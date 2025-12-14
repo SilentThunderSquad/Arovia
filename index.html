@@ -1,0 +1,173 @@
+-<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Arovia — Coming Soon</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Playfair+Display:wght@600&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				color-scheme: dark;
+				--accent: #ffc857;
+				--accent-soft: rgba(255, 200, 87, 0.2);
+				--ink: #f2f2f2;
+				--ink-subtle: rgba(242, 242, 242, 0.78);
+				--bg: #050711;
+				--support: #7c93ff;
+			}
+
+			* {
+				box-sizing: border-box;
+				margin: 0;
+			}
+
+			body {
+				min-height: 100vh;
+				background: radial-gradient(circle at top, #1c1f3b, transparent 45%),
+					linear-gradient(135deg, #050711, #0b0f1f 60%);
+				font-family: 'Space Grotesk', system-ui, sans-serif;
+				color: var(--ink);
+				display: grid;
+				place-items: center;
+				padding: 2rem;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.halo {
+				position: absolute;
+				width: 35rem;
+				height: 35rem;
+				background: radial-gradient(circle, var(--accent-soft), transparent 55%);
+				filter: blur(5px);
+				animation: pulse 8s ease-in-out infinite;
+			}
+
+			.halo.one {
+				top: -8rem;
+				right: -3rem;
+			}
+
+			.halo.two {
+				bottom: -6rem;
+				left: -10rem;
+			}
+
+			@keyframes pulse {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 0.65;
+				}
+				50% {
+					transform: scale(1.15);
+					opacity: 1;
+				}
+			}
+
+			main {
+				position: relative;
+				max-width: 720px;
+				text-align: center;
+				padding: 3rem;
+				border-radius: 1.8rem;
+				background: rgba(5, 7, 17, 0.75);
+				box-shadow: 0 25px 60px rgba(2, 4, 12, 0.7);
+				backdrop-filter: blur(12px);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+			}
+
+			main h1 {
+				font-family: 'Playfair Display', 'Times New Roman', serif;
+				font-size: clamp(2.6rem, 4vw, 3.6rem);
+				letter-spacing: 0.08em;
+				margin-bottom: 1rem;
+			}
+
+			main p {
+				color: var(--ink-subtle);
+				font-size: 1.15rem;
+				line-height: 1.65;
+				margin-bottom: 2rem;
+			}
+
+			.stamp {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.6rem;
+				font-weight: 600;
+				color: var(--support);
+				letter-spacing: 0.15em;
+				text-transform: uppercase;
+			}
+
+			.pulse-dot {
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+				background: var(--support);
+				box-shadow: 0 0 12px var(--support);
+				animation: signal 1.6s ease-in-out infinite;
+			}
+
+			@keyframes signal {
+				0% {
+					transform: scale(0.9);
+					opacity: 0.6;
+				}
+				50% {
+					transform: scale(1.3);
+					opacity: 1;
+				}
+			}
+
+			.note {
+				font-size: 0.9rem;
+				letter-spacing: 0.2em;
+				color: rgba(255, 255, 255, 0.5);
+			}
+		</style>
+	</head>
+	<body>
+		<span class="halo one" aria-hidden="true"></span>
+		<span class="halo two" aria-hidden="true"></span>
+		<main>
+			<div class="stamp">
+				<span class="pulse-dot"></span>
+				Starting Soon
+			</div>
+			<h1>Arovia is crafting something beautiful.</h1>
+			<p>
+				We are shaping a new experience with intent, color, and care. The launch is on its way—come back soon and
+				peek into the next chapter.
+			</p>
+			<p class="note">Feel the anticipation, stay tuned for the unveiling.</p>
+		</main>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				Swal.fire({
+					title: 'Arovia is brewing',
+					text: 'This website will be coming soon. Grab a seat, we will be live shortly!',
+					icon: 'info',
+					confirmButtonText: 'See you soon',
+					background: '#050711',
+					color: '#f2f2f2',
+					toast: false,
+					showClass: {
+						popup: 'swal2-show swal2-noanimation'
+					},
+					hideClass: {
+						popup: 'swal2-hide swal2-noanimation'
+					}
+				})
+			})
+		</script>
+	</body>
+</html>
+
