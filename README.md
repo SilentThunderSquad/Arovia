@@ -32,6 +32,8 @@ Finding the right doctor can be challenging, especially when dealing with specif
 - Improve healthcare accessibility
 - Reduce wait times for medical consultations
 
+- https://docs.google.com/document/d/1fNq1KH-Daut0Pmf09gTA5-6oG9dFP1l_vZSB7-Uvhyk/edit?usp=sharing
+
 ## ✨ Features
 
 ### Current Features
