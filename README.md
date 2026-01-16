@@ -228,7 +228,7 @@ in the Software without restriction...
 
 ## 📧 Contact
 
-**Silent Thunder Team**
+**Silent Thunder Squad**
 
 - **GitHub**: [@SilentThunder-Team](https://github.com/SilentThunder-Team)
 - **Project Link**: [https://github.com/SilentThunder-Team/Doctor-Recommendation](https://github.com/SilentThunder-Team/Doctor-Recommendation)
@@ -240,14 +240,14 @@ For any queries or suggestions, feel free to open an issue or reach out to the t
 
 - Thanks to all contributors who help improve this project
 - Inspired by the need for better healthcare accessibility
-- Built with dedication by the Silent Thunder Team
+- Built with dedication by the Silent Thunder Squad
 - Special thanks to the open-source community for their valuable tools and resources
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by Silent Thunder Team**
+**Made with ❤️ by Silent Thunder Squad**
 
 ⭐ Star this repository if you find it helpful!
 
