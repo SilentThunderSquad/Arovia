@@ -1,6 +1,13 @@
 import './HowItWorks.css';
 
 const HowItWorks = () => {
+    const scrollToSection = (sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     const steps = [
         {
             number: '01',
@@ -63,7 +70,7 @@ const HowItWorks = () => {
                 </div>
 
                 <div className="cta-section">
-                    <button className="btn btn-primary btn-large">
+                    <button className="btn btn-primary btn-large" onClick={() => scrollToSection('home')}>
                         Get Started Now
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

@@ -1,6 +1,13 @@
 import './Hero.css';
 
 const Hero = () => {
+    const scrollToSection = (sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <section className="hero" id="home">
             <div className="hero-background">
@@ -27,13 +34,13 @@ const Hero = () => {
                         </p>
 
                         <div className="hero-cta">
-                            <button className="btn btn-primary btn-large">
+                            <button className="btn btn-primary btn-large" onClick={() => scrollToSection('features')}>
                                 Find Your Specialist
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                     <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </button>
-                            <button className="btn btn-secondary btn-large">
+                            <button className="btn btn-secondary btn-large" onClick={() => scrollToSection('mission')}>
                                 Learn More
                             </button>
                         </div>

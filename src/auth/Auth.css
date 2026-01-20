@@ -6,7 +6,7 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #faf5ff 100%);
+    background: linear-gradient(135deg, #F8F9FA 0%, #e8f5f4 50%, #f0f9ff 100%);
 }
 
 .auth-background {
@@ -206,7 +206,7 @@
 .form-group input:focus {
     outline: none;
     border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgba(15, 76, 92, 0.1);
 }
 
 .form-group input.error {

@@ -75,7 +75,7 @@
 
 .mission-aim {
     padding: var(--spacing-xl);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(139, 92, 246, 0.05));
+    background: linear-gradient(135deg, rgba(15, 76, 92, 0.05), rgba(46, 196, 182, 0.05));
     border-radius: var(--radius-lg);
     border-left: 4px solid var(--primary-blue);
 }
