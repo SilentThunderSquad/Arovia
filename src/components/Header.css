@@ -35,6 +35,12 @@
     font-weight: 700;
     color: var(--primary-blue);
     cursor: pointer;
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+}
+
+.logo:hover {
+    opacity: 0.8;
 }
 
 .logo-icon {

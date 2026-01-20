@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 
 const Header = () => {
@@ -26,12 +27,12 @@ const Header = () => {
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="container">
         <nav className="nav">
-          <div className="logo">
+          <Link to="/" className="logo">
             <span className="logo-icon">🏥</span>
             <span className="logo-text">Arovia</span>
-          </div>
+          </Link>
 
-          <button 
+          <button
             className="mobile-menu-toggle"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
@@ -49,9 +50,9 @@ const Header = () => {
             <li><a onClick={() => scrollToSection('testimonials')}>Testimonials</a></li>
           </ul>
 
-          <button className="btn btn-primary btn-auth">
+          <Link to="/login" className="btn btn-primary btn-auth">
             Login / Register
-          </button>
+          </Link>
         </nav>
       </div>
     </header>
