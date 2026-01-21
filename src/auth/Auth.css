@@ -62,6 +62,32 @@
     background-clip: text;
 }
 
+.back-to-home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--primary-blue);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    transition: all var(--transition-fast);
+    width: fit-content;
+}
+
+.back-to-home:hover {
+    gap: var(--spacing-sm);
+    color: var(--primary-blue-dark);
+}
+
+.back-to-home svg {
+    transition: transform var(--transition-fast);
+}
+
+.back-to-home:hover svg {
+    transform: translateX(-3px);
+}
+
 .branding-content h1 {
     font-size: clamp(2rem, 4vw, 2.5rem);
     color: var(--gray-900);

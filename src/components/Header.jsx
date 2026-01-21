@@ -48,9 +48,14 @@ const Header = () => {
             <li><a onClick={() => scrollToSection('features')}>Features</a></li>
             <li><a onClick={() => scrollToSection('how-it-works')}>How It Works</a></li>
             <li><a onClick={() => scrollToSection('testimonials')}>Testimonials</a></li>
+            <li className="mobile-only">
+              <Link to="/login" className="btn btn-primary btn-auth">
+                Login / Register
+              </Link>
+            </li>
           </ul>
 
-          <Link to="/login" className="btn btn-primary btn-auth">
+          <Link to="/login" className="btn btn-primary btn-auth desktop-only">
             Login / Register
           </Link>
         </nav>

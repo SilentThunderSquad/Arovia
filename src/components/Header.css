@@ -115,6 +115,15 @@
     transition: all var(--transition-base);
 }
 
+/* Mobile/Desktop visibility toggles */
+.mobile-only {
+    display: none;
+}
+
+.desktop-only {
+    display: flex;
+}
+
 @media (max-width: 968px) {
     .mobile-menu-toggle {
         display: flex;
@@ -143,8 +152,18 @@
         pointer-events: all;
     }
 
-    .btn-auth {
+    .mobile-only {
+        display: list-item;
+    }
+
+    .desktop-only {
         display: none;
+    }
+
+    .nav-links .btn-auth {
+        width: 100%;
+        justify-content: center;
+        margin-top: var(--spacing-md);
     }
 }
 

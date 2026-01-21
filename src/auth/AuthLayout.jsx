@@ -17,6 +17,13 @@ const AuthLayout = ({ children, title, subtitle, type }) => {
                         <span className="logo-text">Arovia</span>
                     </Link>
 
+                    <Link to="/" className="back-to-home">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Back to Home
+                    </Link>
+
                     <div className="branding-content">
                         <h1>Find the Right Specialist for Your Chronic Disease</h1>
                         <p>Join thousands of patients who found expert care through our platform</p>
