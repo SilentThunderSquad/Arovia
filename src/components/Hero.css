@@ -53,6 +53,65 @@
     animation-delay: 4s;
 }
 
+/* 3D Floating Medical Icons */
+.floating-medical-icon {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.15;
+    animation: floatMedical 8s ease-in-out infinite;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+    transition: all 0.3s ease;
+    z-index: 0;
+}
+
+.floating-medical-icon:hover {
+    opacity: 0.4;
+    transform: scale(1.2) translateZ(20px);
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.2));
+}
+
+.icon-1 {
+    top: 15%;
+    left: 10%;
+    animation-duration: 10s;
+    animation-delay: 0s;
+}
+
+.icon-2 {
+    top: 25%;
+    right: 15%;
+    animation-duration: 12s;
+    animation-delay: 2s;
+}
+
+.icon-3 {
+    bottom: 30%;
+    left: 8%;
+    animation-duration: 9s;
+    animation-delay: 1s;
+}
+
+.icon-4 {
+    top: 60%;
+    right: 10%;
+    animation-duration: 11s;
+    animation-delay: 3s;
+}
+
+.icon-5 {
+    bottom: 15%;
+    left: 20%;
+    animation-duration: 13s;
+    animation-delay: 4s;
+}
+
+.icon-6 {
+    top: 40%;
+    right: 25%;
+    animation-duration: 10s;
+    animation-delay: 1.5s;
+}
+
 .hero-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -163,11 +222,19 @@
     box-shadow: var(--shadow-lg);
     font-weight: 600;
     color: var(--gray-800);
-    animation: float 3s ease-in-out infinite;
+    animation: float3D 4s ease-in-out infinite;
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+}
+
+.floating-card:hover {
+    transform: translateY(-10px) translateZ(30px) rotateX(5deg) scale(1.05);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
 }
 
 .card-icon {
     font-size: 1.5rem;
+    animation: pulse3D 2s ease-in-out infinite;
 }
 
 .card-1 {
@@ -179,13 +246,13 @@
 .card-2 {
     bottom: 30%;
     left: -15%;
-    animation-delay: 1s;
+    animation-delay: 1.5s;
 }
 
 .card-3 {
     bottom: 10%;
     right: 5%;
-    animation-delay: 2s;
+    animation-delay: 3s;
 }
 
 @media (max-width: 968px) {

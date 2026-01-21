@@ -28,27 +28,30 @@
     background: var(--white);
     border-radius: var(--radius-lg);
     border: 1px solid var(--gray-200);
-    transition: all var(--transition-base);
-    animation: fadeInUp 0.6s ease-out forwards;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: fadeInUp3D 0.6s ease-out forwards;
     opacity: 0;
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
 .feature-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-xl);
+    transform: translateY(-15px) translateZ(30px) rotateX(5deg);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
     border-color: var(--primary-blue);
 }
 
 .feature-card:hover .feature-icon {
-    transform: scale(1.1);
-    animation: glow 2s ease-in-out infinite;
+    transform: scale(1.2) rotateY(360deg);
+    animation: pulse3D 2s ease-in-out infinite;
 }
 
 .feature-icon {
     font-size: 3rem;
     margin-bottom: var(--spacing-md);
     display: inline-block;
-    transition: transform var(--transition-base);
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation: pulse3D 3s ease-in-out infinite;
 }
 
 .feature-card h3 {

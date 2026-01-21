@@ -14,6 +14,25 @@ const Hero = () => {
                 <div className="gradient-orb orb-1"></div>
                 <div className="gradient-orb orb-2"></div>
                 <div className="gradient-orb orb-3"></div>
+
+                {/* 3D Floating Medical Icons */}
+                <div className="floating-medical-icon icon-1">🏥</div>
+                <div className="floating-medical-icon icon-2">💊</div>
+                <div className="floating-medical-icon icon-3">❤️</div>
+                <div className="floating-medical-icon icon-4">🩺</div>
+                <div className="floating-medical-icon icon-5">💉</div>
+                <div className="floating-medical-icon icon-6">⚕️</div>
+
+                {/* Medical Particles */}
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
+                <div className="medical-particle"></div>
             </div>
 
             <div className="container">
