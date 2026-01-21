@@ -76,8 +76,8 @@ const Footer = () => {
                     <div className="footer-section">
                         <h4>Contact</h4>
                         <ul className="footer-links">
-                            <li><a href="mailto:support@arovia.com">support@arovia.com</a></li>
-                            <li><a href="tel:+1234567890">+1 (234) 567-890</a></li>
+                            <li><a href="mailto:support@arovia.in">support@arovia.in</a></li>
+                            <li><a href="tel:+911234567890">+91 1234567890</a></li>
                             <li>Available 24/7</li>
                         </ul>
                     </div>
@@ -92,7 +92,7 @@ const Footer = () => {
                         <a href="#">Cookie Policy</a>
                     </div>
                     <p className="copyright">
-                        © {currentYear} Arovia. All rights reserved. Made with ❤️ by Silent Thunder Squad
+                        © {currentYear} Arovia. All rights reserved. Made by <a href="https://github.com/SilentThunderSquad" target="_blank">Silent Thunder Squad</a>
                     </p>
                 </div>
             </div>
