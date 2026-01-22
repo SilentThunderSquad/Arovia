@@ -127,7 +127,9 @@
     .mission-text {
         order: 1;
     }
+}
 
+@media (max-width: 768px) {
     .mission-values {
         grid-template-columns: 1fr;
     }

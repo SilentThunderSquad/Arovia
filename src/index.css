@@ -342,7 +342,70 @@ a:hover {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+
+/* Laptop Screens (1366px - 1440px) */
+@media (max-width: 1440px) and (min-width: 1024px) {
+  .container {
+    max-width: 1100px;
+    padding: 0 clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .section {
+    padding: clamp(2.5rem, 5vh, 4rem) 0;
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  }
+
+  h2 {
+    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+  }
+
+  h3 {
+    font-size: clamp(1.375rem, 2.75vw, 1.875rem);
+  }
+
+  p {
+    font-size: clamp(1rem, 1.75vw, 1.0625rem);
+  }
+
+  .btn {
+    padding: clamp(0.875rem, 1.5vw, 1rem) clamp(1.75rem, 3vw, 2rem);
+    font-size: clamp(1rem, 1.75vw, 1.125rem);
+  }
+
+  .btn-large {
+    padding: clamp(1rem, 2vw, 1.25rem) clamp(2rem, 3.5vw, 2.5rem);
+    font-size: clamp(1.125rem, 2vw, 1.25rem);
+  }
+
+  .card {
+    padding: clamp(1.5rem, 3vh, 2rem);
+  }
+}
+
+/* Tablet and Small Laptop (968px - 1024px) */
+@media (max-width: 1024px) and (min-width: 968px) {
+  .container {
+    max-width: 960px;
+  }
+
+  .section {
+    padding: clamp(2rem, 4vh, 3rem) 0;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+  }
+}
+
+/* Tablet Portrait */
+@media (max-width: 968px) {
   .container {
     padding: 0 var(--spacing-md);
   }
@@ -374,12 +437,48 @@ a:hover {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .section {
     padding: var(--spacing-xl) 0;
   }
 
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
   .card {
     padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .section {
+    padding: var(--spacing-lg) 0;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .btn-large {
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
   }
 }

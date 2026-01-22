@@ -117,98 +117,129 @@ const Signup = () => {
             type="signup"
         >
             <form className="auth-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="fullName">Full Name</label>
-                    <input
-                        type="text"
-                        id="fullName"
-                        name="fullName"
-                        value={formData.fullName}
-                        onChange={handleChange}
-                        className={errors.fullName ? 'error' : ''}
-                        placeholder="John Doe"
-                    />
-                    {errors.fullName && <span className="error-message">{errors.fullName}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="email">Email Address</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={errors.email ? 'error' : ''}
-                        placeholder="you@example.com"
-                    />
-                    {errors.email && <span className="error-message">{errors.email}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <div className="password-input">
+                {/* Row 1: Full Name and Email */}
+                <div className="form-row-grid">
+                    <div className="form-group">
+                        <label htmlFor="fullName">Full Name</label>
                         <input
-                            type={showPassword ? 'text' : 'password'}
-                            id="password"
-                            name="password"
-                            value={formData.password}
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            value={formData.fullName}
                             onChange={handleChange}
-                            className={errors.password ? 'error' : ''}
-                            placeholder="Create a strong password"
+                            className={errors.fullName ? 'error' : ''}
+                            placeholder="John Doe"
                         />
-                        <button
-                            type="button"
-                            className="password-toggle"
-                            onClick={() => setShowPassword(!showPassword)}
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        >
-                            {showPassword ? '👁️' : '👁️‍🗨️'}
-                        </button>
+                        {errors.fullName && <span className="error-message">{errors.fullName}</span>}
                     </div>
-                    {formData.password && (
-                        <div className="password-strength">
-                            <div className="strength-bar">
-                                <div
-                                    className="strength-fill"
-                                    style={{
-                                        width: `${(passwordStrength / 4) * 100}%`,
-                                        backgroundColor: getStrengthColor()
-                                    }}
-                                ></div>
-                            </div>
-                            <span className="strength-label" style={{ color: getStrengthColor() }}>
-                                {getStrengthLabel()}
-                            </span>
+
+                    <div className="form-group">
+                        <label htmlFor="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={errors.email ? 'error' : ''}
+                            placeholder="you@example.com"
+                        />
+                        {errors.email && <span className="error-message">{errors.email}</span>}
+                    </div>
+                </div>
+
+                {/* Row 2: Password and Confirm Password */}
+                <div className="form-row-grid">
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <div className="password-input">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className={errors.password ? 'error' : ''}
+                                placeholder="Create a strong password"
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? (
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M3.26 11.602C3.942 8.327 6.793 6 10 6c3.206 0 6.057 2.327 6.74 5.602a.5.5 0 00.98-.204C16.943 7.673 13.693 5 10 5c-3.693 0-6.943 2.673-7.72 6.398a.5.5 0 10.98.204z" fill="currentColor" />
+                                        <path d="M10 8a3 3 0 100 6 3 3 0 000-6zm-2 3a2 2 0 114 0 2 2 0 01-4 0z" fill="currentColor" />
+                                        <path d="M2.854 2.146a.5.5 0 10-.708.708l15 15a.5.5 0 00.708-.708l-15-15z" fill="currentColor" />
+                                    </svg>
+                                ) : (
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M10 6c-3.207 0-6.058 2.327-6.74 5.602a.5.5 0 01-.98-.204C3.057 7.673 6.307 5 10 5c3.693 0 6.943 2.673 7.72 6.398a.5.5 0 11-.98.204C15.057 8.327 12.206 6 10 6z" fill="currentColor" />
+                                        <path d="M10 8a3 3 0 100 6 3 3 0 000-6zm-2 3a2 2 0 114 0 2 2 0 01-4 0z" fill="currentColor" />
+                                    </svg>
+                                )}
+                            </button>
                         </div>
-                    )}
-                    {errors.password && <span className="error-message">{errors.password}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="confirmPassword">Confirm Password</label>
-                    <div className="password-input">
-                        <input
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            className={errors.confirmPassword ? 'error' : ''}
-                            placeholder="Re-enter your password"
-                        />
-                        <button
-                            type="button"
-                            className="password-toggle"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                        >
-                            {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-                        </button>
+                        {errors.password && <span className="error-message">{errors.password}</span>}
                     </div>
-                    {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+
+                    <div className="form-group">
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <div className="password-input">
+                            <input
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                className={errors.confirmPassword ? 'error' : ''}
+                                placeholder="Re-enter your password"
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showConfirmPassword ? (
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M3.26 11.602C3.942 8.327 6.793 6 10 6c3.206 0 6.057 2.327 6.74 5.602a.5.5 0 00.98-.204C16.943 7.673 13.693 5 10 5c-3.693 0-6.943 2.673-7.72 6.398a.5.5 0 10.98.204z" fill="currentColor" />
+                                        <path d="M10 8a3 3 0 100 6 3 3 0 000-6zm-2 3a2 2 0 114 0 2 2 0 01-4 0z" fill="currentColor" />
+                                        <path d="M2.854 2.146a.5.5 0 10-.708.708l15 15a.5.5 0 00.708-.708l-15-15z" fill="currentColor" />
+                                    </svg>
+                                ) : (
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M10 6c-3.207 0-6.058 2.327-6.74 5.602a.5.5 0 01-.98-.204C3.057 7.673 6.307 5 10 5c3.693 0 6.943 2.673 7.72 6.398a.5.5 0 11-.98.204C15.057 8.327 12.206 6 10 6z" fill="currentColor" />
+                                        <path d="M10 8a3 3 0 100 6 3 3 0 000-6zm-2 3a2 2 0 114 0 2 2 0 01-4 0z" fill="currentColor" />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
+                        {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+                    </div>
                 </div>
 
+                {/* Row 3: Password Strength Indicator (Full Width) */}
+                {formData.password && (
+                    <div className="password-strength">
+                        <div className="strength-bar">
+                            <div
+                                className="strength-fill"
+                                style={{
+                                    width: `${(passwordStrength / 4) * 100}%`,
+                                    backgroundColor: getStrengthColor()
+                                }}
+                            ></div>
+                        </div>
+                        <span className="strength-label" style={{ color: getStrengthColor() }}>
+                            {getStrengthLabel()}
+                        </span>
+                    </div>
+                )}
+
+                {/* Row 4: Terms and Conditions */}
                 <div className="form-group">
                     <label className="checkbox-label">
                         <input
