@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import AuthLayout from './AuthLayout';
 import './Auth.css';
 
@@ -52,14 +53,30 @@ const Login = () => {
 
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log('Login data:', formData);
-            setIsLoading(false);
-            // TODO: Replace with actual authentication logic
-            // For now, just navigate to home
+        try {
+            const res = await axios.post('http://localhost:5000/api/auth/login', {
+                email: formData.email,
+                password: formData.password
+            });
+
+            // Login success
+            console.log('Login success:', res.data);
+            
+            // Store token and user info
+            localStorage.setItem('token', res.data.token);
+            localStorage.setItem('user', JSON.stringify({ role: res.data.role }));
+
+            // Navigate based on role or to home
             navigate('/');
-        }, 1500);
+        } catch (err) {
+            console.error('Login error:', err);
+            const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+            setErrors({ ...errors, submit: msg });
+            // Display error in password field or general area
+            setErrors(prev => ({ ...prev, password: msg })); 
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

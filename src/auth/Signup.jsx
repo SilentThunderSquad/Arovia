@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import AuthLayout from './AuthLayout';
 import './Auth.css';
 
@@ -90,15 +91,28 @@ const Signup = () => {
 
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log('Signup data:', formData);
-            setIsLoading(false);
-            // TODO: Replace with actual authentication logic
-            // For now, navigate to login
+        try {
+            const { fullName, email, password } = formData;
+            const res = await axios.post('http://localhost:5000/api/auth/register', {
+                name: fullName,
+                email,
+                password
+            });
+
+            console.log('Registration success:', res.data);
+            // Optional: Auto-login or redirect to login
             navigate('/login');
-        }, 1500);
+        } catch (err) {
+            console.error('Registration error:', err);
+            const msg = err.response?.data?.message || 'Registration failed. Please try again.';
+            setErrors({ ...errors, submit: msg });
+            // You might want to display a general error message in the UI
+            alert(msg); // Temporary quick feedback
+        } finally {
+            setIsLoading(false);
+        }
     };
+
 
     const getStrengthLabel = () => {
         const labels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
