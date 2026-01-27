@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LandingPage from './LandingPage';
 import Login from './auth/Login';
 import Signup from './auth/Signup';
+import ChatWidget from './components/ChatWidget';
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,12 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <ChatWidget />
+    </>
+  );
 }
 
 export default App;

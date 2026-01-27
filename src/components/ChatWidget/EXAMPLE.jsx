@@ -67,6 +67,15 @@ export function Layout({ children }) {
  * import Home from './pages/Home';
  * import About from './pages/About';
  * 
+/**
+ * INTEGRATION EXAMPLE
+ * 
+ * How to add ChatWidget to your React Router application:
+ * 
+ * import React from 'react';
+ * import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+ * import ChatWidget from './components/ChatWidget';
+ * 
  * function App() {
  *   return (
  *     <Router>
@@ -75,7 +84,7 @@ export function Layout({ children }) {
  *         <Route path="/about" element={<About />} />
  *       </Routes>
  *       
- *       {/* ChatWidget will be available on all pages */}
+ *       ChatWidget will be available on all pages
  *       <ChatWidget />
  *     </Router>
  *   );

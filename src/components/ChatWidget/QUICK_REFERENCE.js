@@ -68,22 +68,24 @@ Change any value to customize the appearance.
 // ============================================================================
 
 /*
+STYLING CUSTOMIZATION REFERENCE
+
 Location:
-.chatWidgetContainer {
-  bottom: 20px;   /* Distance from bottom */
-  right: 20px;    /* Distance from right */
+chatWidgetContainer {
+  bottom: 20px;
+  right: 20px;
 }
 
 Size:
-.chatWindow {
-  width: 380px;   /* Chat window width */
-  height: 600px;  /* Chat window height */
+chatWindow {
+  width: 380px;
+  height: 600px;
 }
 
 Button size:
-.chatButton {
-  padding: 12px 16px;  /* Button padding */
-  border-radius: 50px;  /* Fully rounded */
+chatButton {
+  padding: 12px 16px;
+  border-radius: 50px;
 }
 */
 
