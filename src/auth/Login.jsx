@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from './AuthLayout';
 import './Auth.css';
+import Swal from 'sweetalert2';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -52,14 +53,55 @@ const Login = () => {
 
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log('Login data:', formData);
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Invalid credentials');
+            }
+
+            localStorage.setItem('token', data.token);
+            if (data.role) localStorage.setItem('role', data.role);
+
+            Swal.fire({
+                title: 'Welcome Back!',
+                text: 'Logged in successfully! Redirecting...',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+                background: '#1a1a2e',
+                color: '#fff',
+                iconColor: '#10b981'
+            });
+            
+            setTimeout(() => {
+                navigate('/');
+            }, 1500);
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Login Failed!',
+                text: error.message,
+                icon: 'error',
+                confirmButtonColor: '#ef4444',
+                background: '#1a1a2e',
+                color: '#fff'
+            });
+        } finally {
             setIsLoading(false);
-            // TODO: Replace with actual authentication logic
-            // For now, just navigate to home
-            navigate('/');
-        }, 1500);
+        }
     };
 
     return (

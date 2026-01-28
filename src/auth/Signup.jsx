@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from './AuthLayout';
 import './Auth.css';
+import Swal from 'sweetalert2';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -90,14 +91,54 @@ const Signup = () => {
 
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log('Signup data:', formData);
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formData.fullName,
+                    email: formData.email,
+                    password: formData.password,
+                    role: 'user' // Default role
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Something went wrong');
+            }
+
+            Swal.fire({
+                title: 'Success!',
+                text: 'Account created successfully! Redirecting...',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                background: '#1a1a2e',
+                color: '#fff',
+                iconColor: '#10b981'
+            });
+            
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Error!',
+                text: error.message,
+                icon: 'error',
+                confirmButtonColor: '#ef4444',
+                background: '#1a1a2e',
+                color: '#fff'
+            });
+        } finally {
             setIsLoading(false);
-            // TODO: Replace with actual authentication logic
-            // For now, navigate to login
-            navigate('/login');
-        }, 1500);
+        }
     };
 
     const getStrengthLabel = () => {
