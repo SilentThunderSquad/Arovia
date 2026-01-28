@@ -54,7 +54,12 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            // Absolute API URL: Works both locally and on any Vercel domain
+            const origin = window.location.origin;
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
+
+            console.log(`Attempting Login fetch to: ${apiUrl}/api/auth/login`);
+
             const response = await fetch(`${apiUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: {
