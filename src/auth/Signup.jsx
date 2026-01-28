@@ -111,6 +111,14 @@ const Signup = () => {
                 }),
             });
 
+            // Handle non-JSON responses (like Vercel error pages)
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await response.text();
+                console.error("Non-JSON response received:", text);
+                throw new Error("Server returned an error page (HTML) instead of data. Please check Vercel Logs.");
+            }
+
             const data = await response.json();
 
             if (!response.ok) {
