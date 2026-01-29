@@ -155,4 +155,53 @@
     .aim-list li {
         font-size: 0.9375rem;
     }
+
+    .value-icon {
+        font-size: 2rem;
+    }
+
+    .value-card h4 {
+        font-size: 1.125rem;
+    }
+
+    .value-card p {
+        font-size: 0.875rem;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+    .mission-motto {
+        font-size: 1rem;
+    }
+
+    .mission-description {
+        font-size: 0.9375rem;
+    }
+
+    .value-card {
+        padding: 1rem;
+    }
+
+    .value-icon {
+        font-size: 1.75rem;
+    }
+
+    .mission-aim {
+        padding: 1rem;
+    }
+
+    .aim-list {
+        gap: var(--spacing-sm);
+    }
+
+    .aim-list li {
+        font-size: 0.875rem;
+        gap: var(--spacing-sm);
+    }
+
+    .aim-list li svg {
+        width: 20px;
+        height: 20px;
+    }
 }

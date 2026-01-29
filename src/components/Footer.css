@@ -158,4 +158,99 @@
     .footer {
         padding: var(--spacing-2xl) 0 var(--spacing-md);
     }
+
+    .footer-logo {
+        font-size: 1.25rem;
+        justify-content: center;
+    }
+
+    .footer-logo .logo-icon {
+        font-size: 1.75rem;
+    }
+
+    .footer-description {
+        text-align: center;
+        font-size: 0.875rem;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .social-links a {
+        width: 36px;
+        height: 36px;
+    }
+
+    .footer-section {
+        text-align: center;
+    }
+
+    .footer-section h4 {
+        font-size: 1rem;
+    }
+
+    .footer-links li {
+        font-size: 0.875rem;
+    }
+
+    .footer-bottom {
+        gap: var(--spacing-sm);
+    }
+
+    .footer-legal {
+        font-size: 0.8125rem;
+        justify-content: center;
+    }
+
+    .copyright {
+        font-size: 0.8125rem;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+    .footer {
+        padding: var(--spacing-xl) 0 var(--spacing-sm);
+    }
+
+    .footer-logo {
+        font-size: 1.125rem;
+    }
+
+    .footer-logo .logo-icon {
+        font-size: 1.5rem;
+    }
+
+    .footer-description {
+        font-size: 0.8125rem;
+    }
+
+    .social-links a {
+        width: 32px;
+        height: 32px;
+    }
+
+    .social-links a svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .footer-section h4 {
+        font-size: 0.9375rem;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .footer-links li {
+        font-size: 0.8125rem;
+    }
+
+    .footer-legal {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .separator {
+        display: none;
+    }
 }
