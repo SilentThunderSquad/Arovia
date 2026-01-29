@@ -175,4 +175,46 @@
     .logo-icon {
         font-size: 1.5rem;
     }
+
+    .header .container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .nav-links {
+        top: 60px;
+        padding: var(--spacing-lg);
+    }
+
+    .nav-links li a {
+        font-size: 0.9375rem;
+    }
+
+    .mobile-menu-toggle span {
+        width: 22px;
+        height: 2.5px;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+    .logo {
+        font-size: 1.125rem;
+    }
+
+    .logo-icon {
+        font-size: 1.375rem;
+    }
+
+    .nav-links {
+        padding: var(--spacing-md);
+    }
+
+    .nav-links li a {
+        font-size: 0.875rem;
+    }
+
+    .nav-links .btn-auth {
+        font-size: 0.875rem;
+        padding: 0.625rem 1rem;
+    }
 }

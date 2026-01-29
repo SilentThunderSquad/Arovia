@@ -82,4 +82,35 @@
     .section-description {
         font-size: 1.125rem;
     }
+
+    .feature-card {
+        padding: var(--spacing-lg);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+    .feature-card {
+        padding: var(--spacing-md);
+    }
+
+    .feature-icon {
+        font-size: 2rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.125rem;
+    }
+
+    .feature-card p {
+        font-size: 0.9375rem;
+    }
+
+    .section-description {
+        font-size: 1rem;
+    }
 }

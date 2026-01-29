@@ -169,4 +169,61 @@
     .testimonial-card {
         padding: var(--spacing-lg);
     }
+
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.75rem;
+    }
+
+    .testimonial-info h4 {
+        font-size: 1.125rem;
+    }
+
+    .condition {
+        font-size: 0.875rem;
+    }
+
+    .testimonial-text {
+        font-size: 0.9375rem;
+    }
+
+    .star {
+        font-size: 1rem;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+    .testimonial-card {
+        padding: var(--spacing-md);
+    }
+
+    .testimonial-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .testimonial-info h4 {
+        font-size: 1rem;
+    }
+
+    .condition {
+        font-size: 0.8125rem;
+    }
+
+    .testimonial-text {
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .dot.active {
+        width: 28px;
+    }
 }

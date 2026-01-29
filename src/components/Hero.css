@@ -314,4 +314,51 @@
     .hero-cta .btn {
         width: 100%;
     }
+
+    .hero-title {
+        font-size: 1.75rem;
+        line-height: 1.2;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+    }
+
+    .hero-badge {
+        font-size: 0.75rem;
+        padding: 0.4rem 1rem;
+    }
+
+    .floating-medical-icon {
+        font-size: 2rem;
+        opacity: 0.1;
+    }
+
+    .gradient-orb {
+        filter: blur(60px);
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+    .hero {
+        padding-top: 80px;
+        padding-bottom: var(--spacing-2xl);
+    }
+
+    .hero-title {
+        font-size: 1.625rem;
+    }
+
+    .hero-description {
+        font-size: 0.9375rem;
+    }
+
+    .stat-number {
+        font-size: 1.75rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
 }
