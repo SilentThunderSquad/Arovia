@@ -99,7 +99,6 @@ body {
 img {
   max-width: 100%;
   height: auto;
-  display: block;
 }
 
 svg {
@@ -512,7 +511,7 @@ a:hover {
   }
 }
 
-/* Extra Small Mobile Devices (320px) */
+/* Extra Small Mobile Devices (up to 375px) */
 @media (max-width: 375px) {
   .container {
     padding: 0 1rem;
