@@ -62,11 +62,6 @@ exports.uploadPrescription = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Initialize prescriptions array if it doesn't exist
-      if (!user.prescriptions) {
-        user.prescriptions = [];
-      }
-
       // Add prescription to user's prescriptions array
       user.prescriptions.push({
         filename: req.file.filename,
