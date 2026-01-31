@@ -12,6 +12,7 @@ const UserDashboard = () => {
 
     useEffect(() => {
         fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchUserData = async () => {
@@ -116,7 +117,7 @@ const UserDashboard = () => {
                 throw new Error('Failed to upload prescription');
             }
 
-            const data = await response.json();
+            await response.json();
             
             Swal.fire({
                 title: 'Success!',
