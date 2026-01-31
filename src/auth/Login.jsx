@@ -100,7 +100,12 @@ const Login = () => {
             });
             
             setTimeout(() => {
-                navigate('/');
+                // Redirect based on role
+                if (data.role === 'admin') {
+                    navigate('/dashboard/admin');
+                } else {
+                    navigate('/dashboard/user');
+                }
             }, 1500);
 
         } catch (error) {

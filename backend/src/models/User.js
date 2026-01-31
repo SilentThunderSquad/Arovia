@@ -22,6 +22,17 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin", "doctor"],     // role based access
       default: "user",
     },
+    prescriptions: [
+      {
+        filename: String,
+        originalName: String,
+        path: String,
+        uploadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true },
 );
