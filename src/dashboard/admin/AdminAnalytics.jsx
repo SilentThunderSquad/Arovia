@@ -1,76 +1,187 @@
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Users, FileText, Activity } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Box, Grid, Card, CardContent, Typography, Paper } from '@mui/material';
+import { People, Description, TrendingUp } from '@mui/icons-material';
+import {
+    ResponsiveContainer,
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    PieChart,
+    Pie,
+    Cell,
+    Legend,
+} from 'recharts';
 
 const AdminAnalytics = ({ analytics }) => {
-    // Default data if analytics is loading/empty
-    const registrationData = analytics?.registrationTrend?.map(d => ({
-        date: d._id,
-        users: d.count
-    })) || [];
+    const registrationData =
+        analytics?.registrationTrend?.map((d) => ({
+            date: d._id,
+            users: d.count,
+        })) || [];
 
     const roleData = [
-        { name: 'Users', value: analytics?.usersByRole?.user || 0, color: '#3b82f6' },
-        { name: 'Admins', value: analytics?.usersByRole?.admin || 0, color: '#8b5cf6' },
-        { name: 'Doctors', value: analytics?.usersByRole?.doctor || 0, color: '#10b981' },
-    ].filter(d => d.value > 0);
+        { name: 'Users', value: analytics?.usersByRole?.user || 0, color: '#0F4C5C' },
+        { name: 'Admins', value: analytics?.usersByRole?.admin || 0, color: '#2EC4B6' },
+        { name: 'Doctors', value: analytics?.usersByRole?.doctor || 0, color: '#FFB703' },
+    ].filter((d) => d.value > 0);
+
+    const kpiCards = [
+        {
+            title: 'Total Users',
+            value: analytics?.totalUsers || 0,
+            icon: People,
+            color: '#0F4C5C',
+            gradient: 'linear-gradient(135deg, #0F4C5C 0%, #1a6b7f 100%)',
+        },
+        {
+            title: 'Prescriptions',
+            value: '--',
+            icon: Description,
+            color: '#2EC4B6',
+            gradient: 'linear-gradient(135deg, #2EC4B6 0%, #4dd4c7 100%)',
+        },
+        {
+            title: 'Active Today',
+            value: '--',
+            icon: TrendingUp,
+            color: '#FFB703',
+            gradient: 'linear-gradient(135deg, #FFB703 0%, #ffc733 100%)',
+        },
+    ];
 
     return (
-        <div className="analytics-container">
+        <Box>
             {/* KPI Cards */}
-            <div className="grid-container grid-3">
-                <div className="card kpi-card">
-                    <div className="kpi-icon blue"><Users size={24} /></div>
-                    <div className="kpi-info">
-                        <h3>Total Users</h3>
-                        <p className="kpi-value">{analytics?.totalUsers || 0}</p>
-                    </div>
-                </div>
-                <div className="card kpi-card">
-                    <div className="kpi-icon green"><FileText size={24} /></div>
-                    <div className="kpi-info">
-                        <h3>Prescriptions</h3>
-                        {/* Assuming we don't have total prescriptions count yet in analytics response, placeholder */}
-                        <p className="kpi-value">--</p>
-                    </div>
-                </div>
-                <div className="card kpi-card">
-                    <div className="kpi-icon purple"><Activity size={24} /></div>
-                    <div className="kpi-info">
-                        <h3>Active Today</h3>
-                        <p className="kpi-value">--</p>
-                    </div>
-                </div>
-            </div>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+                {kpiCards.map((kpi, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Card
+                            component={motion.div}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            whileHover={{
+                                y: -8,
+                                boxShadow: `0 20px 40px ${kpi.color}30`,
+                            }}
+                            sx={{
+                                background: '#ffffff',
+                                border: '1px solid #e5e7eb',
+                                position: 'relative',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    right: 0,
+                                    width: '150px',
+                                    height: '150px',
+                                    background: kpi.gradient,
+                                    opacity: 0.1,
+                                    borderRadius: '50%',
+                                    transform: 'translate(30%, -30%)',
+                                }}
+                            />
+                            <CardContent sx={{ position: 'relative', zIndex: 1 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                    <Box
+                                        sx={{
+                                            width: 50,
+                                            height: 50,
+                                            borderRadius: 2,
+                                            background: kpi.gradient,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            mr: 2,
+                                        }}
+                                    >
+                                        <kpi.icon sx={{ fontSize: 28, color: 'white' }} />
+                                    </Box>
+                                    <Box>
+                                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                                            {kpi.title}
+                                        </Typography>
+                                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#111827' }}>
+                                            {kpi.value}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
 
-            {/* Charts Row 1 */}
-            <div className="grid-container grid-2 charts-row">
-                <div className="card chart-card">
-                    <h3>User Registrations (Last 7 Days)</h3>
-                    <div className="chart-wrapper">
+            {/* Charts */}
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                    <Paper
+                        component={motion.div}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 }}
+                        sx={{
+                            p: 3,
+                            background: '#ffffff',
+                            border: '1px solid #e5e7eb',
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#0F4C5C' }}>
+                            User Registrations (Last 7 Days)
+                        </Typography>
                         <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={registrationData}>
                                 <defs>
                                     <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#2EC4B6" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#2EC4B6" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                                <XAxis dataKey="date" stroke="#94a3b8" />
-                                <YAxis stroke="#94a3b8" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                <XAxis dataKey="date" stroke="#6b7280" />
+                                <YAxis stroke="#6b7280" />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
-                                    itemStyle={{ color: '#f8fafc' }}
+                                    contentStyle={{
+                                        backgroundColor: '#ffffff',
+                                        borderColor: '#e5e7eb',
+                                        color: '#111827',
+                                        borderRadius: '8px',
+                                    }}
                                 />
-                                <Area type="monotone" dataKey="users" stroke="#3b82f6" fillOpacity={1} fill="url(#colorUsers)" />
+                                <Area
+                                    type="monotone"
+                                    dataKey="users"
+                                    stroke="#2EC4B6"
+                                    strokeWidth={2}
+                                    fillOpacity={1}
+                                    fill="url(#colorUsers)"
+                                />
                             </AreaChart>
                         </ResponsiveContainer>
-                    </div>
-                </div>
+                    </Paper>
+                </Grid>
 
-                <div className="card chart-card">
-                    <h3>User Distribution</h3>
-                    <div className="chart-wrapper">
+                <Grid item xs={12} md={6}>
+                    <Paper
+                        component={motion.div}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 }}
+                        sx={{
+                            p: 3,
+                            background: '#ffffff',
+                            border: '1px solid #e5e7eb',
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#0F4C5C' }}>
+                            User Distribution
+                        </Typography>
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
@@ -78,7 +189,7 @@ const AdminAnalytics = ({ analytics }) => {
                                     cx="50%"
                                     cy="50%"
                                     innerRadius={60}
-                                    outerRadius={80}
+                                    outerRadius={100}
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
@@ -87,15 +198,20 @@ const AdminAnalytics = ({ analytics }) => {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
+                                    contentStyle={{
+                                        backgroundColor: '#ffffff',
+                                        borderColor: '#e5e7eb',
+                                        color: '#111827',
+                                        borderRadius: '8px',
+                                    }}
                                 />
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </Paper>
+                </Grid>
+            </Grid>
+        </Box>
     );
 };
 
