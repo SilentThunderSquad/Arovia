@@ -31,101 +31,238 @@
     -webkit-text-fill-color: transparent;
 }
 
-.btn-logout {
-    padding: 0.6rem 1.5rem;
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
+/* User Dashboard Specific Styles */
+.user-dashboard-container {
+    min-height: 100vh;
+    padding-bottom: var(--spacing-xl);
 }
 
-.btn-logout:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: #ef4444;
-    transform: translateY(-2px);
+.glass-header {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-icon {
+    color: var(--primary);
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
 
 .dashboard-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
 }
 
-.user-info-section,
-.prescription-section {
-    margin-bottom: 2rem;
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
 }
 
-.user-info-section h2,
-.prescription-section h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: #fff;
+.grid-section {
+    min-width: 0;
+    /* Fix grid overflow */
 }
 
-.info-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 2rem;
+/* Layout Assignments */
+.profile-section {
+    grid-column: span 12;
 }
 
-.info-item {
+.address-section {
+    grid-column: span 12;
+}
+
+.full-width {
+    grid-column: span 12;
+}
+
+@media (min-width: 1024px) {
+    .profile-section {
+        grid-column: span 5;
+    }
+
+    .address-section {
+        grid-column: span 7;
+    }
+}
+
+/* Specific Card Styles */
+.profile-image-container {
     display: flex;
-    justify-content: space-between;
-    padding: 1rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-label {
-    font-weight: 600;
-    color: #a0aec0;
-}
-
-.info-value {
-    color: #fff;
-    font-weight: 500;
-}
-
-.upload-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 2rem;
-}
-
-.upload-area {
+    justify-content: center;
     margin-bottom: 1.5rem;
 }
 
-.file-input {
-    display: none;
-}
-
-.file-label {
+.image-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid var(--primary);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
-    border: 2px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    cursor: pointer;
+    background-color: #1e293b;
+}
+
+.upload-box {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
     transition: all 0.3s ease;
 }
 
-.file-label:hover {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.05);
+.upload-box:hover {
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.doc-card {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    border: 1px solid var(--border);
+}
+
+.doc-info {
+    margin: 0.5rem 0;
+}
+
+.doc-name {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.doc-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.btn-icon:hover {
+    color: var(--primary);
+}
+
+.btn-icon.danger:hover {
+    color: var(--danger);
+}
+
+/* Security Cards */
+.security-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .security-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.donation-card.active {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border-color: rgba(220, 38, 38, 0.3);
+}
+
+/* Danger Zone */
+.danger-zone {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: linear-gradient(to right, rgba(239, 68, 68, 0.05), transparent);
+}
+
+.danger-header h2 {
+    color: var(--danger);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
 }
 
 .file-label svg {

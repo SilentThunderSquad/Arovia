@@ -19,8 +19,28 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin", "doctor"],     // role based access
+      enum: ["user", "admin", "doctor"],
       default: "user",
+    },
+    phone: String,
+    dob: Date,
+    profilePicture: String,
+    bloodDonor: {
+      type: Boolean,
+      default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    address: {
+      country: String,
+      state: String,
+      pincode: String,
+      city: String,
+      addressLine1: String,
+      addressLine2: String,
+      landmark: String,
     },
     prescriptions: [
       {
