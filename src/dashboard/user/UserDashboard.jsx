@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+    Box,
+    Container,
+    Typography,
+    Button,
+    AppBar,
+    Toolbar,
+    CircularProgress,
+    Grid,
+} from '@mui/material';
+import { Logout, Dashboard as DashboardIcon } from '@mui/icons-material';
 import Swal from 'sweetalert2';
-import { LogOut, LayoutDashboard } from 'lucide-react';
 import UserProfileOptions from './UserProfileOptions';
 import AddressManager from './AddressManager';
 import PrescriptionVault from './PrescriptionVault';
 import SecuritySettings from './SecuritySettings';
 import DangerZone from './DangerZone';
-import './UserDashboard.css';
 
 const UserDashboard = () => {
     const navigate = useNavigate();
@@ -32,13 +41,12 @@ const UserDashboard = () => {
             const response = await fetch(`${apiUrl}/api/user/profile`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
 
             if (!response.ok) {
-                // Handle 401 specifically
                 if (response.status === 401) {
                     localStorage.removeItem('token');
                     navigate('/login');
@@ -55,8 +63,8 @@ const UserDashboard = () => {
                 title: 'Error',
                 text: 'Failed to load user information',
                 icon: 'error',
-                background: '#1a1a2e',
-                color: '#fff'
+                background: '#ffffff',
+                color: '#111827',
             });
         } finally {
             setIsLoading(false);
@@ -64,7 +72,7 @@ const UserDashboard = () => {
     };
 
     const handleUpdateUser = (updatedData) => {
-        setUserInfo(prev => ({ ...prev, ...updatedData }));
+        setUserInfo((prev) => ({ ...prev, ...updatedData }));
     };
 
     const handleLogout = () => {
@@ -75,57 +83,92 @@ const UserDashboard = () => {
 
     if (isLoading) {
         return (
-            <div className="dashboard-loading">
-                <div className="spinner"></div>
-                <p>Loading your dashboard...</p>
-            </div>
+            <Box
+                sx={{
+                    minHeight: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, #0F4C5C 0%, #2EC4B6 100%)',
+                }}
+            >
+                <Box sx={{ textAlign: 'center' }}>
+                    <CircularProgress size={60} sx={{ color: '#FFB703', mb: 2 }} />
+                    <Typography variant="h6" sx={{ color: '#ffffff' }}>
+                        Loading your dashboard...
+                    </Typography>
+                </Box>
+            </Box>
         );
     }
 
     return (
-        <div className="user-dashboard-container">
-            <header className="dashboard-header glass-header">
-                <div className="header-content">
-                    <div className="logo-area">
-                        <LayoutDashboard size={28} className="logo-icon" />
-                        <h1>User Dashboard</h1>
-                    </div>
-                    <div className="user-actions">
-                        <span className="welcome-text">Welcome, {userInfo?.name?.split(' ')[0]}</span>
-                        <button onClick={handleLogout} className="btn btn-outline btn-sm">
-                            <LogOut size={16} /> Logout
-                        </button>
-                    </div>
-                </div>
-            </header>
+        <Box sx={{ minHeight: '100vh', background: '#F8F9FA' }}>
+            {/* Header */}
+            <AppBar
+                position="sticky"
+                elevation={2}
+                sx={{
+                    background: 'linear-gradient(135deg, #0F4C5C 0%, #1a6b7f 100%)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+            >
+                <Toolbar>
+                    <DashboardIcon sx={{ mr: 2, fontSize: 32, color: '#FFB703' }} />
+                    <Typography variant="h5" sx={{ flexGrow: 1, fontWeight: 700, color: '#ffffff' }}>
+                        User Dashboard
+                    </Typography>
+                    <Typography variant="body2" sx={{ mr: 2, color: 'rgba(255,255,255,0.9)' }}>
+                        Welcome, {userInfo?.name?.split(' ')[0]}
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        startIcon={<Logout />}
+                        onClick={handleLogout}
+                        sx={{
+                            borderColor: 'rgba(255,255,255,0.5)',
+                            color: 'white',
+                            borderWidth: '2px',
+                            '&:hover': {
+                                borderColor: '#FFB703',
+                                backgroundColor: 'rgba(255,183,3,0.1)',
+                                borderWidth: '2px',
+                            },
+                        }}
+                    >
+                        Logout
+                    </Button>
+                </Toolbar>
+            </AppBar>
 
-            <main className="dashboard-content">
-                <div className="dashboard-grid">
-                    {/* Top Row: Profile and Address */}
-                    <div className="grid-section profile-section">
+            {/* Main Content */}
+            <Container maxWidth="xl" sx={{ py: 4 }}>
+                <Grid container spacing={3}>
+                    {/* Profile and Address Row */}
+                    <Grid item xs={12} md={6}>
                         <UserProfileOptions userInfo={userInfo} onUpdate={handleUpdateUser} />
-                    </div>
-
-                    <div className="grid-section address-section">
+                    </Grid>
+                    <Grid item xs={12} md={6}>
                         <AddressManager userInfo={userInfo} onUpdate={handleUpdateUser} />
-                    </div>
+                    </Grid>
 
-                    {/* Middle: Prescriptions */}
-                    <div className="grid-section full-width vault-section">
+                    {/* Prescription Vault */}
+                    <Grid item xs={12}>
                         <PrescriptionVault userInfo={userInfo} onUpdate={handleUpdateUser} />
-                    </div>
+                    </Grid>
 
-                    {/* Bottom: Security and Danger */}
-                    <div className="grid-section full-width security-section">
+                    {/* Security Settings */}
+                    <Grid item xs={12}>
                         <SecuritySettings userInfo={userInfo} onUpdate={handleUpdateUser} />
-                    </div>
+                    </Grid>
 
-                    <div className="grid-section full-width danger-section">
+                    {/* Danger Zone */}
+                    <Grid item xs={12}>
                         <DangerZone />
-                    </div>
-                </div>
-            </main>
-        </div>
+                    </Grid>
+                </Grid>
+            </Container>
+        </Box>
     );
 };
 

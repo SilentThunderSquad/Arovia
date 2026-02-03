@@ -1,76 +1,122 @@
 import { useState, useMemo } from 'react';
+import {
+    Box,
+    Card,
+    CardContent,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TablePagination,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    IconButton,
+    Chip,
+    Avatar,
+    Typography,
+    InputAdornment,
+} from '@mui/material';
+import {
+    Search,
+    FilterList,
+    Delete,
+    Block,
+    CheckCircle,
+} from '@mui/icons-material';
 import Swal from 'sweetalert2';
-import { Search, Filter, Trash2, StopCircle, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const UserManagementTable = ({ users, onUserUpdate }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
-    const [currentPage, setCurrentPage] = useState(1);
-    const usersPerPage = 10;
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const filteredUsers = useMemo(() => {
         let result = users || [];
 
         if (searchTerm) {
             const lowerTerm = searchTerm.toLowerCase();
-            result = result.filter(user =>
-                user.name?.toLowerCase().includes(lowerTerm) ||
-                user.email?.toLowerCase().includes(lowerTerm)
+            result = result.filter(
+                (user) =>
+                    user.name?.toLowerCase().includes(lowerTerm) ||
+                    user.email?.toLowerCase().includes(lowerTerm)
             );
         }
 
         if (roleFilter !== 'all') {
-            result = result.filter(user => user.role === roleFilter);
+            result = result.filter((user) => user.role === roleFilter);
         }
 
         return result;
     }, [users, searchTerm, roleFilter]);
 
-    // Pagination
-    const indexOfLastUser = currentPage * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
-        setCurrentPage(1);
+        setPage(0);
     };
 
     const handleRoleFilter = (e) => {
         setRoleFilter(e.target.value);
-        setCurrentPage(1);
+        setPage(0);
     };
 
     const handleDelete = async (userId) => {
         const result = await Swal.fire({
             title: 'Delete User?',
-            text: "This action cannot be undone!",
+            text: 'This action cannot be undone!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ef4444',
             confirmButtonText: 'Yes, delete',
-            background: '#1a1a2e',
-            color: '#fff'
+            background: '#ffffff',
+            color: '#111827',
         });
 
         if (result.isConfirmed) {
             try {
                 const token = localStorage.getItem('token');
                 const origin = window.location.origin;
-                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
+                const apiUrl =
+                    window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
 
                 const response = await fetch(`${apiUrl}/api/admin/users/${userId}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (!response.ok) throw new Error('Failed to delete');
 
-                onUserUpdate(); // Refresh parent
-                Swal.fire('Deleted!', 'User has been removed.', 'success');
+                onUserUpdate();
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'User has been removed.',
+                    icon: 'success',
+                    background: '#ffffff',
+                    color: '#111827',
+                    iconColor: '#2EC4B6',
+                });
             } catch (error) {
-                Swal.fire('Error', 'Failed to delete user', 'error');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to delete user',
+                    icon: 'error',
+                    background: '#ffffff',
+                    color: '#111827',
+                });
             }
         }
     };
@@ -79,16 +125,17 @@ const UserManagementTable = ({ users, onUserUpdate }) => {
         try {
             const token = localStorage.getItem('token');
             const origin = window.location.origin;
-            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
+            const apiUrl =
+                window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
 
             const response = await fetch(`${apiUrl}/api/admin/users/${user._id}/status`, {
                 method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
 
             if (!response.ok) throw new Error('Failed to update status');
 
-            onUserUpdate(); // Refresh parent
+            onUserUpdate();
             const action = user.isActive ? 'suspended' : 'activated';
             Swal.fire({
                 title: 'Status Updated',
@@ -96,125 +143,208 @@ const UserManagementTable = ({ users, onUserUpdate }) => {
                 icon: 'success',
                 timer: 1500,
                 showConfirmButton: false,
-                background: '#1a1a2e',
-                color: '#fff'
+                background: '#ffffff',
+                color: '#111827',
+                iconColor: '#2EC4B6',
             });
         } catch (error) {
-            Swal.fire('Error', 'Failed to update status', 'error');
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to update status',
+                icon: 'error',
+                background: '#ffffff',
+                color: '#111827',
+            });
+        }
+    };
+
+    const getRoleColor = (role) => {
+        switch (role) {
+            case 'admin':
+                return '#0F4C5C';
+            case 'doctor':
+                return '#2EC4B6';
+            default:
+                return '#FFB703';
         }
     };
 
     return (
-        <div className="card user-table-card">
-            <div className="table-header">
-                <h3>User Management</h3>
-                <div className="table-actions">
-                    <div className="search-box">
-                        <Search size={18} />
-                        <input
-                            type="text"
+        <Card sx={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 2 }}>
+            <CardContent>
+                <Box sx={{ mb: 3 }}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#0F4C5C' }}>
+                        User Management
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                        <TextField
                             placeholder="Search users..."
                             value={searchTerm}
                             onChange={handleSearch}
+                            size="small"
+                            sx={{ flexGrow: 1, minWidth: 250 }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Search sx={{ color: '#6b7280' }} />
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
-                    </div>
-                    <div className="filter-box">
-                        <Filter size={18} />
-                        <select value={roleFilter} onChange={handleRoleFilter}>
-                            <option value="all">All Roles</option>
-                            <option value="user">User</option>
-                            <option value="doctor">Doctor</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
 
-            <div className="table-responsive">
-                <table className="users-table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Joined</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentUsers.length > 0 ? (
-                            currentUsers.map(user => (
-                                <tr key={user._id}>
-                                    <td>
-                                        <div className="user-cell">
-                                            <div className="user-avatar-small">
-                                                {user.name?.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <div className="user-name">{user.name}</div>
-                                                <div className="user-email">{user.email}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span className={`badge badge-${user.role === 'admin' ? 'primary' : user.role === 'doctor' ? 'success' : 'warning'}`}>
-                                            {user.role}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span className={`status-dot ${user.isActive ? 'active' : 'inactive'}`}></span>
-                                        {user.isActive ? 'Active' : 'Suspended'}
-                                    </td>
-                                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                                    <td>
-                                        <div className="action-buttons">
-                                            <button
-                                                className="btn-icon"
-                                                title={user.isActive ? "Suspend" : "Activate"}
-                                                onClick={() => handleToggleStatus(user)}
-                                            >
-                                                {user.isActive ? <StopCircle size={18} color="#f59e0b" /> : <CheckCircle size={18} color="#10b981" />}
-                                            </button>
-                                            <button
-                                                className="btn-icon danger"
-                                                title="Delete"
-                                                onClick={() => handleDelete(user._id)}
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="5" className="text-center">No users found</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                        <FormControl size="small" sx={{ minWidth: 150 }}>
+                            <InputLabel>Filter by Role</InputLabel>
+                            <Select
+                                value={roleFilter}
+                                onChange={handleRoleFilter}
+                                label="Filter by Role"
+                                startAdornment={
+                                    <InputAdornment position="start">
+                                        <FilterList sx={{ color: '#6b7280', ml: 1 }} />
+                                    </InputAdornment>
+                                }
+                            >
+                                <MenuItem value="all">All Roles</MenuItem>
+                                <MenuItem value="user">User</MenuItem>
+                                <MenuItem value="doctor">Doctor</MenuItem>
+                                <MenuItem value="admin">Admin</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                </Box>
 
-            <div className="pagination">
-                <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(prev => prev - 1)}
-                    className="btn-page"
-                >
-                    <ChevronLeft size={16} />
-                </button>
-                <span className="page-info">
-                    Page {currentPage} of {totalPages || 1}
-                </span>
-                <button
-                    disabled={currentPage === totalPages || totalPages === 0}
-                    onClick={() => setCurrentPage(prev => prev + 1)}
-                    className="btn-page"
-                >
-                    <ChevronRight size={16} />
-                </button>
-            </div>
-        </div>
+                <TableContainer>
+                    <Table>
+                        <TableHead>
+                            <TableRow sx={{ bgcolor: '#F8F9FA' }}>
+                                <TableCell sx={{ fontWeight: 600, color: '#0F4C5C' }}>User</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#0F4C5C' }}>Role</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#0F4C5C' }}>Status</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#0F4C5C' }}>Joined</TableCell>
+                                <TableCell sx={{ fontWeight: 600, color: '#0F4C5C' }} align="right">
+                                    Actions
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {filteredUsers.length > 0 ? (
+                                filteredUsers
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((user) => (
+                                        <TableRow
+                                            key={user._id}
+                                            sx={{
+                                                '&:hover': { bgcolor: '#F8F9FA' },
+                                                transition: 'background-color 0.2s',
+                                            }}
+                                        >
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                    <Avatar
+                                                        sx={{
+                                                            bgcolor: '#0F4C5C',
+                                                            width: 40,
+                                                            height: 40,
+                                                            fontSize: '1rem',
+                                                        }}
+                                                    >
+                                                        {user.name?.charAt(0).toUpperCase()}
+                                                    </Avatar>
+                                                    <Box>
+                                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                                            {user.name}
+                                                        </Typography>
+                                                        <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                                                            {user.email}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Chip
+                                                    label={user.role}
+                                                    size="small"
+                                                    sx={{
+                                                        bgcolor: `${getRoleColor(user.role)}20`,
+                                                        color: getRoleColor(user.role),
+                                                        fontWeight: 600,
+                                                        textTransform: 'capitalize',
+                                                    }}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box
+                                                        sx={{
+                                                            width: 8,
+                                                            height: 8,
+                                                            borderRadius: '50%',
+                                                            bgcolor: user.isActive ? '#2EC4B6' : '#ef4444',
+                                                        }}
+                                                    />
+                                                    <Typography variant="body2">
+                                                        {user.isActive ? 'Active' : 'Suspended'}
+                                                    </Typography>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                                                    {new Date(user.createdAt).toLocaleDateString()}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleToggleStatus(user)}
+                                                        sx={{
+                                                            color: user.isActive ? '#f59e0b' : '#2EC4B6',
+                                                            '&:hover': { bgcolor: user.isActive ? '#fef3c7' : '#d1fae5' },
+                                                        }}
+                                                        title={user.isActive ? 'Suspend' : 'Activate'}
+                                                    >
+                                                        {user.isActive ? <Block /> : <CheckCircle />}
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleDelete(user._id)}
+                                                        sx={{
+                                                            color: '#ef4444',
+                                                            '&:hover': { bgcolor: '#fee2e2' },
+                                                        }}
+                                                        title="Delete"
+                                                    >
+                                                        <Delete />
+                                                    </IconButton>
+                                                </Box>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                                            No users found
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
+                <TablePagination
+                    component="div"
+                    count={filteredUsers.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[5, 10, 25]}
+                />
+            </CardContent>
+        </Card>
     );
 };
 

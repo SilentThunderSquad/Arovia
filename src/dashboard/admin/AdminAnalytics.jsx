@@ -55,7 +55,7 @@ const AdminAnalytics = ({ analytics }) => {
     return (
         <Box>
             {/* KPI Cards */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid container spacing={4} sx={{ mb: 6 }}>
                 {kpiCards.map((kpi, index) => (
                     <Grid item xs={12} sm={6} md={4} key={index}>
                         <Card
@@ -72,6 +72,7 @@ const AdminAnalytics = ({ analytics }) => {
                                 border: '1px solid #e5e7eb',
                                 position: 'relative',
                                 overflow: 'hidden',
+                                minHeight: 140,
                             }}
                         >
                             <Box
@@ -87,12 +88,12 @@ const AdminAnalytics = ({ analytics }) => {
                                     transform: 'translate(30%, -30%)',
                                 }}
                             />
-                            <CardContent sx={{ position: 'relative', zIndex: 1 }}>
+                            <CardContent sx={{ position: 'relative', zIndex: 1, py: 3 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                     <Box
                                         sx={{
-                                            width: 50,
-                                            height: 50,
+                                            width: 56,
+                                            height: 56,
                                             borderRadius: 2,
                                             background: kpi.gradient,
                                             display: 'flex',
@@ -101,10 +102,10 @@ const AdminAnalytics = ({ analytics }) => {
                                             mr: 2,
                                         }}
                                     >
-                                        <kpi.icon sx={{ fontSize: 28, color: 'white' }} />
+                                        <kpi.icon sx={{ fontSize: 32, color: 'white' }} />
                                     </Box>
                                     <Box>
-                                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                                        <Typography variant="body2" sx={{ color: '#6b7280', mb: 0.5 }}>
                                             {kpi.title}
                                         </Typography>
                                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#111827' }}>
@@ -119,23 +120,24 @@ const AdminAnalytics = ({ analytics }) => {
             </Grid>
 
             {/* Charts */}
-            <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+            <Grid container spacing={4}>
+                <Grid item xs={12} lg={6}>
                     <Paper
                         component={motion.div}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 }}
                         sx={{
-                            p: 3,
+                            p: 4,
                             background: '#ffffff',
                             border: '1px solid #e5e7eb',
+                            minHeight: 450,
                         }}
                     >
-                        <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#0F4C5C' }}>
+                        <Typography variant="h6" sx={{ mb: 4, fontWeight: 600, color: '#0F4C5C' }}>
                             User Registrations (Last 7 Days)
                         </Typography>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={350}>
                             <AreaChart data={registrationData}>
                                 <defs>
                                     <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
@@ -158,7 +160,7 @@ const AdminAnalytics = ({ analytics }) => {
                                     type="monotone"
                                     dataKey="users"
                                     stroke="#2EC4B6"
-                                    strokeWidth={2}
+                                    strokeWidth={3}
                                     fillOpacity={1}
                                     fill="url(#colorUsers)"
                                 />
@@ -167,29 +169,30 @@ const AdminAnalytics = ({ analytics }) => {
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} lg={6}>
                     <Paper
                         component={motion.div}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.4 }}
                         sx={{
-                            p: 3,
+                            p: 4,
                             background: '#ffffff',
                             border: '1px solid #e5e7eb',
+                            minHeight: 450,
                         }}
                     >
-                        <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#0F4C5C' }}>
+                        <Typography variant="h6" sx={{ mb: 4, fontWeight: 600, color: '#0F4C5C' }}>
                             User Distribution
                         </Typography>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={350}>
                             <PieChart>
                                 <Pie
                                     data={roleData}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={100}
+                                    innerRadius={80}
+                                    outerRadius={130}
                                     paddingAngle={5}
                                     dataKey="value"
                                 >

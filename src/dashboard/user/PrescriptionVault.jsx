@@ -1,6 +1,27 @@
 import { useState } from 'react';
+import {
+    Card,
+    CardContent,
+    Typography,
+    Button,
+    Box,
+    Grid,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemAvatar,
+    Avatar,
+    Chip,
+} from '@mui/material';
+import {
+    Description,
+    CloudUpload,
+    Delete,
+    Visibility,
+    PictureAsPdf,
+} from '@mui/icons-material';
 import Swal from 'sweetalert2';
-import { FileText, Upload, Trash2, Eye } from 'lucide-react';
 
 const PrescriptionVault = ({ userInfo, onUpdate }) => {
     const [file, setFile] = useState(null);
@@ -11,11 +32,23 @@ const PrescriptionVault = ({ userInfo, onUpdate }) => {
         if (selectedFile) {
             const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
             if (!validTypes.includes(selectedFile.type)) {
-                Swal.fire('Invalid File', 'Please upload JPG, PNG or PDF', 'error');
+                Swal.fire({
+                    title: 'Invalid File',
+                    text: 'Please upload JPG, PNG or PDF',
+                    icon: 'error',
+                    background: '#ffffff',
+                    color: '#111827',
+                });
                 return;
             }
             if (selectedFile.size > 5 * 1024 * 1024) {
-                Swal.fire('File Too Large', 'Max file size is 5MB', 'error');
+                Swal.fire({
+                    title: 'File Too Large',
+                    text: 'Max file size is 5MB',
+                    icon: 'error',
+                    background: '#ffffff',
+                    color: '#111827',
+                });
                 return;
             }
             setFile(selectedFile);
@@ -36,27 +69,35 @@ const PrescriptionVault = ({ userInfo, onUpdate }) => {
 
             const response = await fetch(`${apiUrl}/api/user/prescription`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}` },
                 body: formData,
             });
 
             if (!response.ok) throw new Error('Upload failed');
 
             const updatedUser = await response.json();
-            onUpdate(updatedUser.user || updatedUser); // Assuming API returns updated user object
+            onUpdate(updatedUser.user || updatedUser);
 
             Swal.fire({
                 title: 'Uploaded!',
                 text: 'Prescription added to vault.',
                 icon: 'success',
                 timer: 1500,
-                background: '#1a1a2e',
-                color: '#fff'
+                showConfirmButton: false,
+                background: '#ffffff',
+                color: '#111827',
+                iconColor: '#2EC4B6',
             });
             setFile(null);
         } catch (error) {
             console.error(error);
-            Swal.fire('Error', 'Failed to upload prescription', 'error');
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to upload prescription',
+                icon: 'error',
+                background: '#ffffff',
+                color: '#111827',
+            });
         } finally {
             setIsUploading(false);
         }
@@ -68,11 +109,11 @@ const PrescriptionVault = ({ userInfo, onUpdate }) => {
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
             confirmButtonText: 'Yes, delete it!',
-            background: '#1a1a2e',
-            color: '#fff'
+            background: '#ffffff',
+            color: '#111827',
         });
 
         if (result.isConfirmed) {
@@ -81,93 +122,158 @@ const PrescriptionVault = ({ userInfo, onUpdate }) => {
                 const origin = window.location.origin;
                 const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
 
-                // Assuming DELETE endpoint exists or using a generic update
-                // For now, let's assume a DELETE endpoint like /api/user/prescription/:id
                 const response = await fetch(`${apiUrl}/api/user/prescription/${prescriptionId}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (!response.ok) throw new Error('Delete failed');
 
-                // We need to manually remove it from local state or refetch. 
-                // Ideally API returns updated list or user.
                 const updatedUser = await response.json();
                 onUpdate(updatedUser.user || updatedUser);
 
-                Swal.fire('Deleted!', 'Prescription has been deleted.', 'success');
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Prescription has been deleted.',
+                    icon: 'success',
+                    background: '#ffffff',
+                    color: '#111827',
+                    iconColor: '#2EC4B6',
+                });
             } catch (error) {
                 console.error(error);
-                Swal.fire('Error', 'Failed to delete prescription', 'error');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to delete prescription',
+                    icon: 'error',
+                    background: '#ffffff',
+                    color: '#111827',
+                });
             }
         }
     };
 
     return (
-        <div className="card prescription-vault">
-            <div className="card-header">
-                <h2><FileText className="icon" size={24} /> Prescription Vault</h2>
-            </div>
+        <Card
+            sx={{
+                background: '#ffffff',
+                border: '1px solid #e5e7eb',
+                borderRadius: 2,
+            }}
+        >
+            <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Description sx={{ mr: 1, color: '#0F4C5C', fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#0F4C5C' }}>
+                        Prescription Vault
+                    </Typography>
+                </Box>
 
-            <div className="upload-section">
-                <div className="upload-box">
+                {/* Upload Section */}
+                <Box
+                    sx={{
+                        border: '2px dashed #e5e7eb',
+                        borderRadius: 2,
+                        p: 4,
+                        textAlign: 'center',
+                        mb: 3,
+                        backgroundColor: '#F8F9FA',
+                        transition: 'all 0.3s',
+                        '&:hover': {
+                            borderColor: '#2EC4B6',
+                            backgroundColor: '#f0fdf4',
+                        },
+                    }}
+                >
                     <input
                         type="file"
                         id="prescription-upload"
                         onChange={handleFileChange}
                         accept=".jpg,.jpeg,.png,.pdf"
-                        className="file-input-hidden"
+                        style={{ display: 'none' }}
                     />
-                    <label htmlFor="prescription-upload" className="upload-label">
-                        <Upload size={32} className="upload-icon" />
-                        <span>{file ? file.name : 'Click to select or drag PDF/Image'}</span>
-                        <span className="upload-hint">Max 5MB</span>
+                    <label htmlFor="prescription-upload" style={{ cursor: 'pointer' }}>
+                        <CloudUpload sx={{ fontSize: 48, color: '#2EC4B6', mb: 2 }} />
+                        <Typography variant="body1" sx={{ mb: 1, color: '#111827' }}>
+                            {file ? file.name : 'Click to select or drag PDF/Image'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                            Max 5MB • JPG, PNG, PDF
+                        </Typography>
                     </label>
-                </div>
-                {file && (
-                    <button
-                        onClick={handleUpload}
-                        className="btn btn-primary btn-upload-action"
-                        disabled={isUploading}
-                    >
-                        {isUploading ? 'Uploading...' : 'Upload to Vault'}
-                    </button>
-                )}
-            </div>
+                </Box>
 
-            <div className="prescriptions-grid-container">
-                <h3>Your Documents</h3>
-                {userInfo?.prescriptions?.length === 0 ? (
-                    <p className="no-docs">No prescriptions uploaded yet.</p>
-                ) : (
-                    <div className="grid-container grid-3">
-                        {userInfo?.prescriptions?.map((doc, idx) => (
-                            <div key={doc._id || idx} className="doc-card">
-                                <div className="doc-preview">
-                                    {doc.filename?.endsWith('.pdf') ? (
-                                        <FileText size={40} className="pdf-icon" />
-                                    ) : (
-                                        <img src={doc.path || 'placeholder.jpg'} alt="Preview" className="img-preview" />
-                                    )}
-                                </div>
-                                <div className="doc-info">
-                                    <p className="doc-name" title={doc.originalName}>{doc.originalName || doc.filename}</p>
-                                    <span className="doc-date">{new Date(doc.uploadedAt).toLocaleDateString()}</span>
-                                </div>
-                                <div className="doc-actions">
-                                    <button className="btn-icon" onClick={() => window.open(doc.path, '_blank')}>
-                                        <Eye size={16} />
-                                    </button>
-                                    <button className="btn-icon danger" onClick={() => handleDelete(doc._id)}>
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                {file && (
+                    <Box sx={{ mb: 3, textAlign: 'center' }}>
+                        <Button
+                            variant="contained"
+                            startIcon={<CloudUpload />}
+                            onClick={handleUpload}
+                            disabled={isUploading}
+                            sx={{ px: 4 }}
+                        >
+                            {isUploading ? 'Uploading...' : 'Upload to Vault'}
+                        </Button>
+                    </Box>
                 )}
-            </div>
-        </div>
+
+                {/* Documents List */}
+                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: '#111827' }}>
+                    Your Documents
+                </Typography>
+
+                {!userInfo?.prescriptions || userInfo.prescriptions.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                            No prescriptions uploaded yet.
+                        </Typography>
+                    </Box>
+                ) : (
+                    <List>
+                        {userInfo.prescriptions.map((doc, idx) => (
+                            <ListItem
+                                key={doc._id || idx}
+                                sx={{
+                                    border: '1px solid #e5e7eb',
+                                    borderRadius: 2,
+                                    mb: 1,
+                                    '&:hover': { bgcolor: '#F8F9FA' },
+                                }}
+                                secondaryAction={
+                                    <Box>
+                                        <IconButton
+                                            edge="end"
+                                            onClick={() => window.open(doc.path, '_blank')}
+                                            sx={{ color: '#2EC4B6', mr: 1 }}
+                                        >
+                                            <Visibility />
+                                        </IconButton>
+                                        <IconButton
+                                            edge="end"
+                                            onClick={() => handleDelete(doc._id)}
+                                            sx={{ color: '#ef4444' }}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </Box>
+                                }
+                            >
+                                <ListItemAvatar>
+                                    <Avatar sx={{ bgcolor: '#0F4C5C' }}>
+                                        {doc.filename?.endsWith('.pdf') ? <PictureAsPdf /> : <Description />}
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={doc.originalName || doc.filename}
+                                    secondary={new Date(doc.uploadedAt).toLocaleDateString()}
+                                    primaryTypographyProps={{ fontWeight: 500 }}
+                                />
+                            </ListItem>
+                        ))}
+                    </List>
+                )}
+            </CardContent>
+        </Card>
     );
 };
 

@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react';
+import {
+    Card,
+    CardContent,
+    Typography,
+    TextField,
+    Button,
+    Box,
+    Grid,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    CircularProgress,
+} from '@mui/material';
+import { LocationOn, Save } from '@mui/icons-material';
 import Swal from 'sweetalert2';
-import { MapPin, Search, Save } from 'lucide-react';
 
 const AddressManager = ({ userInfo, onUpdate }) => {
     const [address, setAddress] = useState({
@@ -10,20 +24,20 @@ const AddressManager = ({ userInfo, onUpdate }) => {
         city: '',
         addressLine1: '',
         addressLine2: '',
-        landmark: ''
+        landmark: '',
     });
     const [isSearching, setIsSearching] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (userInfo && userInfo.address) {
-            setAddress(prev => ({ ...prev, ...userInfo.address }));
+            setAddress((prev) => ({ ...prev, ...userInfo.address }));
         }
     }, [userInfo]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setAddress(prev => ({ ...prev, [name]: value }));
+        setAddress((prev) => ({ ...prev, [name]: value }));
 
         // Auto-trigger pincode search if 6 digits
         if (name === 'pincode' && value.length === 6) {
@@ -39,15 +53,12 @@ const AddressManager = ({ userInfo, onUpdate }) => {
 
             if (data && data[0].Status === 'Success') {
                 const details = data[0].PostOffice[0];
-                setAddress(prev => ({
+                setAddress((prev) => ({
                     ...prev,
                     city: details.District,
                     state: details.State,
-                    country: 'India'
+                    country: 'India',
                 }));
-            } else {
-                // Silent fail or small toast
-                console.log('Invalid pincode');
             }
         } catch (error) {
             console.error('Pincode lookup failed:', error);
@@ -65,10 +76,10 @@ const AddressManager = ({ userInfo, onUpdate }) => {
             const origin = window.location.origin;
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
 
-            const response = await fetch(`${apiUrl}/api/user/address`, { // Assuming new endpoint
+            const response = await fetch(`${apiUrl}/api/user/address`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ address }),
@@ -83,130 +94,149 @@ const AddressManager = ({ userInfo, onUpdate }) => {
                 title: 'Success',
                 text: 'Address updated successfully',
                 icon: 'success',
-                background: '#1a1a2e',
-                color: '#fff',
-                timer: 1500
+                background: '#ffffff',
+                color: '#111827',
+                iconColor: '#2EC4B6',
+                timer: 1500,
+                showConfirmButton: false,
             });
         } catch (error) {
             console.error(error);
-            Swal.fire('Error', 'Failed to update address', 'error');
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to update address',
+                icon: 'error',
+                background: '#ffffff',
+                color: '#111827',
+            });
         } finally {
             setIsSaving(false);
         }
     };
 
     return (
-        <div className="card address-manager">
-            <div className="card-header">
-                <h2><MapPin className="icon" size={24} /> Address Management</h2>
-            </div>
+        <Card
+            sx={{
+                height: '100%',
+                background: '#ffffff',
+                border: '1px solid #e5e7eb',
+                borderRadius: 2,
+            }}
+        >
+            <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <LocationOn sx={{ mr: 1, color: '#0F4C5C', fontSize: 28 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#0F4C5C' }}>
+                        Address Management
+                    </Typography>
+                </Box>
 
-            <form onSubmit={handleSubmit} className="address-form">
-                <div className="grid-container grid-2">
-                    <div className="input-group">
-                        <label>Country</label>
-                        <select
-                            name="country"
-                            className="input-field"
-                            value={address.country}
-                            onChange={handleChange}
-                        >
-                            <option value="India">India</option>
-                            {/* Add other countries if needed */}
-                        </select>
-                    </div>
+                <Box component="form" onSubmit={handleSubmit}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth>
+                                <InputLabel>Country</InputLabel>
+                                <Select
+                                    name="country"
+                                    value={address.country}
+                                    onChange={handleChange}
+                                    label="Country"
+                                >
+                                    <MenuItem value="India">India</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
 
-                    <div className="input-group">
-                        <label>Pincode</label>
-                        <div style={{ position: 'relative' }}>
-                            <input
-                                type="text"
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Pincode"
                                 name="pincode"
-                                className="input-field"
                                 value={address.pincode}
                                 onChange={handleChange}
-                                maxLength={6}
+                                inputProps={{ maxLength: 6 }}
                                 placeholder="Enter 6-digit pincode"
                                 required
+                                InputProps={{
+                                    endAdornment: isSearching && (
+                                        <CircularProgress size={20} sx={{ color: '#2EC4B6' }} />
+                                    ),
+                                }}
                             />
-                            {isSearching && (
-                                <span style={{ position: 'absolute', right: '10px', top: '10px' }}>
-                                    <div className="spinner-small"></div>
-                                </span>
-                            )}
-                        </div>
-                    </div>
+                        </Grid>
 
-                    <div className="input-group">
-                        <label>State</label>
-                        <input
-                            type="text"
-                            name="state"
-                            className="input-field"
-                            value={address.state}
-                            readOnly
-                            placeholder="Auto-filled"
-                        />
-                    </div>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="State"
+                                name="state"
+                                value={address.state}
+                                InputProps={{ readOnly: true }}
+                                placeholder="Auto-filled"
+                            />
+                        </Grid>
 
-                    <div className="input-group">
-                        <label>City / District</label>
-                        <input
-                            type="text"
-                            name="city"
-                            className="input-field"
-                            value={address.city}
-                            readOnly
-                            placeholder="Auto-filled"
-                        />
-                    </div>
-                </div>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="City / District"
+                                name="city"
+                                value={address.city}
+                                InputProps={{ readOnly: true }}
+                                placeholder="Auto-filled"
+                            />
+                        </Grid>
 
-                <div className="input-group">
-                    <label>Address Line 1</label>
-                    <input
-                        type="text"
-                        name="addressLine1"
-                        className="input-field"
-                        value={address.addressLine1}
-                        onChange={handleChange}
-                        placeholder="House No., Building, Street"
-                        required
-                    />
-                </div>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Address Line 1"
+                                name="addressLine1"
+                                value={address.addressLine1}
+                                onChange={handleChange}
+                                placeholder="House No., Building, Street"
+                                required
+                            />
+                        </Grid>
 
-                <div className="input-group">
-                    <label>Address Line 2 (Optional)</label>
-                    <input
-                        type="text"
-                        name="addressLine2"
-                        className="input-field"
-                        value={address.addressLine2}
-                        onChange={handleChange}
-                        placeholder="Apartment, Studio, Floor"
-                    />
-                </div>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Address Line 2 (Optional)"
+                                name="addressLine2"
+                                value={address.addressLine2}
+                                onChange={handleChange}
+                                placeholder="Apartment, Studio, Floor"
+                            />
+                        </Grid>
 
-                <div className="input-group">
-                    <label>Landmark (Optional)</label>
-                    <input
-                        type="text"
-                        name="landmark"
-                        className="input-field"
-                        value={address.landmark}
-                        onChange={handleChange}
-                        placeholder="Near Famous Place"
-                    />
-                </div>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Landmark (Optional)"
+                                name="landmark"
+                                value={address.landmark}
+                                onChange={handleChange}
+                                placeholder="Near Famous Place"
+                            />
+                        </Grid>
 
-                <div className="form-actions">
-                    <button type="submit" className="btn btn-primary" disabled={isSaving}>
-                        <Save size={18} />
-                        {isSaving ? 'Saving...' : 'Save Address'}
-                    </button>
-                </div>
-            </form>
-        </div>
+                        <Grid item xs={12}>
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                startIcon={<Save />}
+                                disabled={isSaving}
+                                sx={{ py: 1.5 }}
+                            >
+                                {isSaving ? 'Saving...' : 'Save Address'}
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </CardContent>
+        </Card>
     );
 };
 
