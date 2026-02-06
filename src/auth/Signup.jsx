@@ -75,7 +75,11 @@ const Signup = () => {
             });
 
             setTimeout(() => {
-                navigate('/');
+                if (role === 'admin') {
+                    navigate('/dashboard/admin');
+                } else {
+                    navigate('/dashboard/user');
+                }
             }, 1500);
         }
     }, [searchParams, navigate]);
