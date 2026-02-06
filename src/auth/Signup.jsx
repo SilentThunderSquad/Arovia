@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     Box,
@@ -26,6 +26,7 @@ import Swal from 'sweetalert2';
 
 const Signup = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -38,6 +39,52 @@ const Signup = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
+
+    // Handle Google OAuth callback
+    useEffect(() => {
+        const token = searchParams.get('token');
+        const error = searchParams.get('error');
+        const name = searchParams.get('name');
+        const role = searchParams.get('role');
+
+        if (error) {
+            Swal.fire({
+                title: 'Authentication Failed!',
+                text: 'Google authentication failed. Please try again.',
+                icon: 'error',
+                confirmButtonColor: '#ef4444',
+                background: '#1a1a2e',
+                color: '#fff'
+            });
+            return;
+        }
+
+        if (token) {
+            localStorage.setItem('token', token);
+            if (role) localStorage.setItem('role', role);
+
+            Swal.fire({
+                title: `Welcome ${name || ''}!`,
+                text: 'Account created successfully with Google!',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+                background: '#1a1a2e',
+                color: '#fff',
+                iconColor: '#10b981'
+            });
+
+            setTimeout(() => {
+                navigate('/');
+            }, 1500);
+        }
+    }, [searchParams, navigate]);
+
+    const handleGoogleLogin = () => {
+        const origin = window.location.origin;
+        const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
+        window.location.href = `${apiUrl}/api/auth/google`;
+    };
 
     const calculatePasswordStrength = (password) => {
         let strength = 0;
@@ -441,6 +488,8 @@ const Signup = () => {
                                         fullWidth
                                         variant="outlined"
                                         startIcon={<Google />}
+                                        onClick={handleGoogleLogin}
+                                        type="button"
                                         sx={{
                                             borderColor: '#d1d5db',
                                             color: '#111827',
@@ -453,6 +502,7 @@ const Signup = () => {
                                         fullWidth
                                         variant="outlined"
                                         startIcon={<Facebook />}
+                                        type="button"
                                         sx={{
                                             borderColor: '#d1d5db',
                                             color: '#111827',

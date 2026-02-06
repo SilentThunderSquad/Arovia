@@ -10,8 +10,24 @@ dotenv.config();
 const connectDB = require('./config/db');
 connectDB();
 
+const passport = require('./config/passport');
+const session = require('express-session');
+
 const app = express();
-app.use(cors());
+
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_secret_key',
+    resave: false,
+    saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:5173', // Adjust based on your frontend URL
+    credentials: true,
+}));
 app.use(express.json());
 
 // Create uploads directory if it doesn't exist
