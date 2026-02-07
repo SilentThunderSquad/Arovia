@@ -5,20 +5,22 @@ const User = require('../models/User');
 // Validate required environment variables
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
     console.error('❌ ERROR: Missing required Google OAuth environment variables!');
-    console.error('Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Vercel environment variables.');
+    console.error('Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in environment variables.');
     console.error('Current values:', {
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? '✓ Set' : '✗ Missing',
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? '✓ Set' : '✗ Missing'
     });
     console.warn('⚠️ Google OAuth login will be disabled. Email/password login will still work.');
 } else {
-    // Only configure Google OAuth if credentials are available
     passport.use(
         new GoogleStrategy(
             {
                 clientID: process.env.GOOGLE_CLIENT_ID,
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackURL: '/api/auth/google/callback',
+                callbackURL: process.env.NODE_ENV === 'production' 
+                    ? 'https://arovia-silentthundersquad.vercel.app/api/auth/google/callback' 
+                    : '/api/auth/google/callback',
+                proxy: true, // Important for Vercel/Heroku to trust headers
             },
             async (accessToken, refreshToken, profile, done) => {
                 try {
