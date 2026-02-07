@@ -5,7 +5,8 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 
-dotenv.config();
+// Load environment variables from backend/.env
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const connectDB = require('./config/db');
 connectDB();
