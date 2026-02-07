@@ -26,9 +26,8 @@ console.log('🔍 Environment variables check:', {
     NODE_ENV: process.env.NODE_ENV || 'development'
 });
 
-const connectDB = require('./config/db');
-connectDB();
 
+const connectDB = require('./config/db');
 const passport = require('./config/passport');
 const session = require('express-session');
 
@@ -72,10 +71,25 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 
 const PORT = process.env.PORT || 5000;
 
-// Only listen if running directly (not when imported by Vercel)
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
+// Initialize server with proper async handling
+async function startServer() {
+    try {
+        // Connect to MongoDB first
+        await connectDB();
+
+        // Only listen if running directly (not when imported by Vercel)
+        if (require.main === module) {
+            app.listen(PORT, () => {
+                console.log(`🚀 Server running on port ${PORT}`);
+            });
+        }
+    } catch (error) {
+        console.error('❌ Failed to start server:', error.message);
+        process.exit(1);
+    }
 }
+
+// Start the server
+startServer();
+
 module.exports = app;
