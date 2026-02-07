@@ -49,10 +49,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Create uploads directory if it doesn't exist
+// Create uploads directory if it doesn't exist (only works in local development)
+// On Vercel, use cloud storage (S3, Cloudinary, etc.) instead of local filesystem
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'prescriptions');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+        console.log('📁 Created uploads directory:', uploadsDir);
+    }
+} catch (error) {
+    console.warn('⚠️ Could not create uploads directory (read-only filesystem):', error.message);
+    console.warn('💡 For production, configure cloud storage (S3, Cloudinary, etc.)');
 }
 
 app.get('/api/health', (req, res) => {
