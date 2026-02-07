@@ -182,8 +182,11 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
                             <Typography variant="h5" fontWeight="bold" gutterBottom>
                                 {user?.name || 'User Name'}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                                 {user?.email || 'user@example.com'}
+                            </Typography>
+                            <Typography variant="body2" color="primary" sx={{ mb: 3, fontWeight: 'bold' }}>
+                                Username: {user?.username && user.username !== 'undefined' ? user.username : (localStorage.getItem('username') !== 'undefined' ? localStorage.getItem('username') : 'N/A')}
                             </Typography>
 
                             <Typography variant="h6" color="primary" gutterBottom sx={{ mt: 2, fontWeight: 'bold' }}>

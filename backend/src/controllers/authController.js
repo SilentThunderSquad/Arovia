@@ -19,6 +19,7 @@ exports.registerUser = async (req, res) => {
     const user = new User({
       name,
       email,
+      username: email.split('@')[0], // Generate username from email
       password, // Pass plain password, let User model hash it
       role,
       profilePicture: req.file ? `/uploads/profile-images/${req.file.filename}` : undefined
@@ -104,7 +105,8 @@ exports.googleCallback = (req, res) => {
     // Redirect to frontend with token
     // Adjust the URL to match your frontend port (defaults to 5173 for Vite)
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-    res.redirect(`${clientUrl}/login?token=${token}&role=${user.role}&name=${encodeURIComponent(user.name)}`);
+    const usernameParam = user.username ? `&username=${encodeURIComponent(user.username)}` : '';
+    res.redirect(`${clientUrl}/login?token=${token}&role=${user.role}&name=${encodeURIComponent(user.name)}${usernameParam}`);
   } catch (error) {
     console.error('Google Auth Error:', error);
     res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`);

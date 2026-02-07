@@ -39,6 +39,18 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
                             }
                             await user.save();
                         }
+
+                        // Backfill username if missing (for ALL existing users)
+                        if (!user.username) {
+                            console.log('--- BACKFILL USERNAME START ---');
+                            console.log('User found without username:', user.email);
+                            user.username = profile.emails[0].value.split('@')[0];
+                            console.log('Generated username:', user.username);
+                            await user.save();
+                            console.log('User saved with new username');
+                            console.log('--- BACKFILL USERNAME END ---');
+                        }
+
                         return done(null, user);
                     }
 
@@ -46,6 +58,7 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
                     user = new User({
                         name: profile.displayName,
                         email: profile.emails[0].value,
+                        username: profile.emails[0].value.split('@')[0], // Generate username from email
                         googleId: profile.id,
                         profilePicture: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
                         role: 'user', // Default role

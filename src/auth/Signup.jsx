@@ -46,6 +46,7 @@ const Signup = () => {
         const error = searchParams.get('error');
         const name = searchParams.get('name');
         const role = searchParams.get('role');
+        const username = searchParams.get('username');
 
         if (error) {
             Swal.fire({
@@ -62,6 +63,7 @@ const Signup = () => {
         if (token) {
             localStorage.setItem('token', token);
             if (role) localStorage.setItem('role', role);
+            if (username) localStorage.setItem('username', username);
 
             Swal.fire({
                 title: `Welcome ${name || ''}!`,
