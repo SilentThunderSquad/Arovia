@@ -3,13 +3,15 @@ const router = express.Router();
 const passport = require('passport');
 const { registerUser, loginUser, googleCallback } = require('../controllers/authController');
 
+const upload = require('../middleware/upload');
+
 // Route for user registration
-router.post('/register', registerUser);
+router.post('/register', upload.single('profileImage'), registerUser);
 // Route for user login
 router.post('/login', loginUser);
 
 // Google Auth Routes
-router.get('/google', passport.authenticate('google', { 
+router.get('/google', passport.authenticate('google', {
     scope: ['profile', 'email'],
     prompt: 'select_account consent' // Forces consent screen and account selection
 }));

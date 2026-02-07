@@ -198,6 +198,33 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
 
                     {/* Right Content - Form */}
                     <Grid item xs={12} md={8}>
+                        {/* Profile Summary Section */}
+                        <Box sx={{ mb: 4, p: 2, bgcolor: '#f8f9fa', borderRadius: 2, border: '1px solid #e9ecef' }}>
+                            <Typography variant="h6" color="primary" sx={{ mb: 2, fontWeight: 'bold' }}>
+                                Profile Summary
+                            </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2" color="text.secondary">Full Name</Typography>
+                                    <Typography variant="body1" fontWeight="500">{user?.name}</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2" color="text.secondary">Email</Typography>
+                                    <Typography variant="body1" fontWeight="500">{user?.email}</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2" color="text.secondary">Phone</Typography>
+                                    <Typography variant="body1" fontWeight="500">{user?.phone || 'Not provided'}</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2" color="text.secondary">Location</Typography>
+                                    <Typography variant="body1" fontWeight="500">
+                                        {user?.address?.city ? `${user.address.city}, ${user.address.state}` : 'Not provided'}
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                        </Box>
+
                         <Box sx={{ mb: 4 }}>
                             <Typography variant="h6" color="primary" sx={{ mb: 3, fontWeight: 'bold', borderBottom: '2px solid #f0f0f0', pb: 1, display: 'inline-block' }}>
                                 Personal Details

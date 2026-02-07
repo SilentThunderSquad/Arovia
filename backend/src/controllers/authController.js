@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 // User Registration  or Sign-Up
 exports.registerUser = async (req, res) => {
-  try{
+  try {
     const { name, email, password, role } = req.body;
 
     // Check if user already exists
@@ -20,7 +20,8 @@ exports.registerUser = async (req, res) => {
       name,
       email,
       password, // Pass plain password, let User model hash it
-      role
+      role,
+      profilePicture: req.file ? `/uploads/profile-images/${req.file.filename}` : undefined
     });
 
     await user.save();
@@ -32,7 +33,7 @@ exports.registerUser = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "User registered successfully ",
       token,
       user: {
@@ -50,7 +51,7 @@ exports.registerUser = async (req, res) => {
 
 // User Login or Sign-In
 exports.loginUser = async (req, res) => {
-  try{
+  try {
     const { email, password } = req.body;
 
     // Find user by email
@@ -67,15 +68,22 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    res.json({ token ,
+    res.json({
+      token,
+      role: user.role,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
         role: user.role,
+        profilePicture: user.profilePicture
+      }
     });
   } catch (error) {
     console.error(error);
@@ -85,20 +93,20 @@ exports.loginUser = async (req, res) => {
 
 // Handle Google OAuth Callback
 exports.googleCallback = (req, res) => {
-    try {
-        const user = req.user;
-        const token = jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
-        );
+  try {
+    const user = req.user;
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
 
-        // Redirect to frontend with token
-        // Adjust the URL to match your frontend port (defaults to 5173 for Vite)
-        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-        res.redirect(`${clientUrl}/login?token=${token}&role=${user.role}&name=${encodeURIComponent(user.name)}`);
-    } catch (error) {
-        console.error('Google Auth Error:', error);
-        res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`);
-    }
+    // Redirect to frontend with token
+    // Adjust the URL to match your frontend port (defaults to 5173 for Vite)
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    res.redirect(`${clientUrl}/login?token=${token}&role=${user.role}&name=${encodeURIComponent(user.name)}`);
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`);
+  }
 };

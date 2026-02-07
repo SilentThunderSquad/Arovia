@@ -241,34 +241,7 @@ const UserDashboard = () => {
                             />
                         </Grid>
 
-                        {/* Recent Activity / Information */}
-                        <Grid item xs={12} md={8}>
-                            <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }} elevation={1}>
-                                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                    Your Profile Summary
-                                </Typography>
-                                <Grid container spacing={2} sx={{ mt: 1 }}>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body2" color="text.secondary">Full Name</Typography>
-                                        <Typography variant="body1">{userInfo?.name}</Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body2" color="text.secondary">Email</Typography>
-                                        <Typography variant="body1">{userInfo?.email}</Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body2" color="text.secondary">Phone</Typography>
-                                        <Typography variant="body1">{userInfo?.phone || 'Not provided'}</Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body2" color="text.secondary">Location</Typography>
-                                        <Typography variant="body1">
-                                            {userInfo?.address?.city ? `${userInfo.address.city}, ${userInfo.address.state}` : 'Not provided'}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                            </Paper>
-                        </Grid>
+
 
                         <Grid item xs={12} md={4}>
                             <Paper sx={{ p: 3, borderRadius: 2, height: '100%', bgcolor: '#0F4C5C', color: 'white' }} elevation={1}>
