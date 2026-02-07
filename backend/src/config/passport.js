@@ -7,7 +7,10 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: '/api/auth/google/callback',
+            callbackURL: process.env.NODE_ENV === 'production' 
+                ? 'https://arovia-silentthundersquad.vercel.app/api/auth/google/callback' 
+                : '/api/auth/google/callback',
+            proxy: true, // Important for Vercel/Heroku to trust headers
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
