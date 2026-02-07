@@ -82,3 +82,23 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Handle Google OAuth Callback
+exports.googleCallback = (req, res) => {
+    try {
+        const user = req.user;
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
+        // Redirect to frontend with token
+        // Adjust the URL to match your frontend port (defaults to 5173 for Vite)
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        res.redirect(`${clientUrl}/login?token=${token}&role=${user.role}&name=${encodeURIComponent(user.name)}`);
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+        res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=auth_failed`);
+    }
+};

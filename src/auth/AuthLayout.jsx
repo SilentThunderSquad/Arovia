@@ -12,10 +12,10 @@ const AuthLayout = ({ children, title, subtitle, type }) => {
 
             <div className="auth-container">
                 <div className="auth-branding">
-                    <Link to="/" className="auth-logo">
+                    {/* <Link to="/" className="auth-logo">
                         <span className="logo-icon">🏥</span>
                         <span className="logo-text">Arovia</span>
-                    </Link>
+                    </Link> */}
 
                     <Link to="/" className="back-to-home">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -47,7 +47,7 @@ const AuthLayout = ({ children, title, subtitle, type }) => {
                             </div>
                         </div>
 
-                        <div className="branding-illustration">
+                        {/* <div className="branding-illustration">
                             <div className="floating-card">
                                 <div className="card-icon">💊</div>
                                 <div className="card-text">Expert Care</div>
@@ -56,7 +56,7 @@ const AuthLayout = ({ children, title, subtitle, type }) => {
                                 <div className="card-icon">📅</div>
                                 <div className="card-text">Easy Booking</div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
