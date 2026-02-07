@@ -128,6 +128,29 @@
     margin: 0;
 }
 
+.visitor-counter-contact {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.visitor-counter-contact a {
+    display: inline-block;
+    opacity: 0.8;
+    transition: opacity var(--transition-fast);
+}
+
+.visitor-counter-contact a:hover {
+    opacity: 1;
+}
+
+.visitor-counter-contact img {
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    max-width: 100%;
+    height: auto;
+}
+
 @media (max-width: 1024px) {
     .footer-content {
         grid-template-columns: repeat(3, 1fr);

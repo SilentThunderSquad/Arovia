@@ -80,6 +80,16 @@ const Footer = () => {
                             <li><a href="tel:+911234567890">+91 1234567890</a></li>
                             <li>Available 24/7</li>
                         </ul>
+                        <div className="visitor-counter-contact">
+                            <a href="https://www.freecounterstat.com" title="website counter" target="_blank" rel="noopener noreferrer">
+                                <img
+                                    src="https://counter1.optistats.ovh/private/freecounterstat.php?c=3et4m65t2c2sc6cnjpefr5yq3lcfgzyj"
+                                    border="0"
+                                    title="website counter"
+                                    alt="website counter"
+                                />
+                            </a>
+                        </div>
                     </div>
                 </div>
 
