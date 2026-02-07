@@ -5,8 +5,26 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 
-// Load environment variables from backend/.env
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+// Load environment variables from backend/.env (only in local development)
+// On Vercel, environment variables are already available via process.env
+const envPath = path.join(__dirname, '..', '.env');
+if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+    console.log('📁 Loaded environment variables from .env file');
+} else {
+    console.log('☁️ Using environment variables from hosting platform (Vercel)');
+}
+
+// Debug: Log which environment variables are available (without exposing values)
+console.log('🔍 Environment variables check:', {
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? '✓ Set' : '✗ Missing',
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? '✓ Set' : '✗ Missing',
+    MONGO_URI: process.env.MONGO_URI ? '✓ Set' : '✗ Missing',
+    JWT_SECRET: process.env.JWT_SECRET ? '✓ Set' : '✗ Missing',
+    SESSION_SECRET: process.env.SESSION_SECRET ? '✓ Set' : '✗ Missing',
+    CLIENT_URL: process.env.CLIENT_URL ? '✓ Set' : '✗ Missing',
+    NODE_ENV: process.env.NODE_ENV || 'development'
+});
 
 const connectDB = require('./config/db');
 connectDB();
