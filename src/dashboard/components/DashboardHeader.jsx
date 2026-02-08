@@ -1,6 +1,7 @@
 import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AvatarMenu from './AvatarMenu';
+import SessionTimer from './SessionTimer';
 
 const DashboardHeader = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteAccount }) => {
     const firstName = user?.name?.split(' ')[0] || 'User';
@@ -24,8 +25,10 @@ const DashboardHeader = ({ user, onEditProfile, onChangePassword, onLogout, onDe
                     </Typography>
                 </Box>
 
-                {/* Right Side: Greeting, Avatar */}
+                {/* Right Side: Session Timer, Greeting, Avatar */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <SessionTimer onSessionExpire={onLogout} />
+
                     <Typography variant="body2" sx={{ color: '#fff', fontSize: '0.9rem', fontWeight: 500 }}>
                         Welcome back, {firstName}
                     </Typography>
