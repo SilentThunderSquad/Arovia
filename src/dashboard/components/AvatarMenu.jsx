@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Avatar, Typography, Paper, Divider, IconButton } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -6,12 +7,14 @@ import {
     Lock,
     Logout,
     DeleteForever,
-    Add
+    Add,
+    Person
 } from '@mui/icons-material';
 
 const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteAccount }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
+    const navigate = useNavigate();
 
     // Close on click outside
     useEffect(() => {
@@ -25,6 +28,15 @@ const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteA
     }, []);
 
     const menuItems = [
+        {
+            label: 'Profile',
+            icon: <Person fontSize="small" />,
+            action: () => {
+                const slug = user?.username || user?.name?.toLowerCase().replace(/\s+/g, '') || 'user';
+                navigate(`/dashboard/${slug}`);
+            },
+            color: 'text.primary'
+        },
         { label: 'Edit Profile', icon: <Edit fontSize="small" />, action: onEditProfile, color: 'text.primary' },
         { label: 'Change Password', icon: <Lock fontSize="small" />, action: onChangePassword, color: 'text.primary' },
         { label: 'Logout', icon: <Logout fontSize="small" />, action: onLogout, color: 'error.main' },
