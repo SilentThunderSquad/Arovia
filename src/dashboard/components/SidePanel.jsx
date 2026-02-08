@@ -1,8 +1,21 @@
+import { useEffect } from 'react';
 import { Box, IconButton, Paper, Typography } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Close } from '@mui/icons-material';
 
 const SidePanel = ({ isOpen, onClose, title, children, width = '45%' }) => {
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+            }
+        };
+        if (isOpen) {
+            window.addEventListener('keydown', handleEsc);
+        }
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [isOpen, onClose]);
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -51,12 +64,14 @@ const SidePanel = ({ isOpen, onClose, title, children, width = '45%' }) => {
                     >
                         {/* Header */}
                         <Box sx={{
-                            p: 3,
+                            background: 'linear-gradient(135deg, #0F4C5C 0%, #073B4C 100%)',
+                            height: { xs: 64, md: 74 },
+                            px: { xs: 2.5, md: 4 },
+                            py: 2,
                             borderBottom: '1px solid rgba(0,0,0,0.08)',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            bgcolor: '#0F4C5C', // Brand Primary
                             color: 'white',
                             position: 'sticky',
                             top: 0,

@@ -124,23 +124,24 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
             transitionDuration={500}
             PaperProps={{
                 sx: {
-                    width: { xs: '100%', md: '75%', lg: '65%' },
+                    width: { xs: '100%', md: '45%' },
+                    maxWidth: '1200px',
                     bgcolor: '#f8f9fa',
                     boxShadow: '-10px 0 50px rgba(0, 0, 0, 0.15)',
-                    borderTopLeftRadius: { md: '40px' },
-                    borderBottomLeftRadius: { md: '40px' },
-                    overflowX: 'hidden'
+                    borderTopLeftRadius: { md: 10 },
+                    borderBottomLeftRadius: { md: 10 },
+                    overflowY: 'auto'
                 }
             }}
         >
             {/* Header with Gradient */}
             <Box sx={{
                 background: 'linear-gradient(135deg, #0F4C5C 0%, #073B4C 100%)',
-                height: 120,
+                height: { xs: 64, md: 74 },
                 position: 'relative',
-                borderTopLeftRadius: { md: '40px' },
-                px: 4,
-                py: 2.5,
+                borderTopLeftRadius: { md: 10 },
+                px: { xs: 2.5, md: 4 },
+                py: 2,
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center'
@@ -205,32 +206,38 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
                     </Box>
 
                     <Grid container spacing={4}>
+                        {/* 1. About (Note) */}
                         <Grid item xs={12}>
-                            <Box sx={{ bgcolor: 'rgba(0,0,0,0.02)', p: 3, borderRadius: 3, mb: 1 }}>
-                                <Typography variant="h6" sx={{ color: '#0F4C5C', fontWeight: 700, mb: 1 }}>About</Typography>
+                            <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
+                                <SectionTitle title="About" />
                                 <Typography variant="body2" sx={{ color: '#4a5568', lineHeight: 1.6 }}>
                                     I'm {user?.name}, currently managing my health profile on Arovia. I enjoy staying healthy and tracking my daily activities.
                                 </Typography>
                             </Box>
                         </Grid>
 
+                        {/* 2. Profile Summary */}
                         <Grid item xs={12}>
                             <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
                                 <SectionTitle title="Profile Summary" />
-                                <Grid container spacing={3}>
-                                    <Grid item xs={12} sm={6} md={3}>
+                                <Grid container spacing={{ xs: 2, md: 3, xl: 4 }}>
+                                    <Grid item xs={12} sm={6} md={2.5} xl={2}>
                                         <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Full Name</Typography>
                                         <Box sx={{ bgcolor: '#f7fafc', p: 1.5, borderRadius: 1, border: '1px solid #edf2f7', fontWeight: 500 }}>{user?.name}</Box>
                                     </Grid>
-                                    <Grid item xs={12} sm={6} md={4}>
+                                    <Grid item xs={12} sm={6} md={3} xl={3}>
                                         <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Email</Typography>
                                         <Box sx={{ bgcolor: '#f7fafc', p: 1.5, borderRadius: 1, border: '1px solid #edf2f7', fontWeight: 500 }}>{user?.email}</Box>
                                     </Grid>
-                                    <Grid item xs={12} sm={6} md={3}>
+                                    <Grid item xs={12} sm={6} md={2.5} xl={2.5}>
                                         <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Phone</Typography>
                                         <Box sx={{ bgcolor: '#f7fafc', p: 1.5, borderRadius: 1, border: '1px solid #edf2f7', fontWeight: 500 }}>{user?.phone || 'N/A'}</Box>
                                     </Grid>
-                                    <Grid item xs={12} sm={6} md={2}>
+                                    <Grid item xs={12} sm={6} md={2} xl={2.5}>
+                                        <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Gender</Typography>
+                                        <Box sx={{ bgcolor: '#f7fafc', p: 1.5, borderRadius: 1, border: '1px solid #edf2f7', fontWeight: 500, textTransform: 'capitalize' }}>{user?.gender || 'N/A'}</Box>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={2} xl={2}>
                                         <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Location</Typography>
                                         <Box sx={{ bgcolor: '#f7fafc', p: 1.5, borderRadius: 1, border: '1px solid #edf2f7', fontWeight: 500 }}>{user?.address?.city || 'N/A'}</Box>
                                     </Grid>
@@ -238,24 +245,75 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
                             </Box>
                         </Grid>
 
+                        {/* 3. Personal Details */}
                         <Grid item xs={12}>
                             <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
                                 <SectionTitle title="Personal Details" />
                                 <Grid container spacing={3}>
-                                    <Grid item xs={12} md={6}><TextField label="Full Name *" fullWidth name="name" value={formData.name || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={6}><TextField label="Email" fullWidth name="email" value={formData.email || ''} disabled sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f7fafc' } }} /></Grid>
-                                    <Grid item xs={12} md={6}><TextField label="Phone Number" fullWidth name="phone" value={formData.phone || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={6}><TextField label="City / District" fullWidth name="city" value={formData.city || ''} InputProps={{ readOnly: true, endAdornment: formData.state && <InputAdornment position="end"><Typography variant="caption" sx={{ color: '#0F4C5C', fontWeight: 600 }}>{formData.state}</Typography></InputAdornment> }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f8f9fa' } }} /></Grid>
-                                    <Grid item xs={12} md={4}><TextField label="Pincode" fullWidth name="pincode" value={formData.pincode || ''} onChange={handlePincodeChange} inputProps={{ maxLength: 6 }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={4}><TextField select label="Gender" fullWidth name="gender" value={formData.gender} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}><MenuItem value="Male">Male</MenuItem><MenuItem value="Female">Female</MenuItem><MenuItem value="Other">Other</MenuItem><MenuItem value="Prefer not to say">Prefer not to say</MenuItem></TextField></Grid>
-                                    <Grid item xs={12} md={4}><TextField select label="Country" fullWidth name="country" value={formData.country} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}><MenuItem value="India">India</MenuItem><MenuItem value="USA">USA</MenuItem><MenuItem value="Other">Other</MenuItem></TextField></Grid>
-                                    <Grid item xs={12}><TextField label="Full Address" fullWidth name="address1" value={formData.address1 || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+                                    <Grid item xs={12} md={6} xl={4}>
+                                        <TextField label="Full Name *" fullWidth name="name" value={formData.name || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                    </Grid>
+                                    <Grid item xs={12} md={6} xl={4}>
+                                        <TextField label="Email" fullWidth name="email" value={formData.email || ''} disabled sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f7fafc' } }} />
+                                    </Grid>
+                                    <Grid item xs={12} md={4} xl={4}>
+                                        <TextField label="Phone Number" fullWidth name="phone" value={formData.phone || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                    </Grid>
+                                    <Grid item xs={12} md={4} xl={6}>
+                                        <TextField
+                                            label="Date of Birth"
+                                            type="date"
+                                            fullWidth
+                                            name="dob"
+                                            value={formData.dob ? formData.dob.split('T')[0] : ''}
+                                            onChange={handleChange}
+                                            InputLabelProps={{ shrink: true }}
+                                            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={4} xl={6}>
+                                        <TextField select label="Gender" fullWidth name="gender" value={formData.gender} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
+                                            <MenuItem value="Male">Male</MenuItem>
+                                            <MenuItem value="Female">Female</MenuItem>
+                                            <MenuItem value="Other">Other</MenuItem>
+                                            <MenuItem value="Prefer not to say">Prefer not to say</MenuItem>
+                                        </TextField>
+                                    </Grid>
                                 </Grid>
                             </Box>
                         </Grid>
 
+                        {/* 4. Address Details */}
                         <Grid item xs={12}>
-                            <Box sx={{ mb: 4 }}>
+                            <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
+                                <SectionTitle title="Address Details" />
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} md={4}>
+                                        <TextField label="Pincode" fullWidth name="pincode" value={formData.pincode || ''} onChange={handlePincodeChange} inputProps={{ maxLength: 6 }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                    </Grid>
+                                    <Grid item xs={12} md={4}>
+                                        <TextField label="City / District" fullWidth name="city" value={formData.city || ''} InputProps={{ readOnly: true, endAdornment: formData.state && <InputAdornment position="end"><Typography variant="caption" sx={{ color: '#0F4C5C', fontWeight: 600 }}>{formData.state}</Typography></InputAdornment> }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f8f9fa' } }} />
+                                    </Grid>
+                                    <Grid item xs={12} md={4}>
+                                        <TextField select label="Country" fullWidth name="country" value={formData.country} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
+                                            <MenuItem value="India">India</MenuItem>
+                                            <MenuItem value="USA">USA</MenuItem>
+                                            <MenuItem value="Other">Other</MenuItem>
+                                        </TextField>
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <TextField label="Address Line 1" fullWidth name="address1" value={formData.address1 || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <TextField label="Address Line 2 (Optional)" fullWidth name="address2" value={formData.address2 || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Grid>
+
+                        {/* 5. Other Preferences */}
+                        <Grid item xs={12}>
+                            <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
                                 <SectionTitle title="Other Preferences" />
                                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, alignItems: 'center', bgcolor: 'rgba(0,0,0,0.02)', p: 3, borderRadius: 3 }}>
                                     <FormControlLabel control={<Switch checked={formData.bloodDonation} onChange={handleChange} name="bloodDonation" sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#0F4C5C' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#0F4C5C' } }} />} label={<Typography fontWeight="500">Interested in Blood Donation</Typography>} sx={{ mr: 4 }} />
@@ -266,7 +324,7 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pb: 4 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pb: 4, mt: 4 }}>
                         <Button onClick={onClose} variant="outlined" sx={{ borderRadius: 10, textTransform: 'none', fontWeight: 700, color: '#4a5568', borderColor: '#cbd5e0', px: 4, py: 1.2, '&:hover': { borderColor: '#a0aec0', bgcolor: '#f7fafc' } }}>Cancel</Button>
                         <Button type="submit" variant="contained" sx={{ borderRadius: 10, textTransform: 'none', fontWeight: 700, bgcolor: '#0F4C5C', color: 'white', px: 6, py: 1.2, boxShadow: '0 4px 14px 0 rgba(15, 76, 92, 0.39)', '&:hover': { bgcolor: '#093a47', boxShadow: '0 6px 20px 0 rgba(15, 76, 92, 0.23)' } }}>Update</Button>
                     </Box>
