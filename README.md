@@ -230,9 +230,9 @@ in the Software without restriction...
 
 **Silent Thunder Squad**
 
-- **GitHub**: [@SilentThunder-Team](https://github.com/SilentThunder-Team)
-- **Project Link**: [https://github.com/SilentThunder-Team/Doctor-Recommendation](https://github.com/SilentThunder-Team/Doctor-Recommendation)
-- **Issues**: [Report a Bug or Request a Feature](https://github.com/SilentThunder-Team/Doctor-Recommendation/issues)
+- **GitHub**: [@SilentThunder-Team](https://github.com/SilentThunderSquad)
+- **Project Link**: [https://github.com/SilentThunder-Team/Doctor-Recommendation](https://github.com/SilentThunderSquad/Arovia)
+- **Issues**: [Report a Bug or Request a Feature](https://github.com/SilentThunderSquad/Arovia/issues)
 
 For any queries or suggestions, feel free to open an issue or reach out to the team.
 
