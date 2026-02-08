@@ -6,6 +6,7 @@ import LandingPage from './LandingPage';
 import Login from './auth/Login';
 import Signup from './auth/Signup';
 import UserDashboard from './dashboard/user/UserDashboard';
+import UserProfilePage from './dashboard/user/UserProfilePage';
 import AdminDashboard from './dashboard/admin/AdminDashboard';
 
 const router = createBrowserRouter([
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: '/dashboard/user',
     element: <UserDashboard />,
+  },
+  {
+    path: '/dashboard/:username',
+    element: <UserProfilePage />,
   },
   {
     path: '/dashboard/admin',

@@ -81,11 +81,15 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-dark);
+  background-color: var(--background);
   color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
   -webkit-font-smoothing: antialiased;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 a {
@@ -101,9 +105,9 @@ a:hover {
 /* Utility Classes */
 .container {
   width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-lg);
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .section {

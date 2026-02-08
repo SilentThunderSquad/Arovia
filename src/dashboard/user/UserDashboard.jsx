@@ -54,6 +54,17 @@ const UserDashboard = () => {
 
             const data = await response.json();
             setUserInfo(data);
+
+            // First-Time User Flow: Open Edit Profile if key fields are missing
+            if (!data.phone || !data.address?.city) {
+                setIsProfileOpen(true);
+                Swal.fire({
+                    title: 'Welcome!',
+                    text: 'Please complete your profile to continue.',
+                    icon: 'info',
+                    confirmButtonColor: '#0F4C5C'
+                });
+            }
         } catch (error) {
             console.error('Error fetching user data:', error);
             Swal.fire({
@@ -203,72 +214,9 @@ const UserDashboard = () => {
             />
 
             {/* Main Content Area */}
-            <Container maxWidth="xl" sx={{ py: 4 }}>
+            <Container maxWidth={false} disableGutters sx={{ py: 4, px: 0, width: '100%' }}>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                    <Box sx={{ mb: 4 }}>
-                        <Typography variant="h4" fontWeight="bold" color="text.primary">
-                            Dashboard Overview
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary">
-                            Manage your health profile and settings
-                        </Typography>
-                    </Box>
-
-                    <Grid container spacing={3}>
-                        {/* Summary Cards */}
-                        <Grid item xs={12} md={4}>
-                            <StatCard
-                                icon={<Assessment fontSize="large" />}
-                                title="Health Profile"
-                                value="85%"
-                                color="#2EC4B6"
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <StatCard
-                                icon={<LocalPharmacy fontSize="large" />}
-                                title="Prescriptions"
-                                value="3 Active"
-                                color="#FFB703"
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <StatCard
-                                icon={<LocationOn fontSize="large" />}
-                                title="Saved Address"
-                                value={userInfo?.address?.city || 'Not Set'}
-                                color="#E71D36"
-                            />
-                        </Grid>
-
-
-
-                        <Grid item xs={12} md={4}>
-                            <Paper sx={{ p: 3, borderRadius: 2, height: '100%', bgcolor: '#0F4C5C', color: 'white' }} elevation={1}>
-                                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                    Quick Action
-                                </Typography>
-                                <Typography variant="body2" sx={{ opacity: 0.8, mb: 2 }}>
-                                    Need to update your health records?
-                                </Typography>
-                                <button
-                                    onClick={() => setIsProfileOpen(true)}
-                                    style={{
-                                        background: 'white',
-                                        color: '#0F4C5C',
-                                        border: 'none',
-                                        padding: '10px 20px',
-                                        borderRadius: '5px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        width: '100%'
-                                    }}
-                                >
-                                    Update Profile
-                                </button>
-                            </Paper>
-                        </Grid>
-                    </Grid>
+                    {/* Content removed per user request */}
                 </motion.div>
             </Container>
 
