@@ -148,15 +148,15 @@ Doctor-Recommendation/
 ### Phase 1: Foundation (Current)
 - [x] Project initialization
 - [x] README documentation
-- [ ] Basic project structure setup
-- [ ] Technology stack selection
+- [x] Basic project structure setup
+- [x] Technology stack selection
 
 ### Phase 2: Core Development
-- [ ] User authentication system
-- [ ] Doctor profile management
-- [ ] Patient registration and profiles
-- [ ] Search and filter functionality
-- [ ] Database design and implementation
+- [x] User authentication system
+- [x] Doctor profile management
+- [x] Patient registration and profiles
+- [x] Search and filter functionality
+- [x] Database design and implementation
 
 ### Phase 3: Advanced Features
 - [ ] Appointment booking system
@@ -230,8 +230,8 @@ in the Software without restriction...
 
 **Silent Thunder Squad**
 
-- **GitHub**: [@SilentThunder-Team](https://github.com/SilentThunderSquad)
-- **Project Link**: [https://github.com/SilentThunder-Team/Doctor-Recommendation](https://github.com/SilentThunderSquad/Arovia)
+- **GitHub**: [@SilentThunderSquad](https://github.com/SilentThunderSquad)
+- **Project Link**: [https://github.com/SilentThunderSquad/Arovia](https://github.com/SilentThunderSquad/Arovia)
 - **Issues**: [Report a Bug or Request a Feature](https://github.com/SilentThunderSquad/Arovia/issues)
 
 For any queries or suggestions, feel free to open an issue or reach out to the team.
