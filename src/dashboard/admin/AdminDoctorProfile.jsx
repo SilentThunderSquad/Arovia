@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     Box, Container, Typography, Grid, Avatar,
@@ -33,12 +33,7 @@ const AdminDoctorProfile = () => {
         return () => window.removeEventListener('keydown', handleEsc);
     }, [navigate]);
 
-    useEffect(() => {
-        fetchAdminProfile();
-        fetchDoctorData();
-    }, [doctorName]);
-
-    const fetchAdminProfile = async () => {
+    const fetchAdminProfile = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             const origin = window.location.origin;
@@ -53,9 +48,9 @@ const AdminDoctorProfile = () => {
         } catch (error) {
             console.error('Failed to fetch admin profile:', error);
         }
-    };
+    }, []);
 
-    const fetchDoctorData = async () => {
+    const fetchDoctorData = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -93,7 +88,12 @@ const AdminDoctorProfile = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [doctorName, navigate]);
+
+    useEffect(() => {
+        fetchAdminProfile();
+        fetchDoctorData();
+    }, [fetchAdminProfile, fetchDoctorData]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -138,7 +138,7 @@ const AdminDoctorProfile = () => {
                     </IconButton>
                 </Box>
 
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                <Box component={motion.div} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                     <Grid container spacing={{ xs: 4, md: 6, xl: 8 }}>
                         {/* LEFT: Profile Photo & Key Info */}
                         <Grid item xs={12} md={4} lg={3} sx={{
@@ -303,7 +303,7 @@ const AdminDoctorProfile = () => {
                             </Box>
                         </Grid>
                     </Grid>
-                </motion.div>
+                </Box>
             </Container>
         </Box>
     );

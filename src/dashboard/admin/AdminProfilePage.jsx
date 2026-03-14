@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box, Container, Typography, Grid, Avatar,
@@ -35,11 +35,7 @@ const AdminProfilePage = () => {
         return () => window.removeEventListener('keydown', handleEsc);
     }, [navigate, isEditOpen, isPasswordOpen, isDeleteOpen]);
 
-    useEffect(() => {
-        fetchAdminProfile();
-    }, []);
-
-    const fetchAdminProfile = async () => {
+    const fetchAdminProfile = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -75,7 +71,11 @@ const AdminProfilePage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [navigate]);
+
+    useEffect(() => {
+        fetchAdminProfile();
+    }, [fetchAdminProfile]);
 
     const handleUpdateAdmin = async (updatedData) => {
         try {
@@ -157,6 +157,7 @@ const AdminProfilePage = () => {
             navigate('/login');
             Swal.fire('Account Deleted', 'Your account has been removed.', 'success');
         } catch (error) {
+            console.error('Error deleting account:', error);
             Swal.fire('Error', 'Failed to delete account.', 'error');
         }
     };
@@ -199,7 +200,7 @@ const AdminProfilePage = () => {
                     </IconButton>
                 </Box>
 
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                <Box component={motion.div} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                     <Grid container spacing={{ xs: 4, md: 6, xl: 8 }}>
                         {/* LEFT: Profile Photo (Simple user identity) */}
                         <Grid item xs={12} md={4} lg={3} sx={{
@@ -301,7 +302,7 @@ const AdminProfilePage = () => {
                             </Box>
                         </Grid>
                     </Grid>
-                </motion.div>
+                </Box>
             </Container>
 
             {/* Hidden Panels for Menu Actions */}

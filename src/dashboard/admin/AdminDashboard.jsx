@@ -7,13 +7,14 @@ import Swal from 'sweetalert2';
 import UserManagementTable from './UserManagementTable';
 
 import AdminDashboardHeader from './AdminDashboardHeader';
+import AdminSidebar from './AdminSidebar';
+import AdminOverview from './AdminOverview';
 import ProfilePanel from '../components/ProfilePanel';
 import PasswordPanel from '../components/PasswordPanel';
 import DeleteAccountPanel from '../components/DeleteAccountPanel';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [analytics, setAnalytics] = useState(null);
     const [users, setUsers] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +26,10 @@ const AdminDashboard = () => {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isPasswordOpen, setIsPasswordOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+    // Layout States
+    const [activeView, setActiveView] = useState('overview');
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     useEffect(() => {
         fetchAdminData();
@@ -60,7 +65,8 @@ const AdminDashboard = () => {
             const origin = window.location.origin;
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
 
-            // Fetch Analytics
+            // Fetch Analytics (Commented out as unused, but logic preserved if needed later)
+            /*
             const analyticsResponse = await fetch(`${apiUrl}/api/admin/analytics`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -71,6 +77,7 @@ const AdminDashboard = () => {
 
             const analyticsData = await analyticsResponse.json();
             setAnalytics(analyticsData);
+            */
 
             // Fetch Users
             const usersResponse = await fetch(`${apiUrl}/api/admin/users`, {
@@ -216,28 +223,43 @@ const AdminDashboard = () => {
     }
 
     return (
-        <Box sx={{ minHeight: '100vh', background: '#F4F6F8' }}>
-            {/* Header matching UserDashboard structure */}
-            <AdminDashboardHeader
-                user={userInfo}
-                onEditProfile={() => setIsProfileOpen(true)}
-                onChangePassword={() => setIsPasswordOpen(true)}
-                onLogout={handleLogout}
-                onDeleteAccount={() => setIsDeleteOpen(true)}
+        <Box sx={{ display: 'flex', minHeight: '100vh', background: '#F4F6F8' }}>
+            {/* Sidebar */}
+            <AdminSidebar 
+                activeView={activeView} 
+                setActiveView={setActiveView} 
+                isCollapsed={isSidebarCollapsed} 
+                setIsCollapsed={setIsSidebarCollapsed} 
             />
 
-            {/* Main Content */}
-            <Container maxWidth="xl" sx={{ py: 4 }}>
-                <Box
-                    component={motion.div}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    sx={{ mt: 4 }}
-                >
-                    <UserManagementTable users={users} doctors={doctors} onUserUpdate={fetchAdminData} />
+            {/* Content Wrapper */}
+            <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', width: '0' }}>
+                <AdminDashboardHeader
+                    user={userInfo}
+                    onEditProfile={() => setIsProfileOpen(true)}
+                    onChangePassword={() => setIsPasswordOpen(true)}
+                    onLogout={handleLogout}
+                    onDeleteAccount={() => setIsDeleteOpen(true)}
+                />
+
+                {/* Main Content Areas */}
+                <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, sm: 3, md: 4 }, overflowY: 'auto' }}>
+                    <Container maxWidth="xl" disableGutters>
+                        {activeView === 'overview' ? (
+                            <AdminOverview users={users} doctors={doctors} />
+                        ) : (
+                            <Box
+                                component={motion.div}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6 }}
+                            >
+                                <UserManagementTable users={users} doctors={doctors} onUserUpdate={fetchAdminData} />
+                            </Box>
+                        )}
+                    </Container>
                 </Box>
-            </Container>
+            </Box>
 
             {/* Side Panels */}
             <ProfilePanel

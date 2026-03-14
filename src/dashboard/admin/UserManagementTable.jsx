@@ -117,6 +117,7 @@ const UserManagementTable = ({ users, doctors, onUserUpdate }) => {
                     iconColor: '#2EC4B6',
                 });
             } catch (error) {
+                console.error('Error deleting:', error);
                 Swal.fire({
                     title: 'Error',
                     text: 'Failed to delete',
@@ -155,6 +156,7 @@ const UserManagementTable = ({ users, doctors, onUserUpdate }) => {
                 iconColor: '#2EC4B6',
             });
         } catch (error) {
+            console.error('Error updating status:', error);
             Swal.fire({
                 title: 'Error',
                 text: 'Failed to update status',
