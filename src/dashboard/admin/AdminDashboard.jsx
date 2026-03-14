@@ -4,7 +4,6 @@ import { Box, Container, Typography, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
 
-import AdminAnalytics from './AdminAnalytics';
 import UserManagementTable from './UserManagementTable';
 
 import AdminDashboardHeader from './AdminDashboardHeader';
@@ -221,18 +220,6 @@ const AdminDashboard = () => {
 
             {/* Main Content */}
             <Container maxWidth="xl" sx={{ py: 4 }}>
-                <Box
-                    component={motion.div}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <Typography variant="h4" sx={{ mb: 4, fontWeight: 700, color: '#0F4C5C' }}>
-                        Overview
-                    </Typography>
-                    <AdminAnalytics analytics={analytics} />
-                </Box>
-
                 <Box
                     component={motion.div}
                     initial={{ opacity: 0, y: 20 }}
