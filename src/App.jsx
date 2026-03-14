@@ -9,6 +9,7 @@ import UserDashboard from './dashboard/user/UserDashboard';
 import UserProfilePage from './dashboard/user/UserProfilePage';
 import AdminDashboard from './dashboard/admin/AdminDashboard';
 import AdminProfilePage from './dashboard/admin/AdminProfilePage';
+import AdminDoctorProfile from './dashboard/admin/AdminDoctorProfile';
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
   {
     path: '/dashboard/admin/profile',
     element: <AdminProfilePage />,
+  },
+  {
+    path: '/dashboard/admin/doctor/:doctorName',
+    element: <AdminDoctorProfile />,
   },
 ]);
 

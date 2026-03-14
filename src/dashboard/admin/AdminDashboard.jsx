@@ -15,6 +15,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const [analytics, setAnalytics] = useState(null);
     const [users, setUsers] = useState([]);
+    const [doctors, setDoctors] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     
     // Admin Info
@@ -77,6 +78,13 @@ const AdminDashboard = () => {
             });
             const usersData = await usersResponse.json();
             setUsers(usersData.users || []);
+
+            // Fetch Doctors
+            const doctorsResponse = await fetch(`${apiUrl}/api/admin/doctors`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const doctorsData = await doctorsResponse.json();
+            setDoctors(doctorsData.doctors || []);
         } catch (error) {
             console.error('Error:', error);
             if (error.message === 'Access Denied') {
@@ -227,7 +235,7 @@ const AdminDashboard = () => {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     sx={{ mt: 4 }}
                 >
-                    <UserManagementTable users={users} onUserUpdate={fetchAdminData} />
+                    <UserManagementTable users={users} doctors={doctors} onUserUpdate={fetchAdminData} />
                 </Box>
             </Container>
 
