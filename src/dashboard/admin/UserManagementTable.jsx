@@ -11,10 +11,6 @@ import {
     TableRow,
     TablePagination,
     TextField,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
     IconButton,
     Chip,
     Avatar,
@@ -23,7 +19,6 @@ import {
 } from '@mui/material';
 import {
     Search,
-    FilterList,
     Delete,
     Block,
     CheckCircle,
@@ -177,13 +172,13 @@ const UserManagementTable = ({ users, onUserUpdate }) => {
                         User Management
                     </Typography>
 
-                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
                         <TextField
                             placeholder="Search users..."
                             value={searchTerm}
                             onChange={handleSearch}
                             size="small"
-                            sx={{ flexGrow: 1, minWidth: 250 }}
+                            sx={{ flexGrow: { xs: 1, md: 0 }, minWidth: 250 }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -193,24 +188,25 @@ const UserManagementTable = ({ users, onUserUpdate }) => {
                             }}
                         />
 
-                        <FormControl size="small" sx={{ minWidth: 150 }}>
-                            <InputLabel>Filter by Role</InputLabel>
-                            <Select
-                                value={roleFilter}
-                                onChange={handleRoleFilter}
-                                label="Filter by Role"
-                                startAdornment={
-                                    <InputAdornment position="start">
-                                        <FilterList sx={{ color: '#6b7280', ml: 1 }} />
-                                    </InputAdornment>
-                                }
-                            >
-                                <MenuItem value="all">All Roles</MenuItem>
-                                <MenuItem value="user">User</MenuItem>
-                                <MenuItem value="doctor">Doctor</MenuItem>
-                                <MenuItem value="admin">Admin</MenuItem>
-                            </Select>
-                        </FormControl>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {['all', 'admin', 'doctor', 'user'].map((role) => (
+                                <Chip
+                                    key={role}
+                                    label={role === 'all' ? 'All Roles' : role}
+                                    onClick={() => { setRoleFilter(role); setPage(0); }}
+                                    sx={{
+                                        textTransform: 'capitalize',
+                                        fontWeight: 600,
+                                        bgcolor: roleFilter === role ? '#0F4C5C' : '#f3f4f6',
+                                        color: roleFilter === role ? '#ffffff' : '#4b5563',
+                                        '&:hover': {
+                                            bgcolor: roleFilter === role ? '#0a3641' : '#e5e7eb',
+                                        },
+                                        px: 1,
+                                    }}
+                                />
+                            ))}
+                        </Box>
                     </Box>
                 </Box>
 
