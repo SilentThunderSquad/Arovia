@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null/undefined values to exist without violating uniqueness
+    },
     email: {
       type: String,
       required: true,
@@ -29,6 +34,11 @@ const userSchema = new mongoose.Schema(
     },
     phone: String,
     dob: Date,
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
+      default: 'Prefer not to say'
+    },
     profilePicture: String,
     bloodDonor: {
       type: Boolean,

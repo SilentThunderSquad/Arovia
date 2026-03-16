@@ -1,0 +1,7 @@
+﻿
+C:\Users\navdh\OneDrive\Documents\GitHub\Arovia\src\dashboard\admin\AdminDoctorProfile.jsx
+  12:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                       no-unused-vars
+  39:8   warning  React Hook useEffect has a missing dependency: 'fetchDoctorData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 2 problems (1 error, 1 warning)
+

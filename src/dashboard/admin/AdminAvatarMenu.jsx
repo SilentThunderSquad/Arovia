@@ -11,9 +11,10 @@ import {
     Person
 } from '@mui/icons-material';
 
-const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteAccount }) => {
+const AdminAvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteAccount }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
+
     const navigate = useNavigate();
 
     // Close on click outside
@@ -28,15 +29,7 @@ const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteA
     }, []);
 
     const menuItems = [
-        {
-            label: 'Profile',
-            icon: <Person fontSize="small" />,
-            action: () => {
-                const slug = user?.username || user?.name?.toLowerCase().replace(/\s+/g, '') || 'user';
-                navigate(`/dashboard/${slug}`);
-            },
-            color: 'text.primary'
-        },
+        { label: 'Profile', icon: <Person fontSize="small" />, action: () => navigate('/dashboard/admin/profile'), color: 'text.primary' },
         { label: 'Edit Profile', icon: <Edit fontSize="small" />, action: onEditProfile, color: 'text.primary' },
         { label: 'Change Password', icon: <Lock fontSize="small" />, action: onChangePassword, color: 'text.primary' },
         { label: 'Logout', icon: <Logout fontSize="small" />, action: onLogout, color: 'error.main' },
@@ -44,7 +37,7 @@ const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteA
     ];
 
     const getInitials = (name) => {
-        return name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
+        return name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'A';
     };
 
     return (
@@ -54,13 +47,13 @@ const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteA
                 sx={{
                     p: 0.5,
                     border: '2px solid transparent',
-                    '&:hover': { border: '2px solid #FFB703' }, // Accent color
+                    '&:hover': { border: '2px solid #FFB703' },
                     transition: 'all 0.2s'
                 }}
             >
                 <Avatar
                     src={user?.profilePicture ? (user.profilePicture.startsWith('http') ? user.profilePicture : `${window.location.origin}${user.profilePicture}`) : ''}
-                    alt={user?.name || 'User'}
+                    alt={user?.name || 'Admin'}
                     sx={{
                         width: 45,
                         height: 45,
@@ -95,10 +88,10 @@ const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteA
                     >
                         <Box sx={{ p: 2, bgcolor: '#f5f5f5' }}>
                             <Typography variant="subtitle1" fontWeight="bold" noWrap>
-                                {user?.name || 'User'}
+                                {user?.name || 'Administrator'}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" noWrap>
-                                {user?.email}
+                                {user?.email || 'admin@arovia.com'}
                             </Typography>
                         </Box>
                         <Divider />
@@ -138,4 +131,4 @@ const AvatarMenu = ({ user, onEditProfile, onChangePassword, onLogout, onDeleteA
     );
 };
 
-export default AvatarMenu;
+export default AdminAvatarMenu;

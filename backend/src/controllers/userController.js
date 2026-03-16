@@ -102,12 +102,13 @@ exports.updateProfile = async (req, res) => {
 
     try {
       // req.body contains text fields, req.files contains files
-      const { name, phone, dob, bloodDonor, address } = req.body;
+      const { name, phone, dob, gender, bloodDonor, address } = req.body;
       const updates = {};
 
       if (name) updates.name = name;
       if (phone) updates.phone = phone;
       if (dob) updates.dob = dob;
+      if (gender) updates.gender = gender;
       if (typeof bloodDonor !== 'undefined') updates.bloodDonor = bloodDonor === 'true' || bloodDonor === true;
 
       // Handle Address (might come as JSON string or individual fields depending on frontend)

@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Doctor = require("../models/Doctor");
 
 // Get all users (admin only)
 exports.getAllUsers = async (req, res) => {
@@ -97,6 +98,59 @@ exports.toggleUserStatus = async (req, res) => {
 
     res.json({ message: `User ${user.isActive ? 'activated' : 'suspended'}`, user });
   } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getAllDoctors = async (req, res) => {
+  try {
+    // const requestingUser = await User.findById(req.user.userId);
+    // if (!requestingUser || requestingUser.role !== 'admin') {
+    //   return res.status(403).json({ message: "Access denied. Admin only." });
+    // }
+    const doctors = await Doctor.find();
+    res.json({ doctors });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getDoctorByName = async (req, res) => {
+  try {
+    const requestingUser = await User.findById(req.user.userId);
+    if (!requestingUser || requestingUser.role !== 'admin') {
+      return res.status(403).json({ message: "Access denied. Admin only." });
+    }
+    
+    // Exact or case-insensitive search based on URL param
+    // user requested "doctor name se space hta ke", so the URL might have "DrPremRatanDegawat" or similar
+    // we should find doctor ignoring spaces if needed, but simple regex works.
+    const nameParam = req.params.name;
+    // Regex to match ignoring spaces
+    const searchRegex = new RegExp(nameParam.split('').join('\\s*'), 'i');
+
+    const doctor = await Doctor.findOne({ Name: { $regex: searchRegex } });
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+    res.json(doctor);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.deleteDoctor = async (req, res) => {
+  try {
+    const requestingUser = await User.findById(req.user.userId);
+    if (!requestingUser || requestingUser.role !== 'admin') {
+      return res.status(403).json({ message: "Access denied. Admin only." });
+    }
+    await Doctor.findByIdAndDelete(req.params.id);
+    res.json({ message: "Doctor deleted successfully" });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };

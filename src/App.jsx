@@ -6,7 +6,10 @@ import LandingPage from './LandingPage';
 import Login from './auth/Login';
 import Signup from './auth/Signup';
 import UserDashboard from './dashboard/user/UserDashboard';
+import UserProfilePage from './dashboard/user/UserProfilePage';
 import AdminDashboard from './dashboard/admin/AdminDashboard';
+import AdminProfilePage from './dashboard/admin/AdminProfilePage';
+import AdminDoctorProfile from './dashboard/admin/AdminDoctorProfile';
 
 const router = createBrowserRouter([
   {
@@ -26,8 +29,20 @@ const router = createBrowserRouter([
     element: <UserDashboard />,
   },
   {
+    path: '/dashboard/:username',
+    element: <UserProfilePage />,
+  },
+  {
     path: '/dashboard/admin',
     element: <AdminDashboard />,
+  },
+  {
+    path: '/dashboard/admin/profile',
+    element: <AdminProfilePage />,
+  },
+  {
+    path: '/dashboard/admin/doctor/:doctorName',
+    element: <AdminDoctorProfile />,
   },
 ]);
 

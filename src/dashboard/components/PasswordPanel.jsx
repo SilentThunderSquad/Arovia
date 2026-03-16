@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Grid, TextField, Button, Alert } from '@mui/material';
+import { Grid, TextField, Button, Alert, Box, Typography } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import SidePanel from './SidePanel';
 import Swal from 'sweetalert2';
@@ -47,68 +47,78 @@ const PasswordPanel = ({ isOpen, onClose }) => {
 
     return (
         <SidePanel isOpen={isOpen} onClose={onClose} title="Change Password">
-            <form onSubmit={handleSubmit}>
-                <Grid container spacing={3}>
-                    {error && (
-                        <Grid item xs={12}>
-                            <Alert severity="error">{error}</Alert>
-                        </Grid>
-                    )}
+            <Box component="form" onSubmit={handleSubmit} sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                py: 2
+            }}>
+                {error && <Alert severity="error" sx={{ borderRadius: 2 }}>{error}</Alert>}
 
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Current Password"
-                            type="password"
-                            fullWidth
-                            name="current"
-                            value={passwords.current}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Grid>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight="600" sx={{ ml: 1 }}>CURRENT PASSWORD</Typography>
+                    <TextField
+                        type="password"
+                        fullWidth
+                        name="current"
+                        placeholder="Enter current password"
+                        value={passwords.current}
+                        onChange={handleChange}
+                        required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'rgba(0,0,0,0.02)' } }}
+                    />
+                </Box>
 
-                    <Grid item xs={12}>
-                        <TextField
-                            label="New Password"
-                            type="password"
-                            fullWidth
-                            name="new"
-                            value={passwords.new}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Grid>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight="600" sx={{ ml: 1 }}>NEW PASSWORD</Typography>
+                    <TextField
+                        type="password"
+                        fullWidth
+                        name="new"
+                        placeholder="Enter new password"
+                        value={passwords.new}
+                        onChange={handleChange}
+                        required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'rgba(0,0,0,0.02)' } }}
+                    />
+                </Box>
 
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Confirm New Password"
-                            type="password"
-                            fullWidth
-                            name="confirm"
-                            value={passwords.confirm}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Grid>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight="600" sx={{ ml: 1 }}>CONFIRM NEW PASSWORD</Typography>
+                    <TextField
+                        type="password"
+                        fullWidth
+                        name="confirm"
+                        placeholder="Confirm new password"
+                        value={passwords.confirm}
+                        onChange={handleChange}
+                        required
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'rgba(0,0,0,0.02)' } }}
+                    />
+                </Box>
 
-                    <Grid item xs={12} sx={{ mt: 2 }}>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            fullWidth
-                            size="large"
-                            startIcon={<Save />}
-                            sx={{
-                                bgcolor: '#0F4C5C',
-                                color: 'white',
-                                '&:hover': { bgcolor: '#093a47' }
-                            }}
-                        >
-                            Update Password
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form>
+                <Box sx={{ mt: 2 }}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        startIcon={<Save />}
+                        sx={{
+                            borderRadius: 10,
+                            textTransform: 'none',
+                            fontWeight: 700,
+                            bgcolor: '#0F4C5C',
+                            color: 'white',
+                            py: 1.5,
+                            boxShadow: '0 4px 14px 0 rgba(15, 76, 92, 0.39)',
+                            '&:hover': { bgcolor: '#093a47', boxShadow: '0 6px 20px 0 rgba(15, 76, 92, 0.23)' }
+                        }}
+                    >
+                        Update Password
+                    </Button>
+                </Box>
+            </Box>
         </SidePanel>
     );
 };
