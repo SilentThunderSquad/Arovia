@@ -17,6 +17,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [doctors, setDoctors] = useState([]);
+    const [analytics, setAnalytics] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     
     // Admin Info
@@ -65,19 +66,15 @@ const AdminDashboard = () => {
             const origin = window.location.origin;
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
 
-            // Fetch Analytics (Commented out as unused, but logic preserved if needed later)
-            /*
+            // Fetch Analytics
             const analyticsResponse = await fetch(`${apiUrl}/api/admin/analytics`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (analyticsResponse.status === 403) {
-                throw new Error('Access Denied');
+            if (analyticsResponse.ok) {
+                const analyticsData = await analyticsResponse.json();
+                setAnalytics(analyticsData);
             }
-
-            const analyticsData = await analyticsResponse.json();
-            setAnalytics(analyticsData);
-            */
 
             // Fetch Users
             const usersResponse = await fetch(`${apiUrl}/api/admin/users`, {
@@ -246,7 +243,7 @@ const AdminDashboard = () => {
                 <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, sm: 3, md: 4 }, overflowY: 'auto' }}>
                     <Container maxWidth="xl" disableGutters>
                         {activeView === 'overview' ? (
-                            <AdminOverview users={users} doctors={doctors} />
+                            <AdminOverview users={users} doctors={doctors} analytics={analytics} />
                         ) : (
                             <Box
                                 component={motion.div}
