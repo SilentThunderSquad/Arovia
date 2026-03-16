@@ -241,7 +241,7 @@ const AdminDashboard = () => {
 
                 {/* Main Content Areas */}
                 <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, sm: 3, md: 4 }, overflowY: 'auto' }}>
-                    <Container maxWidth="xl" disableGutters>
+                    <Container maxWidth={false} disableGutters>
                         {activeView === 'overview' ? (
                             <AdminOverview users={users} doctors={doctors} analytics={analytics} />
                         ) : (

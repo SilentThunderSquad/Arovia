@@ -19,10 +19,10 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { 
-    PieChart, Pie, Cell, 
+    LineChart, Line,
     Tooltip, ResponsiveContainer,
-    AreaChart, Area, XAxis, YAxis,
-    BarChart, Bar
+    XAxis, YAxis,
+    BarChart, Bar, Cell, CartesianGrid
 } from 'recharts';
 import {
     People as PeopleIcon,
@@ -150,20 +150,20 @@ const AdminOverview = ({ users = [], doctors = [], analytics = null }) => {
             {/* Header Section */}
             <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 800, color: colors.primary, letterSpacing: '-0.02em' }}>
-                        Dashboard Intelligence
+                    <Typography variant="h4" sx={{ fontWeight: 900, color: colors.primary, letterSpacing: '-0.02em' }}>
+                        Platform Analytics
                     </Typography>
-                    <Typography variant="body1" sx={{ color: 'text.secondary', mt: 0.5 }}>
-                        Platform status and analytics derived from real-time database records.
+                    <Typography variant="body1" sx={{ color: 'text.secondary', mt: 0.5, fontWeight: 500 }}>
+                        Key Performance Indicators and User Distribution
                     </Typography>
                 </Box>
                 <Paper 
                     elevation={0}
                     sx={{ 
-                        p: '8px 20px', 
+                        p: '10px 24px', 
                         borderRadius: 10, 
                         bgcolor: '#fff', 
-                        border: '1px solid', 
+                        border: '2px solid', 
                         borderColor: alpha(colors.primary, 0.1),
                         display: 'flex',
                         alignItems: 'center',
@@ -171,56 +171,55 @@ const AdminOverview = ({ users = [], doctors = [], analytics = null }) => {
                         boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
                     }}
                 >
-                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: colors.success, animation: 'pulse 2s infinite' }} />
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: colors.primary }}>
-                        System Status: Operational
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: colors.success, animation: 'pulse 2s infinite' }} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: colors.primary }}>
+                        LIVE METRICS
                     </Typography>
                 </Paper>
             </Box>
 
-            {/* Stats Grid */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
+            {/* KPI Stats Grid */}
+            <Grid container spacing={3} sx={{ mb: 6 }}>
                 {statSummary.map((stat, idx) => (
                     <Grid item xs={12} sm={6} lg={3} key={idx} component={motion.div} variants={itemVariants}>
                         <Card 
                             sx={{ 
-                                borderRadius: 4, 
-                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)', 
+                                borderRadius: 5, 
+                                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', 
                                 border: '1px solid rgba(255, 255, 255, 0.3)',
                                 background: '#fff',
-                                position: 'relative',
                                 overflow: 'hidden',
-                                transition: 'all 0.3s ease',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                 '&:hover': {
-                                    transform: 'translateY(-5px)',
-                                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                                    transform: 'scale(1.02)',
+                                    boxShadow: '0 20px 30px -10px rgba(0, 0, 0, 0.1)'
                                 }
                             }}
                         >
-                            <CardContent sx={{ p: 3, position: 'relative', zIndex: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+                            <CardContent sx={{ p: 4 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2.5 }}>
                                     <Avatar 
                                         sx={{ 
                                             bgcolor: alpha(stat.color, 0.1), 
                                             color: stat.color,
-                                            width: 56,
-                                            height: 56,
-                                            borderRadius: 3
+                                            width: 64,
+                                            height: 64,
+                                            borderRadius: 4
                                         }}
                                     >
-                                        {stat.icon}
+                                        {React.cloneElement(stat.icon, { sx: { fontSize: 32 } })}
                                     </Avatar>
                                     <Box>
-                                        <Typography variant="h3" sx={{ fontWeight: 800, color: '#1e293b', lineHeight: 1 }}>
+                                        <Typography variant="h3" sx={{ fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>
                                             {stat.value}
                                         </Typography>
-                                        <Typography variant="subtitle2" sx={{ color: '#64748b', fontWeight: 600, textTransform: 'uppercase', mt: 0.5, fontSize: '0.75rem' }}>
+                                        <Typography variant="subtitle2" sx={{ color: '#64748B', fontWeight: 800, textTransform: 'uppercase', mt: 0.5, letterSpacing: '0.05em' }}>
                                             {stat.name}
                                         </Typography>
                                     </Box>
                                 </Box>
-                                <Divider sx={{ my: 1.5, borderColor: alpha(stat.color, 0.1) }} />
-                                <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 500 }}>
+                                <Divider sx={{ my: 2, borderColor: alpha(stat.color, 0.08) }} />
+                                <Typography variant="caption" sx={{ color: '#94A3B8', fontWeight: 700, fontSize: '0.8rem' }}>
                                     {stat.desc}
                                 </Typography>
                             </CardContent>
@@ -229,70 +228,55 @@ const AdminOverview = ({ users = [], doctors = [], analytics = null }) => {
                 ))}
             </Grid>
 
-            {/* Charts and Lists Grid */}
+            {/* Main Visual KPIs - Line and Bar Charts */}
             <Grid container spacing={3}>
-                {/* Registration Trend Chart */}
-                <Grid item xs={12} lg={8} component={motion.div} variants={itemVariants}>
-                    <Card sx={{ borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', height: '100%', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
-                        <CardContent sx={{ p: 4 }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                                <Box>
-                                    <Typography variant="h6" sx={{ fontWeight: 800, color: colors.primary }}>
-                                        Registration Growth
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                        Daily new accounts over the last 7 days
-                                    </Typography>
-                                </Box>
-                            </Box>
-                            <Box sx={{ height: 450, width: '100%', mt: 2 }}>
+                {/* Registration Trend Line Chart */}
+                <Grid item xs={12} component={motion.div} variants={itemVariants}>
+                    <Card sx={{ borderRadius: 5, boxShadow: '0 4px 25px rgba(0,0,0,0.06)', height: '100%', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
+                        <CardContent sx={{ p: 5 }}>
+                            <Typography variant="h5" sx={{ fontWeight: 900, color: colors.primary, mb: 3, textAlign: 'center' }}>
+                                Registration Growth (Line)
+                            </Typography>
+                            <Box sx={{ height: 380 }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     {activityData.length > 0 ? (
-                                        <AreaChart data={activityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor={colors.primary} stopOpacity={0.3}/>
-                                                    <stop offset="95%" stopColor={colors.primary} stopOpacity={0}/>
-                                                </linearGradient>
-                                            </defs>
+                                        <LineChart data={activityData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
+                                            <CartesianGrid strokeDasharray="4 4" vertical={false} stroke={alpha(colors.primary, 0.1)} />
                                             <XAxis 
                                                 dataKey="date" 
                                                 axisLine={false} 
                                                 tickLine={false} 
-                                                tick={{fill: '#64748b', fontSize: 13, fontWeight: 700}} 
+                                                tick={{fill: colors.primary, fontSize: 14, fontWeight: 800}} 
                                                 dy={15}
                                             />
                                             <YAxis 
                                                 axisLine={false} 
                                                 tickLine={false} 
-                                                tick={{fill: '#64748b', fontSize: 13, fontWeight: 700}} 
+                                                tick={{fill: colors.primary, fontSize: 14, fontWeight: 800}} 
                                                 allowDecimals={false}
-                                                dx={-10}
                                             />
                                             <Tooltip 
                                                 contentStyle={{ 
                                                     borderRadius: 16, 
                                                     border: 'none', 
-                                                    boxShadow: '0 20px 25px -5px rgba(0,0,0,0.15)', 
+                                                    boxShadow: '0 15px 30px rgba(0,0,0,0.1)', 
                                                     padding: '16px',
-                                                    backgroundColor: '#fff'
+                                                    fontWeight: 800
                                                 }}
                                             />
-                                            <Area 
+                                            <Line 
                                                 type="monotone" 
                                                 dataKey="signups" 
                                                 stroke={colors.primary} 
-                                                strokeWidth={5} 
-                                                fillOpacity={1} 
-                                                fill="url(#colorSignups)" 
-                                                animationDuration={2000}
+                                                strokeWidth={6} 
+                                                dot={{ r: 8, fill: colors.primary, strokeWidth: 3, stroke: '#fff' }}
+                                                activeDot={{ r: 12, strokeWidth: 0 }}
+                                                animationDuration={2500}
                                             />
-                                        </AreaChart>
+                                        </LineChart>
                                     ) : (
                                         <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Typography variant="body1" sx={{ color: 'text.disabled', fontStyle: 'italic' }}>
-                                                Insufficient data for trend visualization
-                                            </Typography>
+                                            <Typography variant="h6" sx={{ color: 'text.disabled' }}>Insufficient trend data</Typography>
                                         </Box>
                                     )}
                                 </ResponsiveContainer>
@@ -301,150 +285,63 @@ const AdminOverview = ({ users = [], doctors = [], analytics = null }) => {
                     </Card>
                 </Grid>
 
-                {/* Role Composition Pie */}
-                <Grid item xs={12} lg={4} component={motion.div} variants={itemVariants}>
-                    <Card sx={{ borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', height: '100%', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
-                        <CardContent sx={{ p: 4 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 800, color: colors.primary, mb: 4 }}>
-                                Database Composition
+                {/* Role Composition Bar Chart */}
+                <Grid item xs={12} component={motion.div} variants={itemVariants}>
+                    <Card sx={{ borderRadius: 5, boxShadow: '0 4px 25px rgba(0,0,0,0.06)', height: '100%', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
+                        <CardContent sx={{ p: 5 }}>
+                            <Typography variant="h5" sx={{ fontWeight: 900, color: colors.primary, mb: 3, textAlign: 'center' }}>
+                                Account Composition (Bar)
                             </Typography>
-                            <Box sx={{ height: 320, position: 'relative' }}>
+                            <Box sx={{ height: 380 }}>
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={roleData}
-                                            innerRadius={85}
-                                            outerRadius={110}
-                                            paddingAngle={10}
-                                            dataKey="value"
-                                            stroke="none"
+                                    <BarChart data={roleData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
+                                        <CartesianGrid strokeDasharray="4 4" vertical={false} stroke={alpha(colors.primary, 0.1)} />
+                                        <XAxis 
+                                            dataKey="name" 
+                                            axisLine={false} 
+                                            tickLine={false} 
+                                            tick={{fill: colors.primary, fontSize: 16, fontWeight: 900}} 
+                                            dy={15}
+                                        />
+                                        <YAxis 
+                                            axisLine={false} 
+                                            tickLine={false} 
+                                            tick={{fill: colors.primary, fontSize: 16, fontWeight: 900}} 
+                                            allowDecimals={false}
+                                        />
+                                        <Tooltip 
+                                            cursor={{fill: alpha(colors.primary, 0.03)}}
+                                            contentStyle={{ 
+                                                borderRadius: 16, 
+                                                border: 'none', 
+                                                boxShadow: '0 15px 30px rgba(0,0,0,0.1)', 
+                                                padding: '16px',
+                                                fontWeight: 800
+                                            }}
+                                        />
+                                        <Bar 
+                                            dataKey="value" 
+                                            radius={[12, 12, 0, 0]} 
+                                            barSize={80}
+                                            animationDuration={2000}
                                         >
                                             {roleData.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={entry.color} />
                                             ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                                    <Typography variant="h3" sx={{ fontWeight: 900, color: colors.primary, lineHeight: 1 }}>
-                                        {totalCount}
-                                    </Typography>
-                                    <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 700, letterSpacing: '0.1em' }}>
-                                        TOTAL
-                                    </Typography>
-                                </Box>
-                            </Box>
-                            <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                {roleData.map((role, idx) => (
-                                    <Box key={idx} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                            <Box sx={{ width: 14, height: 14, borderRadius: '4px', bgcolor: role.color }} />
-                                            <Typography variant="body2" sx={{ fontWeight: 700, color: '#475569' }}>{role.name}</Typography>
-                                        </Box>
-                                        <Typography variant="body2" sx={{ fontWeight: 800, color: colors.primary }}>
-                                            {totalCount > 0 ? ((role.value / totalCount) * 100).toFixed(1) : 0}%
-                                        </Typography>
-                                    </Box>
-                                ))}
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* Doctor Specializations Chart */}
-                <Grid item xs={12} lg={6} component={motion.div} variants={itemVariants}>
-                    <Card sx={{ borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
-                        <CardContent sx={{ p: 4 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 800, color: colors.primary, mb: 4 }}>
-                                Top Medical Specializations
-                            </Typography>
-                            <Box sx={{ height: 350 }}>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    {specData.length > 0 ? (
-                                        <BarChart data={specData} layout="vertical" margin={{ left: 20, right: 30 }}>
-                                            <XAxis type="number" hide />
-                                            <YAxis 
-                                                dataKey="name" 
-                                                type="category" 
-                                                axisLine={false} 
-                                                tickLine={false} 
-                                                tick={{fill: '#475569', fontWeight: 700, fontSize: 13}} 
-                                                width={100}
-                                            />
-                                            <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: 12}} />
-                                            <Bar dataKey="value" fill={colors.secondary} radius={[0, 10, 10, 0]} barSize={25} />
-                                        </BarChart>
-                                    ) : (
-                                        <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Typography variant="body2" sx={{ color: 'text.disabled' }}>No doctor data available</Typography>
-                                        </Box>
-                                    )}
+                                        </Bar>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* Recent Platform Activity */}
-                <Grid item xs={12} lg={6} component={motion.div} variants={itemVariants}>
-                    <Card sx={{ borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
-                        <CardContent sx={{ p: 4 }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 800, color: colors.primary }}>
-                                    Latest Registrations
-                                </Typography>
-                                <Chip label="Live Feed" size="small" sx={{ fontWeight: 700, bgcolor: alpha(colors.success, 0.1), color: colors.success }} />
-                            </Box>
-                            <List sx={{ p: 0 }}>
-                                {realRecentActivities.length > 0 ? realRecentActivities.map((activity, idx) => (
-                                    <React.Fragment key={idx}>
-                                        <ListItem sx={{ px: 0, py: 2 }}>
-                                            <ListItemAvatar>
-                                                <Avatar sx={{ 
-                                                    bgcolor: alpha(activity.color, 0.1), 
-                                                    color: activity.color,
-                                                    borderRadius: 2.5
-                                                }}>
-                                                    {activity.icon}
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText 
-                                                primary={<Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1e293b' }}>{activity.user}</Typography>}
-                                                secondary={
-                                                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                                                        New {activity.role} registration
-                                                    </Typography>
-                                                }
-                                            />
-                                            <Box sx={{ textAlign: 'right' }}>
-                                                <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 700, display: 'block' }}>
-                                                    {activity.time}
-                                                </Typography>
-                                                <Typography variant="caption" sx={{ color: activity.role === 'Doctor' ? colors.secondary : colors.warning, fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase' }}>
-                                                    {activity.role}
-                                                </Typography>
-                                            </Box>
-                                        </ListItem>
-                                        {idx < realRecentActivities.length - 1 && <Divider component="li" sx={{ borderStyle: 'dashed' }} />}
-                                    </React.Fragment>
-                                )) : (
-                                    <Box sx={{ py: 4, textAlign: 'center' }}>
-                                        <Typography variant="body2" sx={{ color: 'text.disabled' }}>No recent registrations found</Typography>
-                                    </Box>
-                                )}
-                            </List>
                         </CardContent>
                     </Card>
                 </Grid>
             </Grid>
             
-            {/* Pulsing animation styles */}
             <style dangerouslySetInnerHTML={{ __html: `
                 @keyframes pulse {
-                    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
-                    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
-                    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+                    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(15, 76, 92, 0.4); }
+                    70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(15, 76, 92, 0); }
+                    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(15, 76, 92, 0); }
                 }
             `}} />
         </Box>
