@@ -72,6 +72,9 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
+// Prediction endpoint for symptom-based disease inference
+app.use('/predict', require('./routes/predictRoutes'));
+
 const PORT = process.env.PORT || 5000;
 
 // Initialize server with proper async handling

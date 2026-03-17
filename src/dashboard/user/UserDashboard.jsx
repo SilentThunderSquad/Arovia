@@ -9,6 +9,7 @@ import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import ProfilePanel from '../../dashboard/components/ProfilePanel';
 import PasswordPanel from '../../dashboard/components/PasswordPanel';
 import DeleteAccountPanel from '../../dashboard/components/DeleteAccountPanel';
+import Chatbot from './Chatbot';
 
 const UserDashboard = () => {
     const navigate = useNavigate();
@@ -238,6 +239,9 @@ const UserDashboard = () => {
                 onClose={() => setIsDeleteOpen(false)}
                 onDeleteConfirm={handleDeleteAccount}
             />
+
+            {/* Chatbot Assistant */}
+            <Chatbot />
         </Box>
     );
 };
