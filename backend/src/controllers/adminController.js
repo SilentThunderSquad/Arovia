@@ -104,11 +104,8 @@ exports.toggleUserStatus = async (req, res) => {
 
 exports.getAllDoctors = async (req, res) => {
   try {
-    // const requestingUser = await User.findById(req.user.userId);
-    // if (!requestingUser || requestingUser.role !== 'admin') {
-    //   return res.status(403).json({ message: "Access denied. Admin only." });
-    // }
-    const doctors = await Doctor.find();
+    const limit = parseInt(req.query.limit) || 0;
+    const doctors = await Doctor.find().limit(limit);
     res.json({ doctors });
   } catch (error) {
     console.error(error);

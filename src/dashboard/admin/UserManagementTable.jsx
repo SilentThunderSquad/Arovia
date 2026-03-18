@@ -209,18 +209,22 @@ const UserManagementTable = ({ users, doctors, onUserUpdate }) => {
                         />
 
                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                            {['users', 'admins', 'doctors'].map((tab) => (
+                            {[
+                                { id: 'users', label: 'Users', count: (users || []).filter(u => u.role === 'user').length },
+                                { id: 'admins', label: 'Admins', count: (users || []).filter(u => u.role === 'admin').length },
+                                { id: 'doctors', label: 'Doctors', count: (doctors || []).length }
+                            ].map((tab) => (
                                 <Chip
-                                    key={tab}
-                                    label={tab}
-                                    onClick={() => { setActiveTab(tab); setPage(0); }}
+                                    key={tab.id}
+                                    label={`${tab.label} (${tab.count})`}
+                                    onClick={() => { setActiveTab(tab.id); setPage(0); }}
                                     sx={{
                                         textTransform: 'capitalize',
                                         fontWeight: 600,
-                                        bgcolor: activeTab === tab ? '#0F4C5C' : '#f3f4f6',
-                                        color: activeTab === tab ? '#ffffff' : '#4b5563',
+                                        bgcolor: activeTab === tab.id ? '#0F4C5C' : '#f3f4f6',
+                                        color: activeTab === tab.id ? '#ffffff' : '#4b5563',
                                         '&:hover': {
-                                            bgcolor: activeTab === tab ? '#0a3641' : '#e5e7eb',
+                                            bgcolor: activeTab === tab.id ? '#0a3641' : '#e5e7eb',
                                         },
                                         px: 1,
                                     }}
@@ -430,15 +434,66 @@ const UserManagementTable = ({ users, doctors, onUserUpdate }) => {
                     </Table>
                 </TableContainer>
 
-                <TablePagination
-                    component="div"
-                    count={filteredData.length}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    rowsPerPageOptions={[5, 10, 25]}
-                />
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    px: 2, 
+                    py: 1,
+                    borderTop: '1px solid #e5e7eb',
+                    flexWrap: 'wrap',
+                    gap: 2
+                }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#6b7280', textTransform: 'uppercase' }}>
+                            Fast Limit:
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            {[5, 10, 25, 50, 100].map((limit) => (
+                                <Chip
+                                    key={limit}
+                                    label={limit}
+                                    size="small"
+                                    onClick={() => {
+                                        setRowsPerPage(limit);
+                                        setPage(0);
+                                    }}
+                                    sx={{
+                                        height: 24,
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600,
+                                        bgcolor: rowsPerPage === limit ? '#2EC4B6' : 'transparent',
+                                        color: rowsPerPage === limit ? '#ffffff' : '#6b7280',
+                                        border: '1px solid',
+                                        borderColor: rowsPerPage === limit ? '#2EC4B6' : '#e5e7eb',
+                                        '&:hover': {
+                                            bgcolor: rowsPerPage === limit ? '#25a99d' : '#f3f4f6',
+                                        },
+                                        transition: 'all 0.2s'
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
+
+                    <TablePagination
+                        component="div"
+                        count={filteredData.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[5, 10, 25, 50, 100]}
+                        sx={{
+                            borderBottom: 'none',
+                            '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+                                color: '#6b7280',
+                                fontWeight: 500,
+                                fontSize: '0.875rem'
+                            }
+                        }}
+                    />
+                </Box>
             </CardContent>
         </Card>
     );
