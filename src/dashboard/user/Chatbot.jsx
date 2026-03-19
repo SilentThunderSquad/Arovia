@@ -29,30 +29,50 @@ const PROBLEM_FOLLOW_UPS = {
     { key: 'pain_duration', question: 'कब से दर्द है? (Since when do you have this pain?)' },
     { key: 'pain_frequency', question: 'क्या दर्द लगातार है या कभी कभी? (Is it constant or intermittent?)' },
     { key: 'fever', question: 'क्या आपको बुखार है? (Do you have fever?)' },
+    { key: 'headache', question: 'क्या सिर दर्द है? (Do you have headache?)' },
+    { key: 'nausea', question: 'क्या मतली या उल्टी है? (Do you have nausea or vomiting?)' },
+    { key: 'fatigue', question: 'क्या थकान महसूस हो रही है? (Do you feel fatigued?)' },
+    { key: 'cough', question: 'क्या खांसी है? (Do you have cough?)' },
   ],
   fever: [
     { key: 'fever_duration', question: 'कब से बुखार है? (Since when do you have fever?)' },
     { key: 'fever_temperature', question: 'बुखार कितना है? (How high is the fever - High/Moderate/Mild?)' },
     { key: 'cough', question: 'क्या खांसी है? (Do you have cough?)' },
     { key: 'body_pain', question: 'शरीर में दर्द है? (Do you have body pain?)' },
+    { key: 'headache', question: 'क्या सिर दर्द है? (Do you have headache?)' },
+    { key: 'chills', question: 'क्या ठंड लग रही है? (Do you have chills?)' },
+    { key: 'sweating', question: 'क्या पसीना आ रहा है? (Do you have sweating?)' },
+    { key: 'fatigue', question: 'क्या थकान है? (Do you feel fatigued?)' },
   ],
   skin: [
     { key: 'skin_location', question: 'त्वचा की समस्या कहाँ है? (Where is the skin problem?)' },
     { key: 'skin_duration', question: 'कब से है? (Since when?)' },
     { key: 'itching', question: 'क्या खुजली हो रही है? (Is it itching?)' },
     { key: 'swelling', question: 'सूजन तो नहीं है? (Is there swelling?)' },
+    { key: 'skin_swelling', question: 'क्या त्वचा में सूजन है? (Is there skin swelling?)' },
+    { key: 'rash', question: 'क्या रैश है? (Do you have rash?)' },
+    { key: 'redness', question: 'क्या लालिमा है? (Is there redness?)' },
+    { key: 'pain', question: 'क्या दर्द है? (Is there pain?)' },
   ],
   breathing: [
     { key: 'breathing_duration', question: 'कब से सांस लेने में दिक्कत है? (Since when do you have breathing problems?)' },
     { key: 'breathing_frequency', question: 'कब कब होती है यह दिक्कत? (When does it happen?)' },
     { key: 'cough', question: 'क्या खांसी भी आ रही है? (Do you have cough?)' },
     { key: 'chest_pain', question: 'सीने में दर्द तो नहीं? (Do you have chest pain?)' },
+    { key: 'shortness_of_breath', question: 'क्या सांस फूल रही है? (Do you have shortness of breath?)' },
+    { key: 'rapid_breathing', question: 'क्या सांस तेजी से चल रही है? (Do you have rapid breathing?)' },
+    { key: 'chest_tightness', question: 'क्या सीने में जकड़न है? (Do you have chest tightness?)' },
+    { key: 'wheezing', question: 'क्या सीटी की आवाज आ रही है? (Do you have wheezing?)' },
   ],
   other: [
     { key: 'symptom_description', question: 'आपको क्या समस्या है? (What problem are you facing?)' },
     { key: 'duration', question: 'कब से है? (Since when?)' },
     { key: 'fever', question: 'क्या बुखार है? (Do you have fever?)' },
     { key: 'severity', question: 'समस्या कितनी गंभीर है? (How severe is it - High/Medium/Low?)' },
+    { key: 'headache', question: 'क्या सिर दर्द है? (Do you have headache?)' },
+    { key: 'nausea', question: 'क्या मतली है? (Do you have nausea?)' },
+    { key: 'fatigue', question: 'क्या थकान है? (Do you feel fatigued?)' },
+    { key: 'pain', question: 'क्या दर्द है? (Do you have pain?)' },
   ],
 };
 
@@ -68,6 +88,7 @@ const Chatbot = () => {
   const [loadingPrediction, setLoadingPrediction] = useState(false);
   const [currentFollowUps, setCurrentFollowUps] = useState([]);
   const [showDoctorSuggestion, setShowDoctorSuggestion] = useState(false);
+  const [inputDisabled, setInputDisabled] = useState(false);
 
   const scrollRef = useRef(null);
 
@@ -90,6 +111,7 @@ const Chatbot = () => {
     setLoadingPrediction(false);
     setCurrentFollowUps([]);
     setShowDoctorSuggestion(false);
+    setInputDisabled(false);
   };
 
   useEffect(() => {
@@ -109,23 +131,25 @@ const Chatbot = () => {
     appendMessage({ id: Date.now(), role: 'bot', text: 'कृपया अपनी समस्या का प्रकार चुनें (Please select your problem type):' });
     setOptions(PROBLEM_TYPES);
     setWaitingFor('problemType');
+    setInputDisabled(true);
   };
 
   const askPainLocation = () => {
     appendMessage({ id: Date.now(), role: 'bot', text: 'किस जगह दर्द है? (Where are you feeling pain?)' });
     setOptions(PAIN_LOCATIONS);
     setWaitingFor('painLocation');
+    setInputDisabled(true);
   };
 
-  const askFollowUpQuestion = (index) => {
-    if (index >= currentFollowUps.length) {
+  const askFollowUpQuestion = (index, followUps = currentFollowUps) => {
+    if (index >= followUps.length) {
       setWaitingFor(null);
       return;
     }
 
-    const next = currentFollowUps[index];
+    const next = followUps[index];
     appendMessage({ id: Date.now(), role: 'bot', text: next.question });
-    
+
     // Determine if this question needs option buttons or free text input
     if (['pain_frequency', 'fever_temperature', 'breathing_frequency', 'severity'].includes(next.key)) {
       setOptions([
@@ -133,15 +157,18 @@ const Chatbot = () => {
         { label: 'Medium / कभी कभी', value: 0.5 },
         { label: 'Low / नहीं', value: 0 },
       ]);
+      setInputDisabled(true);
     } else if (['symptom_description', 'pain_location', 'skin_location'].includes(next.key)) {
       // These require free text input
       setOptions([]);
+      setInputDisabled(false);
     } else {
       // Yes/No questions
       setOptions([
         { label: 'हाँ (Yes)', value: 1 },
         { label: 'नहीं (No)', value: 0 },
       ]);
+      setInputDisabled(true);
     }
     setWaitingFor(next.key);
   };
@@ -158,7 +185,6 @@ const Chatbot = () => {
       muscle_pain: 0,
       joint_pain: 0,
     };
-
     return { ...vector, ...symptoms };
   };
 
@@ -192,26 +218,26 @@ const Chatbot = () => {
       const formatted = [];
       formatted.push({ id: Date.now() + 1, role: 'bot', text: '🏥 **Arovia Health Care विश्लेषण**' });
       formatted.push({ id: Date.now() + 2, role: 'bot', text: `📋 आपके लक्षणों के आधार पर: **${result.disease}** (Based on your symptoms: **${result.disease}**)` });
-      
+
       if (result.causes && result.causes.length) {
         formatted.push({ id: Date.now() + 3, role: 'bot', text: '**संभावित कारण (Possible causes):**' });
         result.causes.forEach((c, idx) => {
           formatted.push({ id: Date.now() + 10 + idx, role: 'bot', text: `  • ${c}` });
         });
       }
-      
+
       if (result.precautions && result.precautions.length) {
         formatted.push({ id: Date.now() + 100, role: 'bot', text: '**सावधानियाँ (Precautions):**' });
         result.precautions.forEach((p, idx) => {
           formatted.push({ id: Date.now() + 200 + idx, role: 'bot', text: `  • ${p}` });
         });
       }
-      
+
       if (result.specialist) {
         formatted.push({ id: Date.now() + 300, role: 'bot', text: `**अनुशंसित विशेषज्ञ (Recommended specialist): ${result.specialist}**` });
       }
-      
-      // Sort doctors by rating (descending) and show top 6
+
+      // Sort doctors by rating (descending) and show top 3
       if (result.doctors && result.doctors.length) {
         const topDoctors = result.doctors
           .filter(doc => doc.Contact || doc.contact) // Ensure has contact info
@@ -220,10 +246,10 @@ const Chatbot = () => {
             const ratingB = parseFloat(b.Rating) || 0;
             return ratingB - ratingA;
           })
-          .slice(0, 6);
+          .slice(0, 3);
 
-        formatted.push({ id: Date.now() + 400, role: 'bot', text: '⭐ **शीर्ष 6 सर्वश्रेष्ठ डॉक्टर (Top 6 Best Doctors):**' });
-        
+        formatted.push({ id: Date.now() + 400, role: 'bot', text: '⭐ **शीर्ष 3 सर्वश्रेष्ठ डॉक्टर (Top 3 Best Doctors):**' });
+
         topDoctors.forEach((doc, idx) => {
           const name = doc.Name || doc.name || 'Doctor';
           const specialty = doc.Specialization || doc.specialization || '';
@@ -231,13 +257,13 @@ const Chatbot = () => {
           const rating = doc.Rating || '4.5';
           const experience = doc.Experience || 'Experienced';
           const consultationFee = doc.Consultation_fee || 'Not specified';
-          
+
           const docInfo = `
 **${idx + 1}. ${name}**
 └─ 🏥 ${specialty} @ ${hospital}
 └─ ⭐ Rating: ${rating}/5 | 💼 ${experience}
 └─ 💰 Fee: ${consultationFee}`;
-          
+
           formatted.push({
             id: Date.now() + 500 + idx,
             role: 'bot',
@@ -245,7 +271,7 @@ const Chatbot = () => {
           });
         });
       }
-      
+
       formatted.push({ id: Date.now() + 600, role: 'bot', text: 'क्या आप डॉक्टर से संपर्क करना चाहते हैं? (Do you want to book an appointment?)' });
 
       setMessages((prev) => [...prev, ...formatted]);
@@ -265,12 +291,6 @@ const Chatbot = () => {
     // Reset options while processing
     setOptions([]);
 
-    // Handle doctor suggestion response first
-    if (waitingFor === 'doctorSuggestion') {
-      handleDoctorSuggestionResponse(value);
-      return;
-    }
-
     if (waitingFor === 'problemType') {
       setSymptoms((prev) => ({ ...prev, problem_type: value }));
       if (value === 'pain') {
@@ -287,31 +307,33 @@ const Chatbot = () => {
       }
 
       // Set follow-up questions based on problem type
-      setCurrentFollowUps(PROBLEM_FOLLOW_UPS[value] || PROBLEM_FOLLOW_UPS.other);
+      const followUps = PROBLEM_FOLLOW_UPS[value] || PROBLEM_FOLLOW_UPS.other;
+      setCurrentFollowUps(followUps);
       setFollowUpIndex(0);
-      setTimeout(() => askFollowUpQuestion(0), 400);
+      askFollowUpQuestion(0, followUps);
       return;
     }
 
     if (waitingFor === 'painLocation') {
       setSymptoms((prev) => ({ ...prev, [value]: 1 }));
       setFollowUpIndex(0);
-      setCurrentFollowUps(PROBLEM_FOLLOW_UPS.pain);
-      setTimeout(() => askFollowUpQuestion(0), 400);
+      const followUps = PROBLEM_FOLLOW_UPS.pain.slice(1);
+      setCurrentFollowUps(followUps);
+      askFollowUpQuestion(0, followUps);
       return;
     }
 
-    // Follow-up yes/no responses
+    // Follow-up yes/no responses (or any option-based follow up)
     const currentQuestion = currentFollowUps[followUpIndex];
-    if (currentQuestion && waitingFor === currentQuestion.key) {
+    if (currentQuestion) {
       setSymptoms((prev) => ({ ...prev, [currentQuestion.key]: value }));
       const nextIndex = followUpIndex + 1;
       setFollowUpIndex(nextIndex);
       if (nextIndex < currentFollowUps.length) {
-        setTimeout(() => askFollowUpQuestion(nextIndex), 400);
+        askFollowUpQuestion(nextIndex);
       } else {
-        // All questions answered, ask for doctor suggestion
-        setTimeout(() => askForDoctorSuggestion(), 500);
+        // All questions answered, call prediction
+        callPrediction();
       }
       return;
     }
@@ -334,9 +356,9 @@ const Chatbot = () => {
       const nextIndex = followUpIndex + 1;
       setFollowUpIndex(nextIndex);
       if (nextIndex < currentFollowUps.length) {
-        setTimeout(() => askFollowUpQuestion(nextIndex), 400);
+        askFollowUpQuestion(nextIndex);
       } else {
-        setTimeout(() => callPrediction(), 500);
+        callPrediction();
       }
       return;
     }
@@ -480,12 +502,13 @@ const Chatbot = () => {
                           handleSend();
                         }
                       }}
+                      disabled={inputDisabled}
                       sx={{ fontSize: '0.85rem' }}
                     />
                     <IconButton
                       color="primary"
                       onClick={handleSend}
-                      disabled={!inputValue.trim() || loadingPrediction}
+                      disabled={inputDisabled || !inputValue.trim() || loadingPrediction}
                       size="small"
                       sx={{ bgcolor: '#0F4C5C', '&:hover': { bgcolor: '#0a3540' } }}
                     >
