@@ -1,24 +1,64 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Grid, Paper, CircularProgress, Card, CardContent } from '@mui/material';
+import { Box, Typography, Button, Avatar, Checkbox, Paper, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
-import { Assessment, LocalPharmacy, LocationOn } from '@mui/icons-material';
+import {
+    LayoutDashboard, CalendarDays, Users, Calendar, Pill, FileText, MessageSquare,
+    TestTube, CreditCard, Settings, ChevronLeft, ChevronRight, Menu
+} from 'lucide-react';
 
-import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import ProfilePanel from '../../dashboard/components/ProfilePanel';
 import PasswordPanel from '../../dashboard/components/PasswordPanel';
 import DeleteAccountPanel from '../../dashboard/components/DeleteAccountPanel';
+import AvatarMenu from '../../dashboard/components/AvatarMenu';
+import SessionTimer from '../../dashboard/components/SessionTimer';
+
+const SidebarItem = ({ icon: Icon, label, active, badge, isMinimized }) => {
+    const itemContent = (
+        <Box sx={{
+            display: 'flex', alignItems: 'center', justifyContent: isMinimized ? 'center' : 'space-between',
+            py: 1.25, px: isMinimized ? 0 : 2, cursor: 'pointer', mx: isMinimized ? 1 : 2, mb: 0.5, borderRadius: active ? 2 : 0,
+            bgcolor: active ? 'rgba(15, 76, 92, 0.08)' : 'transparent',
+            color: active ? '#0F4C5C' : '#6b7280',
+            '&:hover': { bgcolor: active ? 'rgba(15, 76, 92, 0.12)' : 'rgba(0,0,0,0.04)' },
+            position: 'relative'
+        }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: isMinimized ? 0 : 1.5 }}>
+                <Icon size={20} strokeWidth={active ? 2.5 : 2} />
+                {!isMinimized && <Typography variant="body2" fontWeight={active ? 600 : 500}>{label}</Typography>}
+            </Box>
+            {!isMinimized && badge && (
+                <Box sx={{ bgcolor: '#8b5cf6', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                    {badge}
+                </Box>
+            )}
+            {isMinimized && badge && (
+                <Box sx={{ position: 'absolute', top: 4, right: 6, bgcolor: '#8b5cf6', color: '#fff', borderRadius: '50%', width: 14, height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 'bold' }}>
+                    {badge}
+                </Box>
+            )}
+        </Box>
+    );
+
+    return isMinimized ? (
+        <Tooltip title={label} placement="right" arrow>
+            {itemContent}
+        </Tooltip>
+    ) : itemContent;
+};
 
 const UserDashboard = () => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Side Panel States
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isPasswordOpen, setIsPasswordOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+    const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
+    const sidebarWidth = isSidebarMinimized ? 80 : 250;
 
     useEffect(() => {
         fetchUserData();
@@ -31,16 +71,11 @@ const UserDashboard = () => {
                 navigate('/login');
                 return;
             }
-
             const origin = window.location.origin;
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
-
             const response = await fetch(`${apiUrl}/api/user/profile`, {
                 method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
             });
 
             if (!response.ok) {
@@ -55,23 +90,15 @@ const UserDashboard = () => {
             const data = await response.json();
             setUserInfo(data);
 
-            // First-Time User Flow: Open Edit Profile if key fields are missing
             if (!data.phone || !data.address?.city) {
                 setIsProfileOpen(true);
                 Swal.fire({
-                    title: 'Welcome!',
-                    text: 'Please complete your profile to continue.',
-                    icon: 'info',
-                    confirmButtonColor: '#0F4C5C'
+                    title: 'Welcome!', text: 'Please complete your profile to continue.', icon: 'info', confirmButtonColor: '#0F4C5C'
                 });
             }
         } catch (error) {
             console.error('Error fetching user data:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Failed to load user information',
-                icon: 'error'
-            });
+            // Optionally remove swal to prevent annoyance on dev mode if API is down
         } finally {
             setIsLoading(false);
         }
@@ -82,63 +109,32 @@ const UserDashboard = () => {
             const token = localStorage.getItem('token');
             const origin = window.location.origin;
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
-
             const formData = new FormData();
-
-            // Append simple fields
             if (updatedData.name) formData.append('name', updatedData.name);
             if (updatedData.phone) formData.append('phone', updatedData.phone);
             if (updatedData.dob) formData.append('dob', updatedData.dob);
             if (updatedData.bloodDonation !== undefined) formData.append('bloodDonor', updatedData.bloodDonation);
+            if (updatedData.avatarFile) formData.append('profilePicture', updatedData.avatarFile);
 
-            // Append Profile Picture if new one selected
-            if (updatedData.avatarFile) {
-                formData.append('profilePicture', updatedData.avatarFile);
-            }
-
-            // Append Address (Pack into object if needed by backend or send flattened)
             const addressObj = {
-                country: updatedData.country,
-                state: updatedData.state,
-                city: updatedData.city,
-                pincode: updatedData.pincode,
-                addressLine1: updatedData.address1,
-                addressLine2: updatedData.address2
+                country: updatedData.country, state: updatedData.state, city: updatedData.city,
+                pincode: updatedData.pincode, addressLine1: updatedData.address1, addressLine2: updatedData.address2
             };
             formData.append('address', JSON.stringify(addressObj));
 
             const response = await fetch(`${apiUrl}/api/user/profile`, {
-                method: 'PUT',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    // Content-Type header not set for FormData, browser sets it with boundary
-                },
-                body: formData,
+                method: 'PUT', headers: { Authorization: `Bearer ${token}` }, body: formData,
             });
 
             if (!response.ok) {
                 const errData = await response.json();
                 throw new Error(errData.message || 'Failed to update profile');
             }
-
             const data = await response.json();
-            setUserInfo(data.user); // Update state with complete user object from server, including new image URL
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Profile Updated',
-                text: 'Your profile details have been updated successfully.',
-                timer: 2000,
-                showConfirmButton: false
-            });
-
+            setUserInfo(data.user);
+            Swal.fire({ icon: 'success', title: 'Profile Updated', text: 'Your profile details have been updated successfully.', timer: 2000, showConfirmButton: false });
         } catch (error) {
-            console.error('Error updating user data:', error);
-            Swal.fire({
-                title: 'Error',
-                text: error.message || 'Failed to update user information',
-                icon: 'error'
-            });
+            Swal.fire({ title: 'Error', text: error.message || 'Failed to update user information', icon: 'error' });
         }
     };
 
@@ -153,29 +149,15 @@ const UserDashboard = () => {
             const token = localStorage.getItem('token');
             const origin = window.location.origin;
             const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : origin;
-
             const response = await fetch(`${apiUrl}/api/user/delete-account`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                method: 'DELETE', headers: { Authorization: `Bearer ${token}` },
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete account');
-            }
-
+            if (!response.ok) throw new Error('Failed to delete account');
             localStorage.clear();
             navigate('/login');
             Swal.fire('Account Deleted', 'Your account and data have been permanently removed.', 'success');
-
         } catch (error) {
-            console.error('Error deleting account:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Failed to delete account. Please try again.',
-                icon: 'error'
-            });
+            Swal.fire({ title: 'Error', text: 'Failed to delete account. Please try again.', icon: 'error' });
         }
     };
 
@@ -187,57 +169,299 @@ const UserDashboard = () => {
         );
     }
 
-    // Dashboard Widgets (Summary Cards)
-    const StatCard = ({ icon, title, value, color }) => (
-        <Card component={motion.div} whileHover={{ y: -5 }} elevation={2} sx={{ height: '100%', borderRadius: 2 }}>
-            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ p: 2, borderRadius: '50%', bgcolor: `${color}20`, color: color }}>
-                    {icon}
+    const StatCard = ({ icon: Icon, title, value, badgeText, badgeColor, badgeBg, subtext, subtextNode, iconColor, iconBg }) => (
+        <Paper elevation={0} sx={{ p: 2.5, borderRadius: 4, border: '1px solid #e5e7eb', bgcolor: '#fff', display: 'flex', flexDirection: 'column', flex: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box sx={{ width: 44, height: 44, borderRadius: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: iconBg, color: iconColor }}>
+                        <Icon size={22} strokeWidth={2.5} />
+                    </Box>
+                    <Typography variant="body2" fontWeight="700" sx={{ color: '#374151' }}>{title}</Typography>
                 </Box>
+                {badgeText && (
+                    <Box sx={{ px: 1.5, py: 0.5, borderRadius: 4, bgcolor: badgeBg, color: badgeColor, fontSize: '0.7rem', fontWeight: 700 }}>
+                        {badgeText}
+                    </Box>
+                )}
+            </Box>
+            <Typography variant="h4" fontWeight="800" sx={{ color: '#111827', mb: 1, pl: 0.5 }}>{value}</Typography>
+            {subtextNode ? (
+                <Box sx={{ pl: 0.5, ...subtextNode.sx }}>{subtextNode.content}</Box>
+            ) : (
+                <Typography variant="caption" sx={{ color: '#6b7280', pl: 0.5, fontWeight: 500 }}>{subtext}</Typography>
+            )}
+        </Paper>
+    );
+
+    const AppointmentRow = ({ time, period, timeBg, name, detail, type, tag, tagColor, tagBg, borderLeft }) => (
+        <Box sx={{ display: 'flex', borderRadius: 3, border: '1px solid #f3f4f6', overflow: 'hidden', bgcolor: '#fff', mb: 1.5, position: 'relative' }}>
+            {borderLeft && <Box sx={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, bgcolor: borderLeft }} />}
+            <Box sx={{ bgcolor: timeBg, color: '#fff', width: 75, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 1, zIndex: 1 }}>
+                <Typography variant="subtitle2" fontWeight="800" sx={{ lineHeight: 1 }}>{time}</Typography>
+                <Typography variant="caption" fontWeight="600" sx={{ mt: 0.5, opacity: 0.9 }}>{period}</Typography>
+            </Box>
+            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', p: 1.5, gap: 2, pl: 2.5 }}>
+                <Avatar src={`https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=f3f4f6&color=374151`} alt={name} sx={{ width: 48, height: 48 }} />
+                <Box sx={{ flex: 1 }}>
+                    <Typography variant="body2" fontWeight="700" sx={{ color: '#111827' }}>{name}</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'block', fontWeight: 500 }}>{detail}</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 500 }}>{type}</Typography>
+                </Box>
+                <Box sx={{ px: 2, py: 0.75, borderRadius: 6, bgcolor: tagBg, color: tagColor, fontSize: '0.75rem', fontWeight: 700 }}>
+                    {tag}
+                </Box>
+            </Box>
+        </Box>
+    );
+
+    const ScheduleRow = ({ time, name, type }) => (
+        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Typography variant="body2" fontWeight="600" sx={{ width: 65, pt: 1, color: '#4b5563', textAlign: 'right' }}>{time}</Typography>
+            <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start' }}>
+                <Box sx={{ mt: 1.5, width: 10, height: 10, borderRadius: '50%', bgcolor: '#3b82f6', border: '2.5px solid #fff', boxShadow: '0 0 0 1px #e5e7eb' }} />
+            </Box>
+            <Box sx={{ flex: 1, display: 'flex', gap: 1.5, alignItems: 'center' }}>
+                <Avatar src={`https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=f3f4f6&color=374151`} sx={{ width: 36, height: 36 }} />
                 <Box>
-                    <Typography variant="body2" color="text.secondary">{title}</Typography>
-                    <Typography variant="h5" fontWeight="bold">{value}</Typography>
+                    <Typography variant="body2" fontWeight="700" sx={{ color: '#111827' }}>{name}</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 500 }}>{type}</Typography>
                 </Box>
-            </CardContent>
-        </Card>
+            </Box>
+        </Box>
+    );
+
+    const PatientRow = ({ name, detail, lastVisit, rx }) => (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1.5, borderBottom: '1px solid #f3f4f6', '&:last-child': { borderBottom: 'none' } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Avatar src={`https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=f3f4f6&color=374151`} alt={name} sx={{ width: 44, height: 44 }} />
+                <Box>
+                    <Typography variant="body2" fontWeight="700" sx={{ color: '#111827' }}>{name}</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 500 }}>{detail}</Typography>
+                </Box>
+            </Box>
+            <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', fontWeight: 500 }}>Last visit {lastVisit}</Typography>
+                <Typography variant="body2" fontWeight="700" sx={{ color: '#374151', mt: 0.25 }}>{rx}</Typography>
+            </Box>
+        </Box>
+    );
+
+    const TaskRow = ({ checked, textHtml, subtextHtml }) => (
+        <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
+            <Checkbox checked={checked} sx={{ p: 0, '& .MuiSvgIcon-root': { fontSize: 22, borderRadius: 1 }, color: '#d1d5db', '&.Mui-checked': { color: '#3b82f6' } }} />
+            <Box sx={{ flex: 1, pt: 0.25 }}>
+                <Typography variant="body2" component="div" sx={{ color: '#374151', fontWeight: 500, '& span.red': { color: '#ef4444', fontWeight: 700 }, '& span.green': { color: '#10b981', fontWeight: 700 } }} dangerouslySetInnerHTML={{ __html: textHtml }} />
+                {subtextHtml && <Typography variant="caption" component="div" sx={{ color: '#f59e0b', textAlign: 'right', display: 'block', pr: 1, fontWeight: 700, mt: 0.5 }} dangerouslySetInnerHTML={{ __html: subtextHtml }} />}
+            </Box>
+        </Box>
     );
 
     return (
-        <Box sx={{ minHeight: '100vh', background: '#F4F6F8' }}>
-            {/* Header with Avatar Menu */}
-            <DashboardHeader
-                user={userInfo}
-                onEditProfile={() => setIsProfileOpen(true)}
-                onChangePassword={() => setIsPasswordOpen(true)}
-                onLogout={handleLogout}
-                onDeleteAccount={() => setIsDeleteOpen(true)}
-            />
+        <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F4F7F8' }}>
+            {/* Sidebar */}
+            <Box sx={{ width: sidebarWidth, transition: 'width 0.3s ease', bgcolor: '#ffffff', color: '#6b7280', display: 'flex', flexDirection: 'column', height: '100vh', position: 'fixed', left: 0, top: 0, zIndex: 100, borderRight: '1px solid rgba(0,0,0,0.08)', boxShadow: '4px 0 24px rgba(0,0,0,0.02)' }}>
+                {/* Toggle Area */}
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarMinimized ? 'center' : 'flex-end', p: 2, height: 72, transition: 'all 0.3s ease' }}>
+                    <IconButton onClick={() => setIsSidebarMinimized(!isSidebarMinimized)} sx={{ color: '#0F4C5C' }}>
+                        {isSidebarMinimized ? <Menu size={24} /> : <ChevronLeft size={24} />}
+                    </IconButton>
+                </Box>
+                <Box sx={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }} />
+                
+                {/* Navigation */}
+                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', mt: 1, overflowY: 'auto' }}>
+                    <SidebarItem icon={LayoutDashboard} label="Dashboard" active isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={CalendarDays} label="Appointments" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={Users} label="Patients" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={Calendar} label="Calendar" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={Pill} label="Prescriptions" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={FileText} label="Reports" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={MessageSquare} label="Messages" badge="4" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={TestTube} label="Lab Results" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={CreditCard} label="Billing" isMinimized={isSidebarMinimized} />
+                    <SidebarItem icon={Settings} label="Settings" isMinimized={isSidebarMinimized} />
+                </Box>
+                
+                {/* Availability Card */}
+                {!isSidebarMinimized && (
+                    <Box sx={{ m: 3, p: 3, borderRadius: 4, background: 'linear-gradient(135deg, #4c3f91 0%, #2f2563 100%)', position: 'relative' }}>
+                        <Box sx={{ position: 'absolute', top: 12, right: 12, opacity: 0.1 }}>
+                            <Typography variant="h1" fontWeight="900">⚕</Typography>
+                        </Box>
+                        <Typography variant="body1" fontWeight="700" sx={{ mb: 1, color: '#fff', position: 'relative', zIndex: 2 }}>Set Your Availability</Typography>
+                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', display: 'block', mb: 2.5, lineHeight: 1.5, position: 'relative', zIndex: 2 }}>
+                            Let patients book appointments that fit your schedule.
+                        </Typography>
+                        <Button variant="contained" fullWidth sx={{ bgcolor: '#fff', color: '#4c3f91', textTransform: 'none', borderRadius: 2.5, fontWeight: 700, py: 1, '&:hover': { bgcolor: '#f3f4f6' } }}>
+                            Manage Schedule
+                        </Button>
+                    </Box>
+                )}
+            </Box>
 
             {/* Main Content Area */}
-            <Container maxWidth={false} disableGutters sx={{ py: 4, px: 0, width: '100%' }}>
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                    {/* Content removed per user request */}
-                </motion.div>
-            </Container>
+            <Box sx={{ flex: 1, ml: `${sidebarWidth}px`, transition: 'margin-left 0.3s ease', display: 'flex', flexDirection: 'column' }}>
+                {/* Header Top Bar */}
+                <Box sx={{ height: 72, bgcolor: '#0f4c5c', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 4, position: 'sticky', top: 0, zIndex: 90 }}>
+                    {/* Main Header Logo */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px', minWidth: 24 }}>
+                            <Box sx={{ width: 10, height: 10, bgcolor: '#FFB703', borderRadius: '3px' }} />
+                            <Box sx={{ width: 10, height: 10, bgcolor: '#2EC4B6', borderRadius: '3px' }} />
+                            <Box sx={{ width: 10, height: 10, bgcolor: '#2EC4B6', borderRadius: '3px' }} />
+                            <Box sx={{ width: 10, height: 10, bgcolor: '#FFB703', borderRadius: '3px' }} />
+                        </Box>
+                        <Typography variant="h6" fontWeight="bold" sx={{ color: '#fff', whiteSpace: 'nowrap' }} letterSpacing="-0.5px">Arovia Dashboard</Typography>
+                    </Box>
+                    
+                    {/* User Profile */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <SessionTimer onSessionExpire={handleLogout} />
+                        <Typography variant="body2" sx={{ color: '#fff', fontWeight: 500 }}>
+                            Welcome back, {userInfo?.name?.split(' ')[0] || 'Anuj'}
+                        </Typography>
+                        <AvatarMenu user={userInfo} onEditProfile={() => setIsProfileOpen(true)} onChangePassword={() => setIsPasswordOpen(true)} onLogout={handleLogout} onDeleteAccount={() => setIsDeleteOpen(true)} />
+                    </Box>
+                </Box>
+
+                {/* Dashboard Content */}
+                <Box sx={{ p: 4, flex: 1 }}>
+                    <Typography variant="h4" fontWeight="800" sx={{ color: '#1f2937', mb: 0.5 }}>
+                        Welcome back, {userInfo?.name?.split(' ')[0] || 'Anuj'}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: '#6b7280', mb: 4, fontWeight: 500 }}>
+                        Here's what's happening with your practice today.
+                    </Typography>
+
+                    {/* Stat Cards Row */}
+                    <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+                        <StatCard 
+                            icon={CalendarDays} title="Today's Appointments" value="8" 
+                            badgeText="↑ 12%" badgeColor="#0d9488" badgeBg="#ccfbf1" 
+                            subtext="Next: 10:30 AM - Rahul Verma" 
+                            iconColor="#2563eb" iconBg="#eff6ff" 
+                        />
+                        <StatCard 
+                            icon={Users} title="Total Patients" value="1,247" 
+                            badgeText="↑ 18%" badgeColor="#0d9488" badgeBg="#ccfbf1" 
+                            subtextNode={{ content: <Typography variant="caption" fontWeight="600" color="#10b981">↑ 3 new this week</Typography> }}
+                            iconColor="#0d9488" iconBg="#ccfbf1" 
+                        />
+                        <StatCard 
+                            icon={TestTube} title="Pending Reports" value="12" 
+                            badgeText="↓ 5%" badgeColor="#ea580c" badgeBg="#ffedd5" 
+                            subtext="Lab results awaiting review" 
+                            iconColor="#ea580c" iconBg="#ffedd5" 
+                        />
+                        <StatCard 
+                            icon={MessageSquare} title="Messages" value="4" 
+                            badgeText="• 2 new" badgeColor="#7c3aed" badgeBg="#ede9fe" 
+                            subtext="2 unread messages" 
+                            iconColor="#7c3aed" iconBg="#ede9fe" 
+                        />
+                    </Box>
+                    
+                    {/* Middle Row: Appointments & Schedule */}
+                    <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+                        {/* Today's Appointments */}
+                        <Paper elevation={0} sx={{ flex: 1.5, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, bgcolor: '#fff' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                <Typography variant="h6" fontWeight="800" sx={{ color: '#111827' }}>Today's Appointments</Typography>
+                                <Button variant="outlined" size="small" sx={{ borderRadius: 6, textTransform: 'none', borderColor: '#e5e7eb', color: '#374151', fontWeight: 600, px: 2 }}>View All</Button>
+                            </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <AppointmentRow time="10:30" period="AM" timeBg="#5b21b6" name="Rahul Verma" detail="45 y/o • Male" type="Chest Pain - Follow-up" tag="Upcoming" tagColor="#7c3aed" tagBg="#f3e8ff" />
+                                <AppointmentRow time="11:00" period="AM" timeBg="#2563eb" name="Sneha Kapoor" detail="Pregnancy Checkup" type="Pregnancy Checkup • Routine" tag="Upcoming" tagColor="#7c3aed" tagBg="#f3e8ff" />
+                                <AppointmentRow time="12:00" period="PM" timeBg="#0d9488" name="Amit Patel" detail="38 y/o • Male" type="Blood Pressure • Follow-up" tag="In 1h 30m" tagColor="#0d9488" tagBg="#ccfbf1" />
+                                <AppointmentRow time="02:30" period="PM" timeBg="#9ca3af" name="Pooja Singh" detail="29 y/o • Female" type="Migraine • New Patient" tag="Scheduled" tagColor="#4b5563" tagBg="#f3f4f6" />
+                            </Box>
+                        </Paper>
+                        
+                        {/* Upcoming Schedule */}
+                        <Paper elevation={0} sx={{ flex: 1, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, bgcolor: '#fff' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                <Typography variant="h6" fontWeight="800" sx={{ color: '#111827' }}>Upcoming Schedule</Typography>
+                                <Button variant="outlined" size="small" sx={{ borderRadius: 6, textTransform: 'none', borderColor: '#e5e7eb', color: '#374151', fontWeight: 600, px: 2 }}>View Calendar</Button>
+                            </Box>
+                            <Box sx={{ position: 'relative', ml: 1 }}>
+                                {/* Vertical line connecting dots */}
+                                <Box sx={{ position: 'absolute', left: 78, top: 16, bottom: 24, width: 2, bgcolor: '#f3f4f6' }} />
+                                <ScheduleRow time="10:30 AM" name="Rahul Verma" type="Chest Pain • Follow-up" />
+                                <ScheduleRow time="11:00 AM" name="Sneha Kapoor" type="Pregnancy Checkup" />
+                                <ScheduleRow time="12:00 PM" name="Amit Patel" type="Blood Pressure • Follow-up" />
+                                <ScheduleRow time="02:30 PM" name="Pooja Singh" type="Migraine • New Patient" />
+                            </Box>
+                        </Paper>
+                    </Box>
+
+                    {/* Bottom Row */}
+                    <Box sx={{ display: 'flex', gap: 3 }}>
+                        {/* Recent Patients */}
+                        <Paper elevation={0} sx={{ flex: 2, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, bgcolor: '#fff' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                <Typography variant="h6" fontWeight="800" sx={{ color: '#111827' }}>Recent Patients</Typography>
+                                <Button variant="outlined" size="small" sx={{ borderRadius: 6, textTransform: 'none', borderColor: '#e5e7eb', color: '#374151', fontWeight: 600, px: 2 }}>View AI Patients</Button>
+                            </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <PatientRow name="Rajesh Kumar" detail="52 y/o • Male • +91 98765 43210" lastVisit="13 Apr 2024" rx="2 prescriptions" />
+                                <PatientRow name="Meera Iyer" detail="41 y/o • Female • +91 91234 55789" lastVisit="14 Apr 2024" rx="1 prescriptions" />
+                                <PatientRow name="Arjun Nair" detail="35 y/o • Male • +91 999887 76555" lastVisit="13 Apr 2024" rx="Lab report pending" />
+                            </Box>
+                        </Paper>
+                        
+                        {/* Checklist */}
+                        <Paper elevation={0} sx={{ flex: 1.5, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, pt: 4, bgcolor: '#fff' }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <TaskRow checked={false} textHtml="Review lab results <span class='red'>- 3 pending</span>" />
+                                <TaskRow checked={false} textHtml="Sign prescription for Amit Patel" subtextHtml="Due in .min" />
+                                <TaskRow checked={true} textHtml="Complete discharge summary, Rajesh Kumar" />
+                                <TaskRow checked={true} textHtml="Review ECG report - Meera Iyer <span class='green'>Completed</span>" />
+                                <TaskRow checked={true} textHtml="Update patient records - Arjun Nair <span class='green'>Com</span>" />
+                            </Box>
+                        </Paper>
+                        
+                        {/* Calendar */}
+                        <Paper elevation={0} sx={{ flex: 1.2, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, bgcolor: '#fff' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                <Typography variant="subtitle1" fontWeight="800" sx={{ color: '#111827' }}>April 2024</Typography>
+                                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                    <IconButton size="small" sx={{ color: '#6b7280' }}><ChevronLeft size={18} /></IconButton>
+                                    <IconButton size="small" sx={{ color: '#6b7280' }}><ChevronRight size={18} /></IconButton>
+                                </Box>
+                            </Box>
+                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', textAlign: 'center' }}>
+                                {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(day => (
+                                    <Typography key={day} variant="caption" sx={{ color: '#9ca3af', fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase' }}>{day}</Typography>
+                                ))}
+                                {/* Days rendering hack for exactly what's on image */}
+                                {[31, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30].map((date, i) => {
+                                    const isMuted = i === 0;
+                                    const isActive = date === 24;
+                                    return (
+                                        <Box key={i} sx={{
+                                            width: 26, height: 26, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            borderRadius: '50%', fontSize: '0.75rem', fontWeight: isActive ? 700 : 600,
+                                            color: isMuted ? '#d1d5db' : (isActive ? '#fff' : '#4b5563'),
+                                            bgcolor: isActive ? '#6366f1' : 'transparent',
+                                            position: 'relative'
+                                        }}>
+                                            {date}
+                                            {date === 25 && <Box sx={{ position: 'absolute', bottom: -2, width: 3, height: 3, borderRadius: '50%', bgcolor: '#6366f1' }} />}
+                                            {date === 29 && <Box sx={{ position: 'absolute', bottom: -2, width: 3, height: 3, borderRadius: '50%', bgcolor: '#6366f1' }} />}
+                                        </Box>
+                                    );
+                                })}
+                            </Box>
+                        </Paper>
+                    </Box>
+
+                </Box>
+            </Box>
 
             {/* Side Panels */}
-            <ProfilePanel
-                isOpen={isProfileOpen}
-                onClose={() => setIsProfileOpen(false)}
-                user={userInfo}
-                onSave={handleUpdateUser}
-            />
-
-            <PasswordPanel
-                isOpen={isPasswordOpen}
-                onClose={() => setIsPasswordOpen(false)}
-            />
-
-            <DeleteAccountPanel
-                isOpen={isDeleteOpen}
-                onClose={() => setIsDeleteOpen(false)}
-                onDeleteConfirm={handleDeleteAccount}
-            />
+            <ProfilePanel isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={userInfo} onSave={handleUpdateUser} />
+            <PasswordPanel isOpen={isPasswordOpen} onClose={() => setIsPasswordOpen(false)} />
+            <DeleteAccountPanel isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} onDeleteConfirm={handleDeleteAccount} />
         </Box>
     );
 };
