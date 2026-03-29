@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Appointment = require("../models/Appointment");
 const Message = require("../models/Message");
 const Report = require("../models/Report");
+const Doctor = require("../models/Doctor");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcryptjs");
@@ -225,38 +226,62 @@ exports.getDashboardStats = async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Today's date range (midnight to midnight)
+    // Dates
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
     const endOfToday = new Date();
     endOfToday.setHours(23, 59, 59, 999);
 
-    // Today's appointments count
-    const todayAppointments = await Appointment.countDocuments({
+    // 1. Stat Counts
+    const todayAppointmentsCount = await Appointment.countDocuments({
       userId,
       date: { $gte: startOfToday, $lte: endOfToday },
       status: { $ne: 'Cancelled' },
     });
-
-    // Next upcoming appointment today
-    const nextAppointment = await Appointment.findOne({
-      userId,
-      date: { $gte: new Date() },
-      status: 'Upcoming',
-    }).sort({ date: 1 });
-
-    // Total patients = all registered users with role 'user'
     const totalPatients = await User.countDocuments({ role: 'user', isActive: true });
-
-    // Pending reports for this user
     const pendingReports = await Report.countDocuments({ userId, status: 'Pending' });
-
-    // Unread & total messages for this user
     const unreadMessages = await Message.countDocuments({ toUserId: userId, isRead: false });
     const totalMessages = await Message.countDocuments({ toUserId: userId });
 
+    // 2. Lists for Sections
+    const todayAppointmentsList = await Appointment.find({
+      userId,
+      date: { $gte: startOfToday, $lte: endOfToday },
+      status: { $ne: 'Cancelled' }
+    }).sort({ date: 1 });
+
+    const upcomingSchedule = await Appointment.find({
+      userId,
+      date: { $gt: endOfToday }, // beyond today
+      status: 'Upcoming'
+    }).sort({ date: 1 }).limit(4);
+
+    const doctorSuggestionsList = await Doctor.find()
+      .sort({ Rating: -1 })
+      .limit(4);
+
+    // Formatted Doctor Suggestions
+    const doctorSuggestions = doctorSuggestionsList.map(doc => {
+        return {
+            name: doc.Name || 'Unknown Doctor',
+            detail: `${doc.Specialization || 'Specialist'} • ${doc.Experience || 'N/A Experience'}`,
+            subDetail: `${doc.Hospital || 'Various Hospitals'} • ${doc.City || 'Any City'}`,
+            rating: doc.Rating || 0,
+            fee: doc.Consultation_fee || 'Varies'
+        };
+    });
+
+    const nextAppointment = await Appointment.findOne({
+      userId,
+      date: { $gt: new Date() },
+      status: 'Upcoming',
+    }).sort({ date: 1 });
+
     res.json({
-      todayAppointments,
+      todayAppointments: todayAppointmentsCount,
+      todayAppointmentsList,
+      upcomingSchedule,
+      doctorSuggestions,
       nextAppointmentLabel: nextAppointment
         ? `Next: ${nextAppointment.time || 'Today'} - ${nextAppointment.doctorName}`
         : 'No appointments today',

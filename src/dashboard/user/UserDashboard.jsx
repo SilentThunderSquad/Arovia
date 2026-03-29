@@ -270,18 +270,21 @@ const UserDashboard = () => {
         </Box>
     );
 
-    const PatientRow = ({ name, detail, lastVisit, rx }) => (
+    const DoctorRow = ({ name, detail, subDetail, rating, fee }) => (
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1.5, borderBottom: '1px solid #f3f4f6', '&:last-child': { borderBottom: 'none' } }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Avatar src={`https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=f3f4f6&color=374151`} alt={name} sx={{ width: 44, height: 44 }} />
+                <Avatar src={`https://ui-avatars.com/api/?name=Dr+${name.replace(' ', '+')}&background=f3f4f6&color=374151`} alt={name} sx={{ width: 44, height: 44 }} />
                 <Box>
-                    <Typography variant="body2" fontWeight="700" sx={{ color: '#111827' }}>{name}</Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 500 }}>{detail}</Typography>
+                    <Typography variant="body2" fontWeight="700" sx={{ color: '#111827' }}>Dr. {name}</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 600, display: 'block' }}>{detail}</Typography>
+                    <Typography variant="caption" sx={{ color: '#9ca3af', fontWeight: 500 }}>{subDetail}</Typography>
                 </Box>
             </Box>
             <Box sx={{ textAlign: 'right' }}>
-                <Typography variant="caption" sx={{ color: '#9ca3af', display: 'block', fontWeight: 500 }}>Last visit {lastVisit}</Typography>
-                <Typography variant="body2" fontWeight="700" sx={{ color: '#374151', mt: 0.25 }}>{rx}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 0.5, mb: 0.5 }}>
+                    <Typography variant="caption" fontWeight="800" sx={{ color: '#f59e0b' }}>★ {rating}</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="700" sx={{ color: '#0d9488' }}>{fee}</Typography>
             </Box>
         </Box>
     );
@@ -421,10 +424,32 @@ const UserDashboard = () => {
                                 <Button variant="outlined" size="small" sx={{ borderRadius: 6, textTransform: 'none', borderColor: '#e5e7eb', color: '#374151', fontWeight: 600, px: 2 }}>View All</Button>
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <AppointmentRow time="10:30" period="AM" timeBg="#5b21b6" name="Rahul Verma" detail="45 y/o • Male" type="Chest Pain - Follow-up" tag="Upcoming" tagColor="#7c3aed" tagBg="#f3e8ff" />
-                                <AppointmentRow time="11:00" period="AM" timeBg="#2563eb" name="Sneha Kapoor" detail="Pregnancy Checkup" type="Pregnancy Checkup • Routine" tag="Upcoming" tagColor="#7c3aed" tagBg="#f3e8ff" />
-                                <AppointmentRow time="12:00" period="PM" timeBg="#0d9488" name="Amit Patel" detail="38 y/o • Male" type="Blood Pressure • Follow-up" tag="In 1h 30m" tagColor="#0d9488" tagBg="#ccfbf1" />
-                                <AppointmentRow time="02:30" period="PM" timeBg="#9ca3af" name="Pooja Singh" detail="29 y/o • Female" type="Migraine • New Patient" tag="Scheduled" tagColor="#4b5563" tagBg="#f3f4f6" />
+                                {statsLoading ? (
+                                    <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress size={24} sx={{ color: '#0F4C5C' }} /></Box>
+                                ) : dashboardStats?.todayAppointmentsList?.length > 0 ? (
+                                    dashboardStats.todayAppointmentsList.map((apt, i) => {
+                                        const timeParts = apt.time?.split(' ') || ['12:00', 'PM'];
+                                        return (
+                                            <AppointmentRow 
+                                                key={apt._id || i}
+                                                time={timeParts[0]} 
+                                                period={timeParts[1]} 
+                                                timeBg={i % 2 === 0 ? "#5b21b6" : "#2EC4B6"} 
+                                                name={apt.patientName} 
+                                                detail={apt.doctorName} 
+                                                type={apt.type} 
+                                                tag={apt.status} 
+                                                tagColor={apt.status === 'Completed' ? '#0d9488' : '#7c3aed'} 
+                                                tagBg={apt.status === 'Completed' ? '#ccfbf1' : '#f3e8ff'} 
+                                            />
+                                        );
+                                    })
+                                ) : (
+                                    <Box sx={{ py: 4, textAlign: 'center', opacity: 0.6 }}>
+                                        <Calendar size={40} style={{ marginBottom: 8, opacity: 0.2 }} />
+                                        <Typography variant="body2">No appointments scheduled for today.</Typography>
+                                    </Box>
+                                )}
                             </Box>
                         </Paper>
                         
@@ -437,37 +462,58 @@ const UserDashboard = () => {
                             <Box sx={{ position: 'relative', ml: 1 }}>
                                 {/* Vertical line connecting dots */}
                                 <Box sx={{ position: 'absolute', left: 78, top: 16, bottom: 24, width: 2, bgcolor: '#f3f4f6' }} />
-                                <ScheduleRow time="10:30 AM" name="Rahul Verma" type="Chest Pain • Follow-up" />
-                                <ScheduleRow time="11:00 AM" name="Sneha Kapoor" type="Pregnancy Checkup" />
-                                <ScheduleRow time="12:00 PM" name="Amit Patel" type="Blood Pressure • Follow-up" />
-                                <ScheduleRow time="02:30 PM" name="Pooja Singh" type="Migraine • New Patient" />
+                                {statsLoading ? (
+                                    <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress size={24} sx={{ color: '#0F4C5C' }} /></Box>
+                                ) : dashboardStats?.upcomingSchedule?.length > 0 ? (
+                                    dashboardStats.upcomingSchedule.map((apt, i) => (
+                                        <ScheduleRow key={apt._id || i} time={apt.time || 'Next Day'} name={apt.patientName} type={apt.type} />
+                                    ))
+                                ) : (
+                                    <Box sx={{ py: 4, textAlign: 'center', opacity: 0.6 }}>
+                                        <Typography variant="body2">No future appointments.</Typography>
+                                    </Box>
+                                )}
                             </Box>
                         </Paper>
                     </Box>
 
                     {/* Bottom Row */}
                     <Box sx={{ display: 'flex', gap: 3 }}>
-                        {/* Recent Patients */}
+                        {/* Doctor Suggestions */}
                         <Paper elevation={0} sx={{ flex: 2, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, bgcolor: '#fff' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                <Typography variant="h6" fontWeight="800" sx={{ color: '#111827' }}>Recent Patients</Typography>
-                                <Button variant="outlined" size="small" sx={{ borderRadius: 6, textTransform: 'none', borderColor: '#e5e7eb', color: '#374151', fontWeight: 600, px: 2 }}>View AI Patients</Button>
+                                <Typography variant="h6" fontWeight="800" sx={{ color: '#111827' }}>Doctor Suggestions</Typography>
+                                <Button variant="outlined" size="small" sx={{ borderRadius: 6, textTransform: 'none', borderColor: '#e5e7eb', color: '#374151', fontWeight: 600, px: 2 }}>View All</Button>
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <PatientRow name="Rajesh Kumar" detail="52 y/o • Male • +91 98765 43210" lastVisit="13 Apr 2024" rx="2 prescriptions" />
-                                <PatientRow name="Meera Iyer" detail="41 y/o • Female • +91 91234 55789" lastVisit="14 Apr 2024" rx="1 prescriptions" />
-                                <PatientRow name="Arjun Nair" detail="35 y/o • Male • +91 999887 76555" lastVisit="13 Apr 2024" rx="Lab report pending" />
+                                {statsLoading ? (
+                                    <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress size={24} sx={{ color: '#0F4C5C' }} /></Box>
+                                ) : dashboardStats?.doctorSuggestions?.length > 0 ? (
+                                    dashboardStats.doctorSuggestions.map((doc, i) => (
+                                        <DoctorRow key={i} name={doc.name} detail={doc.detail} subDetail={doc.subDetail} rating={doc.rating} fee={doc.fee} />
+                                    ))
+                                ) : (
+                                    <Box sx={{ py: 4, textAlign: 'center', opacity: 0.6 }}>
+                                        <Typography variant="body2">No doctor suggestions available.</Typography>
+                                    </Box>
+                                )}
                             </Box>
                         </Paper>
                         
                         {/* Checklist */}
                         <Paper elevation={0} sx={{ flex: 1.5, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, pt: 4, bgcolor: '#fff' }}>
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                <TaskRow checked={false} textHtml="Review lab results <span class='red'>- 3 pending</span>" />
-                                <TaskRow checked={false} textHtml="Sign prescription for Amit Patel" subtextHtml="Due in .min" />
-                                <TaskRow checked={true} textHtml="Complete discharge summary, Rajesh Kumar" />
-                                <TaskRow checked={true} textHtml="Review ECG report - Meera Iyer <span class='green'>Completed</span>" />
-                                <TaskRow checked={true} textHtml="Update patient records - Arjun Nair <span class='green'>Com</span>" />
+                                {statsLoading ? (
+                                    <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress size={24} sx={{ color: '#0F4C5C' }} /></Box>
+                                ) : (
+                                    <>
+                                        <TaskRow checked={dashboardStats?.pendingReports === 0} textHtml={`Review lab results ${dashboardStats?.pendingReports > 0 ? `<span class='red'>- ${dashboardStats.pendingReports} pending</span>` : `<span class='green'>All clear</span>`}`} />
+                                        <TaskRow checked={dashboardStats?.unreadMessages === 0} textHtml={`Reply to messages ${dashboardStats?.unreadMessages > 0 ? `<span class='red'>- ${dashboardStats.unreadMessages} new</span>` : `<span class='green'>Done</span>`}`} />
+                                        <TaskRow checked={dashboardStats?.todayAppointments === 0} textHtml={`Manage today's schedule ${dashboardStats?.todayAppointments > 0 ? `<span class='red'>- ${dashboardStats.todayAppointments} active</span>` : `<span class='green'>Completed</span>`}`} />
+                                        <TaskRow checked={true} textHtml="Clean and sanitize workspace" />
+                                        <TaskRow checked={true} textHtml="Update digital patient records" />
+                                    </>
+                                )}
                             </Box>
                         </Paper>
                         
