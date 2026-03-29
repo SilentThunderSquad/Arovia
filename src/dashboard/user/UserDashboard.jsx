@@ -55,6 +55,8 @@ const UserDashboard = () => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [dashboardStats, setDashboardStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(true);
 
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isPasswordOpen, setIsPasswordOpen] = useState(false);
@@ -80,7 +82,27 @@ const UserDashboard = () => {
 
     useEffect(() => {
         fetchUserData();
+        fetchDashboardStats();
     }, []);
+
+    const fetchDashboardStats = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin;
+            const res = await fetch(`${apiUrl}/api/user/dashboard-stats`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setDashboardStats(data);
+            }
+        } catch (e) {
+            console.error('Stats fetch error:', e);
+        } finally {
+            setStatsLoading(false);
+        }
+    };
 
     const fetchUserData = async () => {
         try {
@@ -354,27 +376,38 @@ const UserDashboard = () => {
                     {/* Stat Cards Row */}
                     <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
                         <StatCard 
-                            icon={CalendarDays} title="Today's Appointments" value="8" 
-                            badgeText="↑ 12%" badgeColor="#0d9488" badgeBg="#ccfbf1" 
-                            subtext="Next: 10:30 AM - Rahul Verma" 
+                            icon={CalendarDays} title="Today's Appointments"
+                            value={statsLoading ? '—' : String(dashboardStats?.todayAppointments ?? 0)}
+                            badgeText={statsLoading ? '' : (dashboardStats?.todayAppointments > 0 ? '✓ Active' : '• None')}
+                            badgeColor={dashboardStats?.todayAppointments > 0 ? '#0d9488' : '#6b7280'}
+                            badgeBg={dashboardStats?.todayAppointments > 0 ? '#ccfbf1' : '#f3f4f6'}
+                            subtext={statsLoading ? 'Loading...' : (dashboardStats?.nextAppointmentLabel || 'No appointments today')}
                             iconColor="#2563eb" iconBg="#eff6ff" 
                         />
                         <StatCard 
-                            icon={Users} title="Total Patients" value="1,247" 
-                            badgeText="↑ 18%" badgeColor="#0d9488" badgeBg="#ccfbf1" 
-                            subtextNode={{ content: <Typography variant="caption" fontWeight="600" color="#10b981">↑ 3 new this week</Typography> }}
+                            icon={Users} title="Total Patients"
+                            value={statsLoading ? '—' : dashboardStats?.totalPatients?.toLocaleString() ?? '0'}
+                            badgeText={statsLoading ? '' : '• Registered'}
+                            badgeColor="#0d9488" badgeBg="#ccfbf1"
+                            subtext={statsLoading ? 'Loading...' : 'All active registered users'}
                             iconColor="#0d9488" iconBg="#ccfbf1" 
                         />
                         <StatCard 
-                            icon={TestTube} title="Pending Reports" value="12" 
-                            badgeText="↓ 5%" badgeColor="#ea580c" badgeBg="#ffedd5" 
-                            subtext="Lab results awaiting review" 
+                            icon={TestTube} title="Pending Reports"
+                            value={statsLoading ? '—' : String(dashboardStats?.pendingReports ?? 0)}
+                            badgeText={statsLoading ? '' : (dashboardStats?.pendingReports > 0 ? '⚠ Pending' : '✓ Clear')}
+                            badgeColor={dashboardStats?.pendingReports > 0 ? '#ea580c' : '#0d9488'}
+                            badgeBg={dashboardStats?.pendingReports > 0 ? '#ffedd5' : '#ccfbf1'}
+                            subtext={statsLoading ? 'Loading...' : 'Lab results awaiting review'}
                             iconColor="#ea580c" iconBg="#ffedd5" 
                         />
                         <StatCard 
-                            icon={MessageSquare} title="Messages" value="4" 
-                            badgeText="• 2 new" badgeColor="#7c3aed" badgeBg="#ede9fe" 
-                            subtext="2 unread messages" 
+                            icon={MessageSquare} title="Messages"
+                            value={statsLoading ? '—' : String(dashboardStats?.totalMessages ?? 0)}
+                            badgeText={statsLoading ? '' : (dashboardStats?.unreadMessages > 0 ? `• ${dashboardStats.unreadMessages} new` : '• Read')}
+                            badgeColor={dashboardStats?.unreadMessages > 0 ? '#7c3aed' : '#6b7280'}
+                            badgeBg={dashboardStats?.unreadMessages > 0 ? '#ede9fe' : '#f3f4f6'}
+                            subtext={statsLoading ? 'Loading...' : `${dashboardStats?.unreadMessages ?? 0} unread messages`}
                             iconColor="#7c3aed" iconBg="#ede9fe" 
                         />
                     </Box>

@@ -1,4 +1,7 @@
 const User = require("../models/User");
+const Appointment = require("../models/Appointment");
+const Message = require("../models/Message");
+const Report = require("../models/Report");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcryptjs");
@@ -214,5 +217,56 @@ exports.deleteAccount = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get Dashboard Stats
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Today's date range (midnight to midnight)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    // Today's appointments count
+    const todayAppointments = await Appointment.countDocuments({
+      userId,
+      date: { $gte: startOfToday, $lte: endOfToday },
+      status: { $ne: 'Cancelled' },
+    });
+
+    // Next upcoming appointment today
+    const nextAppointment = await Appointment.findOne({
+      userId,
+      date: { $gte: new Date() },
+      status: 'Upcoming',
+    }).sort({ date: 1 });
+
+    // Total patients = all registered users with role 'user'
+    const totalPatients = await User.countDocuments({ role: 'user', isActive: true });
+
+    // Pending reports for this user
+    const pendingReports = await Report.countDocuments({ userId, status: 'Pending' });
+
+    // Unread & total messages for this user
+    const unreadMessages = await Message.countDocuments({ toUserId: userId, isRead: false });
+    const totalMessages = await Message.countDocuments({ toUserId: userId });
+
+    res.json({
+      todayAppointments,
+      nextAppointmentLabel: nextAppointment
+        ? `Next: ${nextAppointment.time || 'Today'} - ${nextAppointment.doctorName}`
+        : 'No appointments today',
+      totalPatients,
+      pendingReports,
+      unreadMessages,
+      totalMessages,
+    });
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

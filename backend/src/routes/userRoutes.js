@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { getUserProfile, uploadPrescription } = require('../controllers/userController');
+const { getUserProfile, uploadPrescription, getDashboardStats } = require('../controllers/userController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // All routes require authentication
 // Basic Profile & Prescription
 router.get('/profile', authMiddleware, getUserProfile);
+router.get('/dashboard-stats', authMiddleware, getDashboardStats);
 router.post('/prescription', authMiddleware, uploadPrescription);
 
 // New Routes
