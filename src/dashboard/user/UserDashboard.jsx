@@ -48,6 +48,9 @@ const SidebarItem = ({ icon: Icon, label, active, badge, isMinimized }) => {
     ) : itemContent;
 };
 
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
 const UserDashboard = () => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
@@ -59,6 +62,21 @@ const UserDashboard = () => {
 
     const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
     const sidebarWidth = isSidebarMinimized ? 80 : 250;
+
+    const today = new Date();
+    const [calendarDate, setCalendarDate] = useState({ month: today.getMonth(), year: today.getFullYear() });
+
+    const goToPrevMonth = () => setCalendarDate(prev => {
+        const d = new Date(prev.year, prev.month - 1, 1);
+        return { month: d.getMonth(), year: d.getFullYear() };
+    });
+    const goToNextMonth = () => setCalendarDate(prev => {
+        const d = new Date(prev.year, prev.month + 1, 1);
+        return { month: d.getMonth(), year: d.getFullYear() };
+    });
+
+    const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
+    const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
 
     useEffect(() => {
         fetchUserData();
@@ -420,37 +438,53 @@ const UserDashboard = () => {
                             </Box>
                         </Paper>
                         
-                        {/* Calendar */}
+                        {/* Calendar – Dynamic */}
                         <Paper elevation={0} sx={{ flex: 1.2, borderRadius: 4, border: '1px solid #e5e7eb', p: 3, bgcolor: '#fff' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                <Typography variant="subtitle1" fontWeight="800" sx={{ color: '#111827' }}>April 2024</Typography>
+                                <Typography variant="subtitle1" fontWeight="800" sx={{ color: '#111827' }}>
+                                    {MONTH_NAMES[calendarDate.month]} {calendarDate.year}
+                                </Typography>
                                 <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                    <IconButton size="small" sx={{ color: '#6b7280' }}><ChevronLeft size={18} /></IconButton>
-                                    <IconButton size="small" sx={{ color: '#6b7280' }}><ChevronRight size={18} /></IconButton>
+                                    <IconButton size="small" onClick={goToPrevMonth} sx={{ color: '#6b7280', '&:hover': { color: '#6366f1' } }}><ChevronLeft size={18} /></IconButton>
+                                    <IconButton size="small" onClick={goToNextMonth} sx={{ color: '#6b7280', '&:hover': { color: '#6366f1' } }}><ChevronRight size={18} /></IconButton>
                                 </Box>
                             </Box>
                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', textAlign: 'center' }}>
-                                {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(day => (
+                                {DAY_NAMES.map(day => (
                                     <Typography key={day} variant="caption" sx={{ color: '#9ca3af', fontWeight: 700, fontSize: '0.65rem', textTransform: 'uppercase' }}>{day}</Typography>
                                 ))}
-                                {/* Days rendering hack for exactly what's on image */}
-                                {[31, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30].map((date, i) => {
-                                    const isMuted = i === 0;
-                                    const isActive = date === 24;
+                                {/* Empty cells before first day */}
+                                {Array.from({ length: getFirstDayOfMonth(calendarDate.month, calendarDate.year) }).map((_, i) => (
+                                    <Box key={`empty-${i}`} />
+                                ))}
+                                {/* Actual days */}
+                                {Array.from({ length: getDaysInMonth(calendarDate.month, calendarDate.year) }, (_, i) => i + 1).map(date => {
+                                    const isToday =
+                                        date === today.getDate() &&
+                                        calendarDate.month === today.getMonth() &&
+                                        calendarDate.year === today.getFullYear();
                                     return (
-                                        <Box key={i} sx={{
+                                        <Box key={date} sx={{
                                             width: 26, height: 26, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            borderRadius: '50%', fontSize: '0.75rem', fontWeight: isActive ? 700 : 600,
-                                            color: isMuted ? '#d1d5db' : (isActive ? '#fff' : '#4b5563'),
-                                            bgcolor: isActive ? '#6366f1' : 'transparent',
-                                            position: 'relative'
+                                            borderRadius: '50%', fontSize: '0.75rem', fontWeight: isToday ? 800 : 600,
+                                            color: isToday ? '#fff' : '#4b5563',
+                                            bgcolor: isToday ? '#6366f1' : 'transparent',
+                                            boxShadow: isToday ? '0 2px 8px rgba(99,102,241,0.4)' : 'none',
+                                            cursor: 'default',
+                                            transition: 'all 0.15s',
+                                            '&:hover': { bgcolor: isToday ? '#4f46e5' : '#f3f4f6' }
                                         }}>
                                             {date}
-                                            {date === 25 && <Box sx={{ position: 'absolute', bottom: -2, width: 3, height: 3, borderRadius: '50%', bgcolor: '#6366f1' }} />}
-                                            {date === 29 && <Box sx={{ position: 'absolute', bottom: -2, width: 3, height: 3, borderRadius: '50%', bgcolor: '#6366f1' }} />}
                                         </Box>
                                     );
                                 })}
+                            </Box>
+                            {/* Today label */}
+                            <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#6366f1', flexShrink: 0 }} />
+                                <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 600 }}>
+                                    Today: {today.getDate()} {MONTH_NAMES[today.getMonth()]} {today.getFullYear()}
+                                </Typography>
                             </Box>
                         </Paper>
                     </Box>
