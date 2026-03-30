@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 const Footer = () => {
@@ -95,11 +96,11 @@ const Footer = () => {
 
                 <div className="footer-bottom">
                     <div className="footer-legal">
-                        <a href="#">Privacy Policy</a>
+                        <Link to="/privacy-policy">Privacy Policy</Link>
                         <span className="separator">•</span>
-                        <a href="#">Terms of Service</a>
+                        <Link to="/terms-of-service">Terms of Service</Link>
                         <span className="separator">•</span>
-                        <a href="#">Cookie Policy</a>
+                        <Link to="/privacy-policy">Cookie Policy</Link>
                     </div>
                     <p className="copyright">
                         © {currentYear} Arovia. All rights reserved. Made by <a href="https://github.com/SilentThunderSquad" target="_blank">Silent Thunder Squad</a>

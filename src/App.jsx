@@ -10,6 +10,8 @@ import UserProfilePage from './dashboard/user/UserProfilePage';
 import AdminDashboard from './dashboard/admin/AdminDashboard';
 import AdminProfilePage from './dashboard/admin/AdminProfilePage';
 import AdminDoctorProfile from './dashboard/admin/AdminDoctorProfile';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 const router = createBrowserRouter([
   {
@@ -43,6 +45,14 @@ const router = createBrowserRouter([
   {
     path: '/dashboard/admin/doctor/:doctorName',
     element: <AdminDoctorProfile />,
+  },
+  {
+    path: '/privacy-policy',
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: '/terms-of-service',
+    element: <TermsOfService />,
   },
 ]);
 
