@@ -24,7 +24,7 @@ Add the following environment variables from your `backend/.env` file:
 | `MONGO_URI` | MongoDB connection string | `mongodb+srv://user:pass@cluster.mongodb.net/arovia` |
 | `JWT_SECRET` | Secret key for JWT tokens | `your_super_secret_jwt_key_here` |
 | `SESSION_SECRET` | Secret key for sessions | `your_session_secret_key_here` |
-| `CLIENT_URL` | Frontend URL | `https://your-app.vercel.app` |
+| `CLIENT_URL` | Frontend URL | `https://arovia.silentthundersquad.in` |
 
 #### Optional Variables:
 
@@ -60,7 +60,7 @@ If you don't have Google OAuth credentials yet:
 5. Configure the OAuth consent screen if prompted
 6. Select **Web application** as application type
 7. Add authorized redirect URIs:
-   - `https://your-app.vercel.app/api/auth/google/callback`
+   - `https://arovia.silentthundersquad.in/api/auth/google/callback`
    - `http://localhost:5000/api/auth/google/callback` (for local dev)
 8. Copy the **Client ID** and **Client Secret**
 

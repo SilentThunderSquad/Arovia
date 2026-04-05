@@ -18,7 +18,7 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
                 clientID: process.env.GOOGLE_CLIENT_ID,
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 callbackURL: process.env.NODE_ENV === 'production' 
-                    ? 'https://arovia-silentthundersquad.vercel.app/api/auth/google/callback' 
+                    ? 'https://arovia.silentthundersquad.in/api/auth/google/callback' 
                     : '/api/auth/google/callback',
                 proxy: true, // Important for Vercel/Heroku to trust headers
             },
