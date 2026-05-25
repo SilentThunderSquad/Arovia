@@ -1,0 +1,53 @@
+import { Link } from 'react-router-dom';
+import '@features/auth/styles/auth.css';
+
+const AuthLayout = ({ children, title, subtitle, type }) => {
+    return (
+        <div className="auth-page">
+            <div className="auth-background">
+                <div className="gradient-orb orb-1"></div>
+                <div className="gradient-orb orb-2"></div>
+                <div className="gradient-orb orb-3"></div>
+            </div>
+            <div className="auth-container">
+                <div className="auth-branding">
+                    <Link to="/" className="back-to-home">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Back to Home
+                    </Link>
+                    <div className="branding-content">
+                        <h1>Find the Right Specialist for Your Chronic Disease</h1>
+                        <p>Join thousands of patients who found expert care through our platform</p>
+                        <div className="branding-features">
+                            {['10,000+ Verified Specialists', 'AI-Powered Matching', 'Secure & Confidential', '24/7 Support'].map((f) => (
+                                <div className="feature-item" key={f}><div className="feature-icon">✓</div><span>{f}</span></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <div className="auth-form-section">
+                    <div className="auth-form-container">
+                        <div className="auth-header"><h2>{title}</h2><p>{subtitle}</p></div>
+                        {children}
+                        <div className="auth-divider"><span>or continue with</span></div>
+                        <div className="social-auth">
+                            <button className="social-btn google">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10V12.05H15.4818C15.2364 13.3 14.5273 14.3591 13.4727 15.0682V17.5773H16.7636C18.7182 15.8364 19.8 13.2727 19.8 10.2273Z" fill="#4285F4" />
+                                    <path d="M10 20C12.7 20 14.9636 19.1045 16.7636 17.5773L13.4727 15.0682C12.5727 15.6682 11.4182 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.40455 11.9H0.995455V14.4909C2.78636 18.0591 6.10909 20 10 20Z" fill="#34A853" />
+                                    <path d="M4.40455 11.9C4.19545 11.3 4.07727 10.6591 4.07727 10C4.07727 9.34091 4.19545 8.7 4.40455 8.1V5.50909H0.995455C0.363636 6.77273 0 8.18182 0 9.65909C0 11.1364 0.363636 12.5455 0.995455 13.8091L4.40455 11.9Z" fill="#FBBC04" />
+                                    <path d="M10 3.97727C11.5545 3.97727 12.9409 4.48182 14.0273 5.51818L16.9409 2.60455C15.1636 0.954545 12.8909 0 10 0C6.10909 0 2.78636 1.94091 0.995455 5.50909L4.40455 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z" fill="#EA4335" />
+                                </svg>
+                                Google
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default AuthLayout;

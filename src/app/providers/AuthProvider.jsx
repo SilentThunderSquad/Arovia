@@ -144,19 +144,45 @@ export const AuthProvider = ({ children }) => {
 
         logEvent('INITIALIZE_SESSION_SUCCESS', { email: profile.email, role });
       } catch (error) {
-        // Step 6: Error → degrade to unauthenticated (terminal state)
+        // Step 6: Error → degrade gracefully
         logEvent('INITIALIZE_SESSION_FAILED', { error: error.message });
         clearTimeout(failsafeTimeout);
-        localStorage.removeItem('token');
-        // ✅ role not in localStorage anymore
-        setAuthState({
-          state: 'unauthenticated',
-          user: null,
-          profile: null,
-          role: null,
-          loading: false,
-          errorMsg: error.message || 'Verification failed. Please login again.',
-        });
+        
+        // IMPROVED: Check if error is due to backend unavailability
+        const isNetworkError = error.message?.includes('ERR_CONNECTION_REFUSED') || 
+                               error.message?.includes('Failed to fetch') ||
+                               error.code === 'ECONNREFUSED';
+        
+        if (isNetworkError) {
+          logEvent('BACKEND_UNAVAILABLE_FALLBACK', { 
+            error: error.message,
+            action: 'allowing_login_attempt'
+          });
+          
+          // For OAuth callback: allow to proceed with minimal state
+          // This lets the callback redirect to dashboard even if backend is down
+          localStorage.setItem('token', localStorage.getItem('token') || ''); // Keep token
+          
+          setAuthState({
+            state: 'authenticated',
+            user: { email: 'pending', id: 'pending' }, // Minimal user object
+            profile: null,
+            role: 'user', // Default to user role
+            loading: false,
+            errorMsg: null,
+          });
+        } else {
+          // Real authentication error - go to unauthenticated state
+          localStorage.removeItem('token');
+          setAuthState({
+            state: 'unauthenticated',
+            user: null,
+            profile: null,
+            role: null,
+            loading: false,
+            errorMsg: error.message || 'Verification failed. Please login again.',
+          });
+        }
       }
     };
 

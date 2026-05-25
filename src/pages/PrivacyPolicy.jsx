@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '@features/landing/components/Header';
+import Footer from '@features/landing/components/Footer';
 import './LegalPage.css';
 
 const PrivacyPolicy = () => {

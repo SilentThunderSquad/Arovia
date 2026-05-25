@@ -1,98 +1,79 @@
-// Server Entry Point
-const cors = require('cors');
-const express = require('express');
-const dotenv = require('dotenv');
-const fs = require('fs');
-const path = require('path');
+'use strict';
 
-// Load environment variables from backend/.env (only in local development)
-// On Vercel, environment variables are already available via process.env
+// ── Load environment variables (local dev only) ──────────────────────────────
+const path = require('path');
+const fs   = require('fs');
+const dotenv = require('dotenv');
+
 const envPath = path.join(__dirname, '..', '.env');
 if (fs.existsSync(envPath)) {
-    dotenv.config({ path: envPath });
-    console.log('📁 Loaded environment variables from .env file');
+  dotenv.config({ path: envPath });
+  console.log('📁 Loaded .env from file');
 } else {
-    console.log('☁️ Using environment variables from hosting platform (Vercel)');
+  console.log('☁️  Using platform environment variables (Vercel)');
 }
 
-// Debug: Log which environment variables are available (without exposing values)
-console.log('🔍 Environment variables check:', {
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? '✓ Set' : '✗ Missing',
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? '✓ Set' : '✗ Missing',
-    MONGO_URI: process.env.MONGO_URI ? '✓ Set' : '✗ Missing',
-    JWT_SECRET: process.env.JWT_SECRET ? '✓ Set' : '✗ Missing',
-    SESSION_SECRET: process.env.SESSION_SECRET ? '✓ Set' : '✗ Missing',
-    CLIENT_URL: process.env.CLIENT_URL ? '✓ Set' : '✗ Missing',
-    NODE_ENV: process.env.NODE_ENV || 'development'
-});
+// ── Validate required vars ────────────────────────────────────────────────────
+const required = ['SUPABASE_URL', 'SUPABASE_SERVICE_KEY'];
+const missing  = required.filter((k) => !process.env[k]);
+if (missing.length) {
+  console.error('❌ Missing required environment variables:', missing.join(', '));
+  process.exit(1);
+}
 
-
-const connectDB = require('./config/db');
-const passport = require('./config/passport');
-const session = require('express-session');
+// ── Express setup ─────────────────────────────────────────────────────────────
+const express = require('express');
+const cors    = require('cors');
 
 const app = express();
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your_secret_key',
-    resave: false,
-    saveUninitialized: false,
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173', // Adjust based on your frontend URL
-    credentials: true,
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
 }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-
-// Create uploads directory if it doesn't exist (only works in local development)
-// On Vercel, use cloud storage (S3, Cloudinary, etc.) instead of local filesystem
-const uploadsDir = path.join(__dirname, '..', 'uploads', 'prescriptions');
-try {
-    if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-        console.log('📁 Created uploads directory:', uploadsDir);
-    }
-} catch (error) {
-    console.warn('⚠️ Could not create uploads directory (read-only filesystem):', error.message);
-    console.warn('💡 For production, configure cloud storage (S3, Cloudinary, etc.)');
-}
-
-app.get('/api/health', (req, res) => {
-    res.status(200).json({ status: 'ok', message: 'Server is running' });
+// ── HTTP Security Headers Middleware ──────────────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; frame-ancestors 'none';");
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  res.setHeader('X-Download-Options', 'noopen');
+  next();
 });
 
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/user', require('./routes/userRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
+// ── Health check ──────────────────────────────────────────────────────────────
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Arovia API is running', timestamp: new Date().toISOString() });
+});
 
-const PORT = process.env.PORT || 5000;
+// ── API Routes — module-based ─────────────────────────────────────────────────
+app.use('/api/auth',   require('./modules/auth/auth.routes'));
+app.use('/api/user',   require('./modules/user/user.routes'));
+app.use('/api/admin',  require('./modules/admin/admin.routes'));
+app.use('/api/public', require('./modules/public/public.routes'));
 
-// Initialize server with proper async handling
-async function startServer() {
-    try {
-        // Connect to MongoDB first
-        await connectDB();
+// ── 404 handler ───────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: `Route ${req.method} ${req.path} not found` });
+});
 
-        // Only listen if running directly (not when imported by Vercel)
-        if (require.main === module) {
-            app.listen(PORT, () => {
-                console.log(`🚀 Server running on port ${PORT}`);
-            });
-        }
-    } catch (error) {
-        console.error('❌ Failed to start server:', error.message);
-        process.exit(1);
-    }
+// ── Global error handler (must be last) ──────────────────────────────────────
+app.use(require('./middleware/error.middleware'));
+
+// ── Start (local dev only) ────────────────────────────────────────────────────
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Arovia API running on http://localhost:${PORT}`);
+    console.log(`   Supabase: ${process.env.SUPABASE_URL}`);
+    console.log(`   CORS origin: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
+  });
 }
-
-// Start the server
-startServer();
 
 module.exports = app;
