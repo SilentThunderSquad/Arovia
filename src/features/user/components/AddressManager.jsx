@@ -107,8 +107,8 @@ const AddressManager = ({ userInfo, onUpdate }) => {
                             </FormControl>
                         </Grid>
                         <Grid xs={12} sm={6}>
-                            <TextField fullWidth label="Pincode" name="pincode" value={address.pincode} onChange={handleChange}
-                                inputProps={{ maxLength: 6 }} placeholder="Enter 6-digit pincode" required
+                            <TextField fullWidth label="Pincode *" name="pincode" value={address.pincode} onChange={handleChange}
+                                inputProps={{ maxLength: 6 }} placeholder="Enter 6-digit pincode" required helperText="Enter 6-digit Indian postal code for auto-fill"
                                 InputProps={{ endAdornment: isSearching && <CircularProgress size={20} sx={{ color: '#2EC4B6' }} /> }}
                             />
                         </Grid>
@@ -119,13 +119,13 @@ const AddressManager = ({ userInfo, onUpdate }) => {
                             <TextField fullWidth label="City / District" name="city" value={address.city} InputProps={{ readOnly: true }} placeholder="Auto-filled" />
                         </Grid>
                         <Grid xs={12}>
-                            <TextField fullWidth label="Address Line 1" name="addressLine1" value={address.addressLine1} onChange={handleChange} placeholder="House No., Building, Street" required />
+                            <TextField fullWidth label="Address Line 1 *" name="addressLine1" value={address.addressLine1} onChange={handleChange} placeholder="House No., Building, Street" required helperText="Your house number, building name, street address" />
                         </Grid>
                         <Grid xs={12}>
-                            <TextField fullWidth label="Address Line 2 (Optional)" name="addressLine2" value={address.addressLine2} onChange={handleChange} placeholder="Apartment, Studio, Floor" />
+                            <TextField fullWidth label="Address Line 2 (Optional)" name="addressLine2" value={address.addressLine2} onChange={handleChange} placeholder="Apartment, Studio, Floor" helperText="Apartment number, suite, or floor" />
                         </Grid>
                         <Grid xs={12}>
-                            <TextField fullWidth label="Landmark (Optional)" name="landmark" value={address.landmark} onChange={handleChange} placeholder="Near Famous Place" />
+                            <TextField fullWidth label="Landmark (Optional)" name="landmark" value={address.landmark} onChange={handleChange} placeholder="Near Famous Place" helperText="e.g., Next to railway station, near market" />
                         </Grid>
                         <Grid xs={12}>
                             <Button type="submit" fullWidth variant="contained" startIcon={<Save />} disabled={isSaving} sx={{ py: 1.5 }}>
