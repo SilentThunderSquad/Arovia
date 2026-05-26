@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: arovia-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: CLIENT_URL
+        value: https://arovia.silentthundersquad.in
