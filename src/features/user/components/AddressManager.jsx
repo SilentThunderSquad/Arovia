@@ -23,20 +23,57 @@ const AddressManager = ({ userInfo, onUpdate }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setAddress((prev) => ({ ...prev, [name]: value }));
-        if (name === 'pincode' && value.length === 6) lookupPincode(value);
+        
+        // Trigger pincode lookup when user finishes typing (blur would be better, but this works)
+        if (name === 'pincode' && value.length === 6) {
+            lookupPincode(value);
+        }
     };
 
     const lookupPincode = async (pincode) => {
+        if (!pincode || pincode.length !== 6) return;
+        
         setIsSearching(true);
         try {
             const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
-            if (data?.[0]?.Status === 'Success') {
+            
+            if (data?.[0]?.Status === 'Success' && data[0].PostOffice?.length > 0) {
                 const details = data[0].PostOffice[0];
-                setAddress((prev) => ({ ...prev, city: details.District, state: details.State, country: 'India' }));
+                
+                // Map API response to address fields
+                setAddress((prev) => ({
+                    ...prev,
+                    city: details.District || '',
+                    state: details.State || '',
+                    country: 'India'
+                }));
+                
+                logger.debug('Pincode lookup successful', { pincode, district: details.District, state: details.State }, 'USER');
+            } else {
+                logger.warn('Pincode not found', { pincode, status: data?.[0]?.Status }, 'USER');
+                Swal.fire({
+                    title: 'Pincode Not Found',
+                    text: 'Please enter a valid Indian pincode',
+                    icon: 'warning',
+                    background: '#ffffff',
+                    color: '#111827'
+                });
             }
         } catch (error) {
-            logger.warn('Pincode lookup failed', { error: error.message }, 'USER');
+            logger.warn('Pincode lookup failed', { error: error.message, pincode }, 'USER');
+            Swal.fire({
+                title: 'Lookup Failed',
+                text: 'Could not fetch location details. Please enter manually.',
+                icon: 'error',
+                background: '#ffffff',
+                color: '#111827'
+            });
         } finally {
             setIsSearching(false);
         }
