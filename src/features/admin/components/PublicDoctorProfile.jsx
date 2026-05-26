@@ -153,7 +153,7 @@ const PublicDoctorProfile = () => {
 
             {/* Grid details */}
             <Grid container spacing={4}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Box>
                     <Typography variant="caption" color="text.secondary" display="block">SPECIALIZATION</Typography>
@@ -185,7 +185,7 @@ const PublicDoctorProfile = () => {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {profile.experience && (
                     <Box>
@@ -219,7 +219,7 @@ const PublicDoctorProfile = () => {
                 <Divider sx={{ my: 4 }} />
                 <Typography variant="h6" fontWeight="bold" color="#0F4C5C" sx={{ mb: 2 }}>Availability & Schedule</Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                       <AccessTime sx={{ color: '#0F4C5C' }} />
                       <Box>
@@ -228,7 +228,7 @@ const PublicDoctorProfile = () => {
                       </Box>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <Box>
                       <Typography variant="caption" color="text.secondary" display="block">SCHEDULE DAYS</Typography>
                       <Typography variant="body1" fontWeight={600} color="#1F2937">{profile.scheduleDays}</Typography>

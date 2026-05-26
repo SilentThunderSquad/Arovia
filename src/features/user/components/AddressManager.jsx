@@ -66,7 +66,7 @@ const AddressManager = ({ userInfo, onUpdate }) => {
 
                 <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid xs={12} sm={6}>
                             <FormControl fullWidth>
                                 <InputLabel>Country</InputLabel>
                                 <Select name="country" value={address.country} onChange={handleChange} label="Country">
@@ -74,28 +74,28 @@ const AddressManager = ({ userInfo, onUpdate }) => {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid xs={12} sm={6}>
                             <TextField fullWidth label="Pincode" name="pincode" value={address.pincode} onChange={handleChange}
                                 inputProps={{ maxLength: 6 }} placeholder="Enter 6-digit pincode" required
                                 InputProps={{ endAdornment: isSearching && <CircularProgress size={20} sx={{ color: '#2EC4B6' }} /> }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid xs={12} sm={6}>
                             <TextField fullWidth label="State" name="state" value={address.state} InputProps={{ readOnly: true }} placeholder="Auto-filled" />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid xs={12} sm={6}>
                             <TextField fullWidth label="City / District" name="city" value={address.city} InputProps={{ readOnly: true }} placeholder="Auto-filled" />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField fullWidth label="Address Line 1" name="addressLine1" value={address.addressLine1} onChange={handleChange} placeholder="House No., Building, Street" required />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField fullWidth label="Address Line 2 (Optional)" name="addressLine2" value={address.addressLine2} onChange={handleChange} placeholder="Apartment, Studio, Floor" />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField fullWidth label="Landmark (Optional)" name="landmark" value={address.landmark} onChange={handleChange} placeholder="Near Famous Place" />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <Button type="submit" fullWidth variant="contained" startIcon={<Save />} disabled={isSaving} sx={{ py: 1.5 }}>
                                 {isSaving ? 'Saving...' : 'Save Address'}
                             </Button>

@@ -87,31 +87,31 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
                         </Box>
                     </Box>
                     <Grid container spacing={4}>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
                                 <SectionTitle title="Personal Details" />
                                 <Grid container spacing={3}>
-                                    <Grid item xs={12} md={6}><TextField label="Full Name *" fullWidth name="name" value={formData.name || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={6}><TextField label="Email" fullWidth name="email" value={formData.email || ''} disabled sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f7fafc' } }} /></Grid>
-                                    <Grid item xs={12} md={4}><TextField label="Phone Number" fullWidth name="phone" value={formData.phone || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={4}><TextField label="Date of Birth" type="date" fullWidth name="dob" value={formData.dob ? formData.dob.split('T')[0] : ''} onChange={handleChange} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={4}><TextField select label="Gender" fullWidth name="gender" value={formData.gender} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}><MenuItem value="Male">Male</MenuItem><MenuItem value="Female">Female</MenuItem><MenuItem value="Other">Other</MenuItem><MenuItem value="Prefer not to say">Prefer not to say</MenuItem></TextField></Grid>
+                                    <Grid xs={12} md={6}><TextField label="Full Name *" fullWidth name="name" value={formData.name || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+                                    <Grid xs={12} md={6}><TextField label="Email" fullWidth name="email" value={formData.email || ''} disabled sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f7fafc' } }} /></Grid>
+                                    <Grid xs={12} md={4}><TextField label="Phone Number" fullWidth name="phone" value={formData.phone || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+                                    <Grid xs={12} md={4}><TextField label="Date of Birth" type="date" fullWidth name="dob" value={formData.dob ? formData.dob.split('T')[0] : ''} onChange={handleChange} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+                                    <Grid xs={12} md={4}><TextField select label="Gender" fullWidth name="gender" value={formData.gender} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}><MenuItem value="Male">Male</MenuItem><MenuItem value="Female">Female</MenuItem><MenuItem value="Other">Other</MenuItem><MenuItem value="Prefer not to say">Prefer not to say</MenuItem></TextField></Grid>
                                 </Grid>
                             </Box>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
                                 <SectionTitle title="Address Details" />
                                 <Grid container spacing={3}>
-                                    <Grid item xs={12} md={4}><TextField label="Pincode" fullWidth name="pincode" value={formData.pincode || ''} onChange={handlePincodeChange} inputProps={{ maxLength: 6 }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={4}><TextField label="City / District" fullWidth name="city" value={formData.city || ''} InputProps={{ readOnly: true, endAdornment: formData.state && <InputAdornment position="end"><Typography variant="caption" sx={{ color: '#0F4C5C', fontWeight: 600 }}>{formData.state}</Typography></InputAdornment> }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f8f9fa' } }} /></Grid>
-                                    <Grid item xs={12} md={4}><TextField select label="Country" fullWidth name="country" value={formData.country} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}><MenuItem value="India">India</MenuItem><MenuItem value="USA">USA</MenuItem><MenuItem value="Other">Other</MenuItem></TextField></Grid>
-                                    <Grid item xs={12} md={6}><TextField label="Address Line 1" fullWidth name="address1" value={formData.address1 || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
-                                    <Grid item xs={12} md={6}><TextField label="Address Line 2 (Optional)" fullWidth name="address2" value={formData.address2 || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+                                    <Grid xs={12} md={4}><TextField label="Pincode" fullWidth name="pincode" value={formData.pincode || ''} onChange={handlePincodeChange} inputProps={{ maxLength: 6 }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+                                    <Grid xs={12} md={4}><TextField label="City / District" fullWidth name="city" value={formData.city || ''} InputProps={{ readOnly: true, endAdornment: formData.state && <InputAdornment position="end"><Typography variant="caption" sx={{ color: '#0F4C5C', fontWeight: 600 }}>{formData.state}</Typography></InputAdornment> }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#f8f9fa' } }} /></Grid>
+                                    <Grid xs={12} md={4}><TextField select label="Country" fullWidth name="country" value={formData.country} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}><MenuItem value="India">India</MenuItem><MenuItem value="USA">USA</MenuItem><MenuItem value="Other">Other</MenuItem></TextField></Grid>
+                                    <Grid xs={12} md={6}><TextField label="Address Line 1" fullWidth name="address1" value={formData.address1 || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
+                                    <Grid xs={12} md={6}><TextField label="Address Line 2 (Optional)" fullWidth name="address2" value={formData.address2 || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} /></Grid>
                                 </Grid>
                             </Box>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <Box sx={{ bgcolor: 'white', p: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}>
                                 <SectionTitle title="Other Preferences" />
                                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, alignItems: 'center', bgcolor: 'rgba(0,0,0,0.02)', p: 3, borderRadius: 3 }}>

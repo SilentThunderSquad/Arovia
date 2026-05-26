@@ -110,7 +110,7 @@ const AdminAnalytics = ({ analytics }) => {
 
             {/* Charts */}
             <Grid container spacing={4}>
-                <Grid item xs={12} lg={6}>
+                <Grid xs={12} lg={6}>
                     <Paper
                         component={motion.div}
                         initial={{ opacity: 0, x: -20 }}
@@ -158,7 +158,7 @@ const AdminAnalytics = ({ analytics }) => {
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} lg={6}>
+                <Grid xs={12} lg={6}>
                     <Paper
                         component={motion.div}
                         initial={{ opacity: 0, x: 20 }}

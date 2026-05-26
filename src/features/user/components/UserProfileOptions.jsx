@@ -187,7 +187,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
 
                     {/* Form Fields */}
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField
                                 fullWidth
                                 label="Full Name"
@@ -198,7 +198,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField
                                 fullWidth
                                 label="Email Address"
@@ -208,7 +208,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField
                                 fullWidth
                                 label="Username"
@@ -229,7 +229,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <FormControl fullWidth>
                                 <InputLabel id="visibility-label">Profile Visibility</InputLabel>
                                 <Select
@@ -249,7 +249,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField
                                 fullWidth
                                 label="Phone Number"
@@ -261,7 +261,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <TextField
                                 fullWidth
                                 label="Date of Birth"
@@ -273,7 +273,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid xs={12}>
                             <Button
                                 type="submit"
                                 fullWidth

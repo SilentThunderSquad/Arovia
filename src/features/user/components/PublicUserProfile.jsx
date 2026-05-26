@@ -150,7 +150,7 @@ const PublicUserProfile = () => {
 
             {/* Grid details */}
             <Grid container spacing={4}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Badge sx={{ color: '#0F4C5C' }} />
@@ -172,7 +172,7 @@ const PublicUserProfile = () => {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {profile.bloodDonor && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

@@ -54,7 +54,7 @@ const SecuritySettings = ({ userInfo, onUpdate }) => {
 
     return (
         <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
                 <Card sx={{ height: '100%', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 2 }}>
                     <CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -68,11 +68,11 @@ const SecuritySettings = ({ userInfo, onUpdate }) => {
                                     { label: 'New Password', name: 'new', helper: 'Minimum 8 characters' },
                                     { label: 'Confirm Password', name: 'confirm' },
                                 ].map(({ label, name, helper }) => (
-                                    <Grid item xs={12} key={name}>
+                                    <Grid xs={12} key={name}>
                                         <TextField fullWidth type="password" label={label} name={name} value={passwords[name]} onChange={handlePasswordChange} required helperText={helper} />
                                     </Grid>
                                 ))}
-                                <Grid item xs={12}>
+                                <Grid xs={12}>
                                     <Button type="submit" fullWidth variant="contained" startIcon={<Lock />} disabled={isUpdating} sx={{ py: 1.5 }}>
                                         {isUpdating ? 'Updating...' : 'Update Password'}
                                     </Button>
@@ -83,7 +83,7 @@ const SecuritySettings = ({ userInfo, onUpdate }) => {
                 </Card>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
                 <Card sx={{ height: '100%', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 2 }}>
                     <CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
