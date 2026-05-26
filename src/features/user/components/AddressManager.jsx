@@ -76,13 +76,54 @@ const AddressManager = ({ userInfo, onUpdate }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validate required fields
+        if (!address.country || !address.pincode) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Country and Pincode are required fields',
+                icon: 'warning',
+                background: '#ffffff',
+                color: '#111827'
+            });
+            return;
+        }
+        
+        if (!address.addressLine1) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Address Line 1 is required',
+                icon: 'warning',
+                background: '#ffffff',
+                color: '#111827'
+            });
+            return;
+        }
+        
         setIsSaving(true);
         try {
             const updatedUser = await userService.updateAddress(address);
             if (onUpdate) onUpdate(updatedUser.user || updatedUser);
-            Swal.fire({ title: 'Success', text: 'Address updated successfully', icon: 'success', background: '#ffffff', color: '#111827', iconColor: '#2EC4B6', timer: 1500, showConfirmButton: false });
+            Swal.fire({ 
+                title: 'Success', 
+                text: 'Address updated successfully', 
+                icon: 'success', 
+                background: '#ffffff', 
+                color: '#111827', 
+                iconColor: '#2EC4B6', 
+                timer: 1500, 
+                showConfirmButton: false 
+            });
         } catch (error) {
-            Swal.fire({ title: 'Error', text: 'Failed to update address', icon: 'error', background: '#ffffff', color: '#111827' });
+            logger.warn('Address update failed', { error: error.message }, 'USER');
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update address';
+            Swal.fire({ 
+                title: 'Error', 
+                text: errorMessage, 
+                icon: 'error', 
+                background: '#ffffff', 
+                color: '#111827' 
+            });
         } finally {
             setIsSaving(false);
         }

@@ -75,8 +75,22 @@ const updateProfile = asyncHandler(async (req, res) => {
 const updateAddress = asyncHandler(async (req, res) => {
   const { address } = req.body;
   if (!address) return badRequest(res, 'Address is required');
+  
+  // Validate address object has required fields
+  if (typeof address === 'string') {
+    try {
+      address = JSON.parse(address);
+    } catch (e) {
+      return badRequest(res, 'Invalid address format');
+    }
+  }
+  
+  if (!address.country || !address.pincode) {
+    return badRequest(res, 'Country and pincode are required');
+  }
+  
   const updatedProfile = await userService.updateProfile(req.user.userId, { address });
-  return success(res, { user: mapProfileToFrontend(updatedProfile, []) }, 'Address updated');
+  return success(res, { user: mapProfileToFrontend(updatedProfile, [], req.user.email) }, 'Address updated');
 });
 
 /** POST /api/user/change-password */
