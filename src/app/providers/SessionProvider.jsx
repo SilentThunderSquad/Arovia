@@ -176,7 +176,7 @@ export const SessionProvider = ({ children }) => {
     // Initialize activity throttler: batches activity into single broadcast per 30 seconds
     activityThrottlerRef.current = new ActivityThrottler(30000);
 
-    logger.session.sessionInitSuccess();
+    logger.session.trackerInitialized();
 
     // Establish multi-tab broadcast channel
     try {
