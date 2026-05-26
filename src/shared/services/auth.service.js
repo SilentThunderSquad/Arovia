@@ -1,12 +1,6 @@
 import { supabase } from '@lib/supabase';
 import { api } from '@shared/services/api';
-
-/**
- * Structured log helper for observability
- */
-const logEvent = (event, metadata = {}) => {
-  console.log(`[AUTH_OBSERVABILITY] [${new Date().toISOString()}] ${event}`, JSON.stringify(metadata));
-};
+import logger from '@shared/utils/logger';
 
 let refreshPromiseLock = null;
 
@@ -15,13 +9,13 @@ const authService = {
    * Register a standard user credential
    */
   async register({ name, email, password }) {
-    logEvent('REGISTER_ATTEMPT', { email });
+    logger.debug('Register attempt', { email }, 'AUTH');
     try {
       const response = await api.post('/api/auth/register', { name, email, password });
-      logEvent('REGISTER_SUCCESS', { email });
+      logger.auth.registrationSuccess(email);
       return response;
     } catch (error) {
-      logEvent('REGISTER_FAILED', { email, error: error.message });
+      logger.warn('Registration failed', { email, error: error.message }, 'AUTH');
       throw error;
     }
   },
@@ -30,15 +24,15 @@ const authService = {
    * Login standard credential user
    */
   async login(email, password) {
-    logEvent('LOGIN_ATTEMPT', { email });
+    logger.debug('Login attempt', { email }, 'AUTH');
     try {
       const data = await api.post('/api/auth/login', { email, password });
       localStorage.setItem('token', data.token);
       // ✅ role is in context now, NOT in localStorage
-      logEvent('LOGIN_SUCCESS', { email, role: data.role });
+      logger.auth.loginSuccess(email, data.role);
       return data;
     } catch (error) {
-      logEvent('LOGIN_FAILED', { email, error: error.message });
+      logger.warn('Login failed', { email, error: error.message }, 'AUTH');
       throw error;
     }
   },
@@ -47,13 +41,13 @@ const authService = {
    * Triggers redirection flow to Google OAuth
    */
   async loginWithGoogle() {
-    logEvent('OAUTH_REDIRECT_START', { provider: 'google' });
+    logger.debug('OAuth redirect start', { provider: 'google' }, 'AUTH');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) {
-      logEvent('OAUTH_REDIRECT_FAILED', { error: error.message });
+      logger.warn('OAuth redirect failed', { error: error.message }, 'AUTH');
       throw new Error(error.message);
     }
   },
@@ -67,7 +61,7 @@ const authService = {
    * SAFETY: Handles both hash and query string OAuth redirect formats
    */
   async handleOAuthCallback() {
-    logEvent('OAUTH_CALLBACK_ATTEMPT');
+    logger.debug('OAuth callback attempt', {}, 'AUTH');
     
     // Supabase expects token in hash format for getSession() to work
     // If it's in query string, Supabase won't find it
@@ -76,7 +70,7 @@ const authService = {
     const queryAccessToken = searchParams.get('access_token');
     
     if (queryAccessToken && !window.location.hash.includes('access_token')) {
-      logEvent('OAUTH_CALLBACK_QUERY_STRING_TOKEN_DETECTED', { hasToken: true });
+      logger.debug('OAuth query string token detected', { hasToken: true }, 'AUTH');
       // Manually set hash so Supabase getSession() finds it
       window.location.hash = `#access_token=${queryAccessToken}`;
       // Reload to process with hash
@@ -86,13 +80,13 @@ const authService = {
 
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error || !session) {
-      logEvent('OAUTH_CALLBACK_FAILED', { error: error?.message || 'No active session' });
+      logger.warn('OAuth callback failed', { error: error?.message || 'No active session' }, 'AUTH');
       throw new Error('OAuth session not found');
     }
 
     const accessToken = session.access_token;
     localStorage.setItem('token', accessToken);
-    logEvent('OAUTH_CALLBACK_SESSION_ACQUIRED');
+    logger.debug('OAuth session acquired', {}, 'AUTH');
 
     let profileData = null;
     let profileFetchError = null;
@@ -100,10 +94,10 @@ const authService = {
     // Try to fetch profile, but don't block OAuth completion if it fails
     try {
       profileData = await api.get('/api/user/profile');
-      logEvent('OAUTH_CALLBACK_PROFILE_FETCHED', { role: profileData.role });
+      logger.debug('OAuth profile fetched', { role: profileData.role }, 'AUTH');
     } catch (err) {
       // RESILIENCE: If profile fetch fails, construct minimal profile from OAuth data
-      logEvent('OAUTH_CALLBACK_PROFILE_FETCH_FAILED', { error: err.message });
+      logger.debug('OAuth profile fetch failed', { error: err.message }, 'AUTH');
       profileFetchError = err;
       
       // Fallback: use OAuth user data to construct minimal profile
@@ -116,27 +110,27 @@ const authService = {
         profilePicture: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
         profilePictureUrl: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
       };
-      logEvent('OAUTH_CALLBACK_FALLBACK_PROFILE_CREATED', { email: profileData.email });
+      logger.debug('OAuth fallback profile created', { email: profileData.email }, 'AUTH');
     }
 
     // Attempt avatar sync if profile was fetched successfully
     const googleAvatar = session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture;
     if (googleAvatar && profileData && !profileFetchError && !profileData.profilePicture) {
       try {
-        logEvent('OAUTH_AVATAR_SYNC_START');
+        logger.debug('OAuth avatar sync start', {}, 'AUTH');
         const syncRes = await api.put('/api/user/profile', { profilePictureUrl: googleAvatar });
         if (syncRes?.user) {
           profileData = syncRes.user;
-          logEvent('OAUTH_AVATAR_SYNC_SUCCESS');
+          logger.debug('OAuth avatar sync success', {}, 'AUTH');
         }
       } catch (err) {
-        logEvent('OAUTH_AVATAR_SYNC_BYPASSED', { error: err.message });
+        logger.debug('OAuth avatar sync bypassed', { error: err.message }, 'AUTH');
       }
     }
 
     const role = profileData.role || 'user';
     // ✅ role is in context now, NOT in localStorage
-    logEvent('OAUTH_CALLBACK_SUCCESS', { email: profileData.email, role, hadProfileError: !!profileFetchError });
+    logger.auth.oauthSuccess(role, profileData.email);
     return { token: accessToken, role, user: profileData };
   },
 
@@ -145,11 +139,11 @@ const authService = {
    */
   async refreshSession() {
     if (refreshPromiseLock) {
-      logEvent('TOKEN_REFRESH_AWAIT_LOCK');
+      logger.debug('Token refresh await lock', {}, 'AUTH');
       return refreshPromiseLock;
     }
 
-    logEvent('TOKEN_REFRESH_START');
+    logger.debug('Token refresh start', {}, 'AUTH');
     refreshPromiseLock = (async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -158,10 +152,10 @@ const authService = {
 
         const token = session.access_token;
         localStorage.setItem('token', token);
-        logEvent('TOKEN_REFRESH_SUCCESS');
+        logger.debug('Token refresh success', {}, 'AUTH');
         return session;
       } catch (error) {
-        logEvent('TOKEN_REFRESH_FAILED', { error: error.message });
+        logger.warn('Token refresh failed', { error: error.message }, 'AUTH');
         throw error;
       } finally {
         refreshPromiseLock = null;
@@ -175,15 +169,15 @@ const authService = {
    * Log out active user completely
    */
   async logout() {
-    logEvent('LOGOUT_START');
+    logger.debug('Logout start', {}, 'AUTH');
     try {
       await supabase.auth.signOut();
     } catch (e) {
-      logEvent('LOGOUT_SUPABASE_SIGNOUT_ERROR', { error: e.message });
+      logger.debug('Logout Supabase signout error', { error: e.message }, 'AUTH');
     }
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    logEvent('LOGOUT_SUCCESS');
+    logger.auth.logoutSuccess();
   },
 
   isLoggedIn() { return !!localStorage.getItem('token'); },

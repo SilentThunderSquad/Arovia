@@ -5,6 +5,8 @@
  * @param {string} pincode - The 6-digit pincode
  * @returns {Promise<{state: string, city: string, error?: string}>}
  */
+import logger from './logger';
+
 export const fetchLocationByPincode = async (pincode) => {
     if (!pincode || pincode.length !== 6) return { error: 'Invalid pincode length' };
     try {
@@ -16,7 +18,7 @@ export const fetchLocationByPincode = async (pincode) => {
         }
         return { error: 'Invalid pincode or not found' };
     } catch (error) {
-        console.error('Error fetching pincode details:', error);
+        logger.debug('Pincode lookup failed', { error: error.message }, 'PINCODE');
         return { error: 'Failed to fetch location data' };
     }
 };
