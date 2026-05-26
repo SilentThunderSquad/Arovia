@@ -28,7 +28,12 @@ const SecuritySettings = ({ userInfo, onUpdate }) => {
             Swal.fire({ title: 'Success', text: 'Password changed successfully', icon: 'success', background: '#ffffff', color: '#111827', iconColor: '#2EC4B6' });
             setPasswords({ current: '', new: '', confirm: '' });
         } catch (error) {
-            Swal.fire({ title: 'Error', text: error.message, icon: 'error', background: '#ffffff', color: '#111827' });
+            const errorMessage = error.message?.includes('401')
+                ? 'Current password is incorrect.'
+                : error.message?.includes('409')
+                ? 'New password must be different from current password.'
+                : error.message || 'Failed to update password. Please try again.';
+            Swal.fire({ title: 'Error', text: errorMessage, icon: 'error', background: '#ffffff', color: '#111827' });
         } finally {
             setIsUpdating(false);
         }

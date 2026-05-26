@@ -39,7 +39,12 @@ const PrescriptionVault = ({ userInfo, onUpdate }) => {
             Swal.fire({ title: 'Uploaded!', text: 'Prescription added to vault.', icon: 'success', timer: 1500, showConfirmButton: false, background: '#ffffff', color: '#111827', iconColor: '#2EC4B6' });
             setFile(null);
         } catch (error) {
-            Swal.fire({ title: 'Error', text: 'Failed to upload prescription', icon: 'error', background: '#ffffff', color: '#111827' });
+            const errorMessage = error.message?.includes('401') 
+                ? 'Your session has expired. Please login again.'
+                : error.message?.includes('413')
+                ? 'File is too large. Maximum 5MB allowed.'
+                : 'Failed to upload prescription. Please try again.';
+            Swal.fire({ title: 'Error', text: errorMessage, icon: 'error', background: '#ffffff', color: '#111827' });
         } finally {
             setIsUploading(false);
         }
@@ -58,7 +63,10 @@ const PrescriptionVault = ({ userInfo, onUpdate }) => {
                 }
                 Swal.fire({ title: 'Deleted!', text: 'Prescription has been deleted.', icon: 'success', background: '#ffffff', color: '#111827', iconColor: '#2EC4B6' });
             } catch (error) {
-                Swal.fire({ title: 'Error', text: 'Failed to delete prescription', icon: 'error', background: '#ffffff', color: '#111827' });
+                const errorMessage = error.message?.includes('401')
+                    ? 'Your session has expired. Please login again.'
+                    : 'Failed to delete prescription. Please try again.';
+                Swal.fire({ title: 'Error', text: errorMessage, icon: 'error', background: '#ffffff', color: '#111827' });
             }
         }
     };
