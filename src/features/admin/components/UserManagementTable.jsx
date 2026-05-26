@@ -287,6 +287,8 @@ const UserManagementTable = ({ users, doctors, onUserUpdate, viewMode }) => {
                                                     <TableCell>
                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                             <Avatar
+                                                                src={row.profileImage || row.avatar}
+                                                                alt={row.name}
                                                                 sx={{
                                                                     bgcolor: '#0F4C5C',
                                                                     width: 40,
