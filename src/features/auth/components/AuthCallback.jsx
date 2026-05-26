@@ -87,7 +87,7 @@ const AuthCallback = () => {
    // If initialization succeeded and auth is now authenticated, redirect immediately
   if (isInitialized && state === 'authenticated') {
     const dashboardPath = getDashboardPath(role);
-    logEvent('OAUTH_CALLBACK_REDIRECTING_SUCCESS', { path: dashboardPath });
+    logger.debug('OAuth callback redirecting to dashboard', { path: dashboardPath }, 'AUTH');
     return <Navigate to={dashboardPath} replace />;
   }
 
@@ -95,7 +95,7 @@ const AuthCallback = () => {
   if (isInitialized && state !== 'authenticated') {
     const savedRole = localStorage.getItem('auth_role') || 'user';
     const dashboardPath = savedRole === 'admin' ? '/dashboard/admin' : '/dashboard/user';
-    logEvent('OAUTH_CALLBACK_REDIRECTING_FALLBACK', { path: dashboardPath, role: savedRole });
+    logger.debug('OAuth callback fallback redirect', { path: dashboardPath, role: savedRole }, 'AUTH');
     return <Navigate to={dashboardPath} replace />;
   }
 
