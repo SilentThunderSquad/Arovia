@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   const initializeSession = useCallback(async (explicitToken = null) => {
     // Concurrency lock: if initialization is already running, await the existing promise
     if (initPromiseRef.current) {
-      logEvent('INITIALIZE_SESSION_CONCURRENCY_LOCKED');
+      logger.debug('Session initialization already in progress', {}, 'AUTH');
       return initPromiseRef.current;
     }
 
@@ -330,3 +330,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

@@ -88,12 +88,20 @@ const logger = {
    * Only logs important transitions, not raw activity
    */
   auth: {
+    sessionInitStart: () => logger.info('Session initialization started', {}, 'AUTH'),
     sessionInitStarted: () => logger.info('Session initialization started', {}, 'AUTH'),
     sessionInitSuccess: (email, role) => logger.info('Session initialized successfully', { email, role }, 'AUTH'),
     sessionInitFailed: (reason) => logger.error('Session initialization failed', { reason }, 'AUTH'),
     profileFetchRetry: (retriesLeft, delayMs) => logger.debug('Retrying profile fetch', { retriesLeft, delayMs }, 'AUTH'),
     supabaseEventReceived: (event) => logger.debug('Supabase auth event', { event }, 'AUTH'),
     tokenRefreshed: () => logger.debug('Token refreshed', {}, 'AUTH'),
+    loginSuccess: (email, role) => logger.info('Login successful', { email, role }, 'AUTH'),
+    registrationSuccess: (email) => logger.info('Registration successful', { email }, 'AUTH'),
+    oauthSuccess: (role, email) => logger.info('OAuth login successful', { role, email }, 'AUTH'),
+    logoutSuccess: () => logger.info('Logout successful', {}, 'AUTH'),
+    loginFailed: (reason) => logger.error('Login failed', { reason }, 'AUTH'),
+    registrationFailed: (reason) => logger.error('Registration failed', { reason }, 'AUTH'),
+    oauthFailed: (reason) => logger.error('OAuth login failed', { reason }, 'AUTH'),
   },
 
   /**
