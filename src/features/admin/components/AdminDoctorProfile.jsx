@@ -14,6 +14,7 @@ import authService from '@shared/services/auth.service';
 import userService from '@features/user/services/userService';
 
 import { useAuth } from '@shared/hooks/useAuth';
+import logger from '@shared/utils/logger';
 
 const AdminDoctorProfile = () => {
     const navigate = useNavigate();
@@ -40,7 +41,7 @@ const AdminDoctorProfile = () => {
             const data = await userService.getProfile();
             setAdminInfo(data);
         } catch (error) {
-            console.error('Failed to fetch admin profile:', error);
+            logger.warn('Failed to fetch admin profile', { error: error.message }, 'ADMIN');
         }
     }, []);
 
@@ -54,7 +55,7 @@ const AdminDoctorProfile = () => {
             }
             setDoctorInfo(data);
         } catch (error) {
-            console.error('Error fetching doctor data:', error);
+            logger.warn('Error fetching doctor data', { error: error.message }, 'ADMIN');
             Swal.fire('Error', 'Failed to load doctor profile', 'error');
         } finally {
             setLoading(false);

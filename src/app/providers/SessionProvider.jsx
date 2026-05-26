@@ -1,12 +1,10 @@
 import { createContext, useEffect, useRef, useContext, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import { AuthContext } from './AuthProvider';
+import logger from '@shared/utils/logger';
+import { ActivityThrottler } from '@shared/utils/throttle';
 
 export const SessionContext = createContext(null);
-
-const logEvent = (event, metadata = {}) => {
-  console.log(`[SESSION_PROVIDER] [${new Date().toISOString()}] ${event}`, JSON.stringify(metadata));
-};
 
 export const SessionProvider = ({ children }) => {
   const { state, logout } = useContext(AuthContext);
@@ -19,6 +17,8 @@ export const SessionProvider = ({ children }) => {
   const warningModalActiveRef = useRef(false);
   const timerIntervalRef = useRef(null);
   const logoutTriggeredRef = useRef(false);
+  const activityThrottlerRef = useRef(null);
+  const initializeRef = useRef(false);
 
   // Tracks the absolute timestamp when the session should expire
   const getSessionEndTime = () => {
@@ -32,6 +32,12 @@ export const SessionProvider = ({ children }) => {
 
   /**
    * Reset session timer duration across active events
+   * 
+   * Architecture:
+   * - Local timer reset: happens instantly (client-side only)
+   * - Broadcast: throttled to max once per 30 seconds (cross-tab sync)
+   * 
+   * This prevents event storms while keeping session responsive
    */
   const resetSessionTimer = useCallback((broadcast = true) => {
     if (state !== 'authenticated' || logoutTriggeredRef.current) return;
@@ -39,9 +45,12 @@ export const SessionProvider = ({ children }) => {
     const newEndTime = Date.now() + TIMEOUT_DURATION;
     setSessionEndTime(newEndTime);
 
-    if (broadcast && syncChannelRef.current) {
-      logEvent('RESET_TIMER_BROADCASTED');
-      syncChannelRef.current.postMessage({ type: 'RESET_TIMER', time: newEndTime });
+    // Only broadcast if explicitly requested AND within throttle window
+    if (broadcast && syncChannelRef.current && activityThrottlerRef.current) {
+      activityThrottlerRef.current.track(() => {
+        logger.session.sessionExtended();
+        syncChannelRef.current.postMessage({ type: 'RESET_TIMER', time: newEndTime });
+      });
     }
   }, [state, TIMEOUT_DURATION]);
 
@@ -53,8 +62,8 @@ export const SessionProvider = ({ children }) => {
     extendDebounceRef.current = true;
     setTimeout(() => { extendDebounceRef.current = false; }, 1000);
 
-    logEvent('SESSION_EXTENDED');
-    resetSessionTimer(false); // Update database/local timestamps
+    logger.session.sessionExtended();
+    resetSessionTimer(false);
 
     // Close any active SweetAlert warnings safely
     if (warningModalActiveRef.current) {
@@ -74,7 +83,7 @@ export const SessionProvider = ({ children }) => {
     if (logoutTriggeredRef.current) return;
     logoutTriggeredRef.current = true;
 
-    logEvent('SESSION_EXPIRED');
+    logger.session.sessionExpired();
 
     if (warningModalActiveRef.current) {
       Swal.close();
@@ -108,7 +117,7 @@ export const SessionProvider = ({ children }) => {
     if (warningModalActiveRef.current || logoutTriggeredRef.current) return;
     warningModalActiveRef.current = true;
 
-    logEvent('SHOWING_WARNING_MODAL');
+    logger.session.expirationWarning(Math.floor((getSessionEndTime() - Date.now()) / 1000));
 
     let timerInterval;
     Swal.fire({
@@ -141,7 +150,7 @@ export const SessionProvider = ({ children }) => {
       if (result.isConfirmed) {
         extendSession(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        logEvent('MANUAL_INACTIVITY_LOGOUT');
+        logger.info('Manual inactivity logout', {}, 'SESSION');
         handleSessionExpire(true);
       }
     });
@@ -156,26 +165,37 @@ export const SessionProvider = ({ children }) => {
         syncChannelRef.current = null;
       }
       logoutTriggeredRef.current = false;
+      initializeRef.current = false;
       return;
     }
 
-    logEvent('INITIALIZING_SESSION_TRACKER');
-    logoutTriggeredRef.current = false;
+    // CRITICAL: Guard against React StrictMode double-mounts and duplicate subscriptions
+    if (initializeRef.current) return;
+    initializeRef.current = true;
+
+    // Initialize activity throttler: batches activity into single broadcast per 30 seconds
+    activityThrottlerRef.current = new ActivityThrottler(30000);
+
+    logger.session.sessionInitSuccess();
 
     // Establish multi-tab broadcast channel
-    syncChannelRef.current = new BroadcastChannel('arovia-session-sync');
-    syncChannelRef.current.onmessage = (event) => {
-      logEvent('CROSS_TAB_MESSAGE_RECEIVED', { type: event.data.type });
-      const { type, time } = event.data;
+    try {
+      syncChannelRef.current = new BroadcastChannel('arovia-session-sync');
+      syncChannelRef.current.onmessage = (event) => {
+        logger.debug('Cross-tab message', { type: event.data.type }, 'SESSION');
+        const { type, time } = event.data;
 
-      if (type === 'RESET_TIMER' && time) {
-        setSessionEndTime(time);
-      } else if (type === 'EXTEND_SESSION') {
-        extendSession(false);
-      } else if (type === 'LOGOUT') {
-        handleSessionExpire(false);
-      }
-    };
+        if (type === 'RESET_TIMER' && time) {
+          setSessionEndTime(time);
+        } else if (type === 'EXTEND_SESSION') {
+          extendSession(false);
+        } else if (type === 'LOGOUT') {
+          handleSessionExpire(false);
+        }
+      };
+    } catch (err) {
+      logger.warn('BroadcastChannel unavailable', { error: err.message }, 'SESSION');
+    }
 
     // Initialize/sync ending timestamps
     const now = Date.now();
@@ -202,20 +222,23 @@ export const SessionProvider = ({ children }) => {
       }
     }, 1000);
 
-    // Global activity listeners
+    // Global activity listeners - throttled to prevent event storms
     const handleActivity = () => {
       // Avoid resetting if warning modal is open, to prevent user bypass without clicking extend
       if (warningModalActiveRef.current) return;
+      
+      // Reset locally ALWAYS for responsiveness
+      // But only broadcast once per 30 seconds (via activityThrottlerRef)
       resetSessionTimer(true);
     };
 
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-    events.forEach((e) => window.addEventListener(e, handleActivity));
+    events.forEach((e) => window.addEventListener(e, handleActivity, { passive: true }));
 
     // visibilityState change tracker to recalibrate expired times instantly
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        logEvent('TAB_VISIBLE_RECALIBRATION_START');
+        logger.debug('Tab visible, recalibrating session', {}, 'SESSION');
         const end = getSessionEndTime();
         const rem = end - Date.now();
         if (rem <= 0) {
@@ -235,6 +258,9 @@ export const SessionProvider = ({ children }) => {
       }
       events.forEach((e) => window.removeEventListener(e, handleActivity));
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Reset initialization guard
+      initializeRef.current = false;
     };
   }, [state, TIMEOUT_DURATION, WARNING_DURATION, extendSession, triggerWarningModal, handleSessionExpire, resetSessionTimer]);
 

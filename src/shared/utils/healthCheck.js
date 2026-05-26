@@ -4,6 +4,8 @@
  * Verifies backend API is available before attempting OAuth or critical operations
  */
 
+import logger from './logger';
+
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const HEALTH_CHECK_TIMEOUT = 3000; // 3 seconds
 
@@ -20,16 +22,16 @@ export const checkBackendHealth = async (verbose = false) => {
     clearTimeout(timeoutId);
 
     if (verbose) {
-      console.log('[HEALTH_CHECK] Backend is healthy', { status: response.status });
+      logger.debug('Backend health check passed', { status: response.status }, 'HEALTH');
     }
     
     return response.ok;
   } catch (error) {
     if (verbose) {
-      console.error('[HEALTH_CHECK] Backend unavailable:', {
+      logger.warn('Backend health check failed', {
         error: error.message,
         backend: BACKEND_URL,
-      });
+      }, 'HEALTH');
     }
     return false;
   }

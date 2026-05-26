@@ -2,12 +2,9 @@ import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@lib/supabase';
 import { api } from '@shared/services/api';
 import authService from '@shared/services/auth.service';
+import logger from '@shared/utils/logger';
 
 export const AuthContext = createContext(null);
-
-const logEvent = (event, metadata = {}) => {
-  console.log(`[AUTH_PROVIDER] [${new Date().toISOString()}] ${event}`, JSON.stringify(metadata));
-};
 
 /**
  * AuthProvider — Single Source of Truth for Authentication State
@@ -45,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       return await api.get('/api/user/profile');
     } catch (err) {
       if (retries > 0) {
-        logEvent('PROFILE_FETCH_RETRY', { retriesLeft: retries, nextDelayMs: delay });
+        logger.debug('Profile fetch retry', { retriesLeft: retries, nextDelayMs: delay }, 'AUTH');
         await new Promise((resolve) => setTimeout(resolve, delay));
         return fetchProfileWithRetry(retries - 1, delay * 2);
       }
@@ -73,14 +70,14 @@ export const AuthProvider = ({ children }) => {
       return initPromiseRef.current;
     }
 
-    const runInit = async () => {
-      logEvent('INITIALIZE_SESSION_START');
+   const runInit = async () => {
+      logger.auth.sessionInitStart();
       setAuthState((prev) => ({ ...prev, state: 'loading', loading: true, errorMsg: null }));
 
       // Failsafe: force terminal state if hydration hangs for 20 seconds
       // (7s was too aggressive for slow networks; 3x retry with backoff + 5s buffer)
       const failsafeTimeout = setTimeout(() => {
-        logEvent('INITIALIZE_SESSION_FAILSAFE_TRIGGERED');
+        logger.warn('Session initialization timeout', { timeout_ms: 20000 }, 'AUTH');
         setAuthState({
           state: 'unauthenticated',
           user: null,
@@ -98,14 +95,14 @@ export const AuthProvider = ({ children }) => {
           const { data: { session } } = await supabase.auth.getSession();
           activeSession = session;
         } catch (err) {
-          logEvent('SESSION_RETRIEVAL_WARNING', { error: err.message });
+          logger.debug('Session retrieval warning', { error: err.message }, 'AUTH');
         }
 
         const token = explicitToken || activeSession?.access_token || localStorage.getItem('token');
 
         // Step 2: No token → unauthenticated (terminal state)
         if (!token) {
-          logEvent('INITIALIZE_SESSION_NO_TOKEN');
+          logger.debug('No token found', {}, 'AUTH');
           clearTimeout(failsafeTimeout);
           localStorage.removeItem('token');
           // ✅ role not in localStorage anymore
@@ -124,7 +121,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', token);
 
         // Step 4: Fetch user profile with retries
-        logEvent('PROFILE_FETCH_START');
+        logger.debug('Fetching user profile', {}, 'AUTH');
         const profile = await fetchProfileWithRetry();
         const role = profile.role || 'user';
         // ✅ token kept in localStorage for API headers
@@ -142,10 +139,10 @@ export const AuthProvider = ({ children }) => {
           errorMsg: null,
         });
 
-        logEvent('INITIALIZE_SESSION_SUCCESS', { email: profile.email, role });
+        logger.auth.sessionInitSuccess(profile.email, role);
       } catch (error) {
         // Step 6: Error → degrade gracefully
-        logEvent('INITIALIZE_SESSION_FAILED', { error: error.message });
+        logger.warn('Session initialization failed', { error: error.message }, 'AUTH');
         clearTimeout(failsafeTimeout);
         
         // IMPROVED: Check if error is due to backend unavailability
@@ -154,10 +151,7 @@ export const AuthProvider = ({ children }) => {
                                error.code === 'ECONNREFUSED';
         
         if (isNetworkError) {
-          logEvent('BACKEND_UNAVAILABLE_FALLBACK', { 
-            error: error.message,
-            action: 'allowing_login_attempt'
-          });
+          logger.warn('Backend unavailable, allowing login attempt', { error: error.message }, 'AUTH');
           
           // For OAuth callback: allow to proceed with minimal state
           // This lets the callback redirect to dashboard even if backend is down
@@ -198,15 +192,15 @@ export const AuthProvider = ({ children }) => {
    * Manual credentials login
    */
   const login = async (email, password) => {
-    logEvent('MANUAL_LOGIN_START', { email });
+    logger.debug('Manual login start', { email }, 'AUTH');
     setAuthState((prev) => ({ ...prev, state: 'loading', loading: true }));
     try {
       const data = await authService.login(email, password);
       await initializeSession(data.token);
-      logEvent('MANUAL_LOGIN_SUCCESS', { email, role: data.role });
+      logger.auth.loginSuccess(email, data.role);
       return data;
     } catch (error) {
-      logEvent('MANUAL_LOGIN_FAILED', { email, error: error.message });
+      logger.warn('Manual login failed', { email, error: error.message }, 'AUTH');
       setAuthState((prev) => ({
         ...prev,
         state: 'unauthenticated',
@@ -221,13 +215,13 @@ export const AuthProvider = ({ children }) => {
    * Manual credentials registration
    */
   const register = async ({ name, email, password }) => {
-    logEvent('MANUAL_REGISTER_START', { email });
+    logger.debug('Registration start', { email }, 'AUTH');
     try {
       const data = await authService.register({ name, email, password });
-      logEvent('MANUAL_REGISTER_SUCCESS', { email });
+      logger.debug('Registration success', { email }, 'AUTH');
       return data;
     } catch (error) {
-      logEvent('MANUAL_REGISTER_FAILED', { email, error: error.message });
+      logger.warn('Registration failed', { email, error: error.message }, 'AUTH');
       throw error;
     }
   };
@@ -236,7 +230,7 @@ export const AuthProvider = ({ children }) => {
    * Manual logout — clears all auth state and storage synchronously
    */
   const logout = useCallback(async () => {
-    logEvent('MANUAL_LOGOUT_START');
+    logger.debug('Logout start', {}, 'AUTH');
     // Clear storage FIRST before any async work
     localStorage.removeItem('token');
     // ✅ NO localStorage.removeItem('role') - role is in context now
@@ -254,9 +248,9 @@ export const AuthProvider = ({ children }) => {
     try {
       await authService.logout();
     } catch (err) {
-      logEvent('MANUAL_LOGOUT_CLEANUP_WARNING', { error: err.message });
+      logger.debug('Logout cleanup warning', { error: err.message }, 'AUTH');
     }
-    logEvent('MANUAL_LOGOUT_SUCCESS');
+    logger.auth.logoutSuccess();
   }, []);
 
   useEffect(() => {
@@ -271,7 +265,7 @@ export const AuthProvider = ({ children }) => {
     // But we already called initializeSession() above, so skip those initial events
     let isInitialEvent = true;
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      logEvent('SUPABASE_AUTH_EVENT_RECEIVED', { event, isInitialEvent });
+      logger.debug('Supabase auth event', { event, isInitialEvent }, 'AUTH');
       
       // Skip initial Supabase event - we already ran initializeSession()
       if (isInitialEvent) {
@@ -282,7 +276,7 @@ export const AuthProvider = ({ children }) => {
       // Prevent redundant initialization if already authenticated
       // (Supabase fires SIGNED_IN on tab visibility changes, which would cause loops)
       if (event === 'SIGNED_IN' && authStateRef.current?.state === 'authenticated') {
-        logEvent('SUPABASE_SIGNED_IN_SKIPPED_ALREADY_AUTHENTICATED');
+        logger.debug('Supabase SIGNED_IN skipped (already authenticated)', {}, 'AUTH');
         return;
       }
 

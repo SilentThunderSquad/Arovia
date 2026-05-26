@@ -4,10 +4,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import authService from '@shared/services/auth.service';
 import { useAuth } from '@shared/hooks/useAuth';
 import { getDashboardPath } from '@shared/utils/roleRoutes';
-
-const logEvent = (event, metadata = {}) => {
-  console.log(`[OAUTH_CALLBACK] [${new Date().toISOString()}] ${event}`, JSON.stringify(metadata));
-};
+import logger from '@shared/utils/logger';
 
 /**
  * AuthCallback - OAuth callback handler
@@ -34,7 +31,7 @@ const AuthCallback = () => {
     // If profile fetch doesn't complete in 8 seconds, redirect anyway with fallback auth
     const earlyTimeoutId = setTimeout(() => {
       if (!error && !isInitialized) {
-        logEvent('OAUTH_CALLBACK_EARLY_TIMEOUT', { waited: '8s', proceeding: 'with_fallback' });
+        logger.warn('OAuth callback early timeout', { waited_ms: 8000, proceeding_with: 'fallback' }, 'AUTH');
         
         // Get role from token or localStorage
         const savedRole = localStorage.getItem('auth_role') || 'user';
@@ -46,16 +43,16 @@ const AuthCallback = () => {
     // Also keep diagnostic timeout for monitoring
     const diagnosticTimeout = setTimeout(() => {
       if (!error && isInitialized === false) {
-        logEvent('OAUTH_CALLBACK_DIAGNOSTIC_TIMEOUT', { waited: '10s' });
+        logger.debug('OAuth callback diagnostic timeout', { waited_ms: 10000 }, 'AUTH');
       }
     }, 10000);
 
     const handle = async () => {
       try {
         // Extract token from URL
-        logEvent('OAUTH_CALLBACK_EXTRACTING_TOKEN');
+        logger.debug('OAuth callback extracting token', {}, 'AUTH');
         const result = await authService.handleOAuthCallback();
-        logEvent('OAUTH_CALLBACK_TOKEN_EXTRACTED', { hasToken: !!result.token, role: result.role });
+        logger.debug('OAuth callback token extracted', { hasToken: !!result.token, role: result.role }, 'AUTH');
         
         // Save role for fallback
         if (result.role) {
@@ -63,17 +60,16 @@ const AuthCallback = () => {
         }
         
         // Initialize session (updates auth state)
-        logEvent('OAUTH_CALLBACK_INITIALIZING_SESSION');
+        logger.debug('OAuth callback initializing session', {}, 'AUTH');
         await initializeSession(result.token);
-        logEvent('OAUTH_CALLBACK_SESSION_INITIALIZED');
+        logger.auth.oauthSuccess(result.role);
         
         // Mark as initialized so next render will redirect
         setIsInitialized(true);
         clearTimeout(earlyTimeoutId);
         clearTimeout(diagnosticTimeout);
       } catch (err) {
-        console.error('OAuth Callback failed:', err);
-        logEvent('OAUTH_CALLBACK_ERROR', { error: err.message, stack: err.stack });
+        logger.warn('OAuth callback failed', { error: err.message }, 'AUTH');
         setError(err.message || 'Authentication failed');
         clearTimeout(earlyTimeoutId);
         clearTimeout(diagnosticTimeout);

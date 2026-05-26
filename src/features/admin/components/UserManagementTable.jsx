@@ -7,6 +7,7 @@ import { Block, CheckCircle, Delete, Edit, Search, Visibility } from '@mui/icons
 import Swal from 'sweetalert2';
 
 import adminService from '@features/admin/services/adminService';
+import logger from '@shared/utils/logger';
 
 const UserManagementTable = ({ users, doctors, onUserUpdate, viewMode }) => {
     const navigate = useNavigate();
@@ -97,7 +98,7 @@ const UserManagementTable = ({ users, doctors, onUserUpdate, viewMode }) => {
                     iconColor: '#2EC4B6',
                 });
             } catch (error) {
-                console.error('Error deleting:', error);
+                logger.warn('Error deleting user', { error: error.message }, 'ADMIN');
                 Swal.fire({ title: 'Error', text: 'Failed to delete', icon: 'error', background: '#ffffff', color: '#111827' });
             }
         }
@@ -110,7 +111,7 @@ const UserManagementTable = ({ users, doctors, onUserUpdate, viewMode }) => {
             const action = user.isActive ? 'suspended' : 'activated';
             Swal.fire({ title: 'Status Updated', text: `User has been ${action}.`, icon: 'success', timer: 1500, showConfirmButton: false, background: '#ffffff', color: '#111827', iconColor: '#2EC4B6' });
         } catch (error) {
-            console.error('Error updating status:', error);
+            logger.warn('Error updating user status', { error: error.message }, 'ADMIN');
             Swal.fire({ title: 'Error', text: 'Failed to update status', icon: 'error', background: '#ffffff', color: '#111827' });
         }
     };

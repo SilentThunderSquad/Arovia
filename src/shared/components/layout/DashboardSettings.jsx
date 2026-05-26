@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import userService from '@features/user/services/userService';
 
 import { useAuth } from '@shared/hooks/useAuth';
+import logger from '@shared/utils/logger';
 
 const DashboardSettings = ({ user, onUpdate }) => {
   const { logout } = useAuth();
@@ -79,7 +80,8 @@ const DashboardSettings = ({ user, onUpdate }) => {
         addressLine2: user.address?.addressLine2 || ''
       });
       setAvatarPreview(user.profilePicture || '');
-      fetchUsernameHistory();
+      // TODO: This endpoint doesn't exist in the API yet
+      // fetchUsernameHistory();
     }
   }, [user]);
 
@@ -92,7 +94,7 @@ const DashboardSettings = ({ user, onUpdate }) => {
         setUsernameHistory(data.data);
       }
     } catch (err) {
-      console.warn('Skipped fetching username log history.');
+      logger.debug('Skipped username history fetch', { reason: 'endpoint_not_implemented' }, 'USER');
     }
   };
 
@@ -180,7 +182,7 @@ const DashboardSettings = ({ user, onUpdate }) => {
         setAddressForm(prev => ({ ...prev, city: details.District, state: details.State }));
       }
     } catch (error) {
-      console.warn('Pincode lookup error:', error);
+      logger.debug('Pincode lookup error', { error: error.message }, 'USER');
     } finally {
       setLoading(false);
     }

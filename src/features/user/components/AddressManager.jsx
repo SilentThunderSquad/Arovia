@@ -6,6 +6,7 @@ import { LocationOn, Save } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 
 import userService from '@features/user/services/userService';
+import logger from '@shared/utils/logger';
 
 const AddressManager = ({ userInfo, onUpdate }) => {
     const [address, setAddress] = useState({
@@ -35,7 +36,7 @@ const AddressManager = ({ userInfo, onUpdate }) => {
                 setAddress((prev) => ({ ...prev, city: details.District, state: details.State, country: 'India' }));
             }
         } catch (error) {
-            console.error('Pincode lookup failed:', error);
+            logger.warn('Pincode lookup failed', { error: error.message }, 'USER');
         } finally {
             setIsSearching(false);
         }
