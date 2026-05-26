@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import userService from '@features/user/services/userService';
 
 import { useAuth } from '@shared/hooks/useAuth';
+import { fetchLocationByPincode } from '@shared/utils/pincode';
 import logger from '@shared/utils/logger';
 
 const DashboardSettings = ({ user, onUpdate }) => {
@@ -173,16 +174,62 @@ const DashboardSettings = ({ user, onUpdate }) => {
   };
 
   const lookupPincode = async (pin) => {
+    if (!pin || pin.length !== 6) {
+      logger.warn('Invalid pincode format', { pincode: pin }, 'USER');
+      return;
+    }
+    
     setLoading(true);
     try {
-      const response = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
-      const data = await response.json();
-      if (data?.[0]?.Status === 'Success') {
-        const details = data[0].PostOffice[0];
-        setAddressForm(prev => ({ ...prev, city: details.District, state: details.State }));
+      const location = await fetchLocationByPincode(pin);
+      
+      if (location.error) {
+        logger.warn('Pincode lookup failed', { error: location.error, pincode: pin }, 'USER');
+        Swal.fire({
+          title: 'Invalid Pincode',
+          text: location.error,
+          icon: 'warning',
+          background: '#ffffff',
+          color: '#111827',
+          toast: true,
+          position: 'bottom-end',
+          timer: 3000,
+          showConfirmButton: false
+        });
+      } else {
+        setAddressForm(prev => ({ 
+          ...prev, 
+          city: location.city || '', 
+          state: location.state || '' 
+        }));
+        
+        Swal.fire({
+          title: 'Location Detected',
+          text: `${location.city}, ${location.state}`,
+          icon: 'success',
+          background: '#ffffff',
+          color: '#111827',
+          toast: true,
+          position: 'bottom-end',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        
+        logger.debug('Pincode lookup successful', { pincode: pin, state: location.state, city: location.city }, 'USER');
       }
     } catch (error) {
-      logger.debug('Pincode lookup error', { error: error.message }, 'USER');
+      logger.warn('Pincode lookup error', { error: error.message, pincode: pin }, 'USER');
+      Swal.fire({
+        title: 'Lookup Failed',
+        text: 'Could not fetch location details. Please enter manually.',
+        icon: 'error',
+        background: '#ffffff',
+        color: '#111827',
+        toast: true,
+        position: 'bottom-end',
+        timer: 3000,
+        showConfirmButton: false
+      });
     } finally {
       setLoading(false);
     }

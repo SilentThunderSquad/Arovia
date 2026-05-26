@@ -6,6 +6,7 @@ import { LocationOn, Save } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 
 import userService from '@features/user/services/userService';
+import { fetchLocationByPincode } from '@shared/utils/pincode';
 import logger from '@shared/utils/logger';
 
 const AddressManager = ({ userInfo, onUpdate }) => {
@@ -31,32 +32,17 @@ const AddressManager = ({ userInfo, onUpdate }) => {
     };
 
     const lookupPincode = async (pincode) => {
-        if (!pincode || pincode.length !== 6) return;
+        if (!pincode || pincode.length !== 6) {
+            logger.warn('Invalid pincode format', { pincode }, 'USER');
+            return;
+        }
         
         setIsSearching(true);
         try {
-            const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+            const location = await fetchLocationByPincode(pincode);
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data?.[0]?.Status === 'Success' && data[0].PostOffice?.length > 0) {
-                const details = data[0].PostOffice[0];
-                
-                // Map API response to address fields
-                setAddress((prev) => ({
-                    ...prev,
-                    city: details.District || '',
-                    state: details.State || '',
-                    country: 'India'
-                }));
-                
-                logger.debug('Pincode lookup successful', { pincode, district: details.District, state: details.State }, 'USER');
-            } else {
-                logger.warn('Pincode not found', { pincode, status: data?.[0]?.Status }, 'USER');
+            if (location.error) {
+                logger.warn('Pincode lookup failed', { error: location.error, pincode }, 'USER');
                 Swal.fire({
                     title: 'Pincode Not Found',
                     text: 'Please enter a valid Indian pincode',
@@ -64,6 +50,15 @@ const AddressManager = ({ userInfo, onUpdate }) => {
                     background: '#ffffff',
                     color: '#111827'
                 });
+            } else {
+                setAddress((prev) => ({
+                    ...prev,
+                    city: location.city || '',
+                    state: location.state || '',
+                    country: 'India'
+                }));
+                
+                logger.debug('Pincode lookup successful', { pincode, state: location.state, city: location.city }, 'USER');
             }
         } catch (error) {
             logger.warn('Pincode lookup failed', { error: error.message, pincode }, 'USER');

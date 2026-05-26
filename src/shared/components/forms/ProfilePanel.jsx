@@ -45,7 +45,33 @@ const ProfilePanel = ({ isOpen, onClose, user, onSave }) => {
         setFormData(prev => ({ ...prev, pincode: pin }));
         if (pin.length === 6) {
             const location = await fetchLocationByPincode(pin);
-            if (!location.error) setFormData(prev => ({ ...prev, state: location.state, city: location.city }));
+            if (location.error) {
+                // Show user feedback for invalid pincode
+                Swal.fire({
+                    title: 'Invalid Pincode',
+                    text: location.error,
+                    icon: 'warning',
+                    background: '#ffffff',
+                    color: '#111827',
+                    toast: true,
+                    position: 'bottom-end',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            } else {
+                setFormData(prev => ({ ...prev, state: location.state, city: location.city }));
+                Swal.fire({
+                    title: 'Location Detected',
+                    text: `${location.city}, ${location.state}`,
+                    icon: 'success',
+                    background: '#ffffff',
+                    color: '#111827',
+                    toast: true,
+                    position: 'bottom-end',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
         }
     };
 
