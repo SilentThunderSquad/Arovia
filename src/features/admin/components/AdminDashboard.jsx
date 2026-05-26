@@ -110,6 +110,8 @@ const AdminDashboard = () => {
         return <AdminOverview users={users} doctors={doctors} analytics={analytics} />;
       case 'users':
         return <UserManagementTable users={users} doctors={doctors} onUserUpdate={fetchAdminData} viewMode="users" />;
+      case 'admins':
+        return <UserManagementTable users={users} doctors={doctors} onUserUpdate={fetchAdminData} viewMode="admins" />;
       case 'doctors':
         return <UserManagementTable users={users} doctors={doctors} onUserUpdate={fetchAdminData} viewMode="doctors" />;
       case 'analytics':
@@ -128,6 +130,8 @@ const AdminDashboard = () => {
         return { title: 'Admin Console', subtitle: 'Global operational summaries, growth analytics, and logs.' };
       case 'users':
         return { title: 'Registered Patients', subtitle: 'Manage active patient profile rosters and access levels.' };
+      case 'admins':
+        return { title: 'System Administrators', subtitle: 'Manage system admin accounts and access permissions.' };
       case 'doctors':
         return { title: 'Medical Providers', subtitle: 'Verify credentials and manage provider rosters.' };
       case 'analytics':

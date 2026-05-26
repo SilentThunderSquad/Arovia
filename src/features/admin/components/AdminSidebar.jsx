@@ -22,6 +22,7 @@ const AdminSidebar = ({ activeView, setActiveView, isCollapsed, setIsCollapsed, 
       title: 'MANAGEMENT',
       items: [
         { id: 'users', label: 'Registered Users', icon: <PeopleAlt /> },
+        { id: 'admins', label: 'System Admins', icon: <AssignmentInd /> },
         { id: 'doctors', label: 'Medical Providers', icon: <AssignmentInd /> }
       ]
     },
