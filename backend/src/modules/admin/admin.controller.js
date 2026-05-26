@@ -52,7 +52,7 @@ function mapUserToFrontend(profile) {
   return {
     _id: profile.id, id: profile.id, name: profile.name, username: profile.username,
     role: profile.role, phone: profile.phone, dob: profile.dob, gender: profile.gender,
-    profilePicture: profile.profile_picture, bloodDonor: profile.blood_donor,
+    profileImage: profile.profile_picture, profilePicture: profile.profile_picture, avatar: profile.profile_picture, bloodDonor: profile.blood_donor,
     isActive: profile.is_active, address: profile.address || {},
     createdAt: profile.created_at, updatedAt: profile.updated_at,
   };
