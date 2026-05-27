@@ -36,13 +36,25 @@ class UserService {
   }
 
   async updateProfile(userId, updates) {
+    console.log('[SERVICE] updateProfile called for user:', userId, 'with updates:', Object.keys(updates));
+    
     const { data, error } = await supabase
       .from('profiles')
       .update(updates)
       .eq('id', userId)
       .select()
       .single();
-    throwIf(error);
+    
+    if (error) {
+      console.error('[SERVICE] Supabase update error:');
+      console.error('  Code:', error.code);
+      console.error('  Message:', error.message);
+      console.error('  Details:', error.details);
+      console.error('  Hint:', error.hint);
+      throwIf(error);
+    }
+    
+    console.log('[SERVICE] Update successful, returned data:', !!data);
     return data;
   }
 
