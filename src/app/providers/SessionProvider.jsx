@@ -9,7 +9,7 @@ export const SessionContext = createContext(null);
 export const SessionProvider = ({ children }) => {
   const { state, logout } = useContext(AuthContext);
 
-  const TIMEOUT_DURATION = 5 * 60 * 1000; // 5 minutes
+  const TIMEOUT_DURATION = 20 * 60 * 1000; // 20 minutes
   const WARNING_DURATION = 1 * 60 * 1000; // 1 minute warning
   const extendDebounceRef = useRef(false);
 
