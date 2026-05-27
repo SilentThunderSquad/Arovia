@@ -106,16 +106,31 @@ const updateAddress = asyncHandler(async (req, res) => {
     return badRequest(res, 'Address Line 1 is required');
   }
   
-  console.log('[ADDRESS] Updating address for user:', req.user.userId, 'with:', address);
+  console.log('[ADDRESS] Updating address for user:', req.user.userId);
+  console.log('[ADDRESS] Received address object:', JSON.stringify(address, null, 2));
   
   try {
+    console.log('[ADDRESS] Calling userService.updateProfile...');
     const updatedProfile = await userService.updateProfile(req.user.userId, { address });
-    console.log('[ADDRESS] Update successful, profile returned:', !!updatedProfile);
     
+    if (!updatedProfile) {
+      console.error('[ADDRESS] No profile returned from update');
+      return badRequest(res, 'Failed to update address');
+    }
+    
+    console.log('[ADDRESS] Update successful, fetching prescriptions...');
     const prescriptions = await userService.getPrescriptions(req.user.userId);
-    return success(res, { user: mapProfileToFrontend(updatedProfile, prescriptions, req.user.email) }, 'Address updated');
+    
+    const response = mapProfileToFrontend(updatedProfile, prescriptions, req.user.email);
+    console.log('[ADDRESS] Response mapped successfully');
+    
+    return success(res, { user: response }, 'Address updated');
   } catch (error) {
-    console.error('[ADDRESS] Error during update:', error.message, error.stack);
+    console.error('[ADDRESS] Error during update:');
+    console.error('  Message:', error.message);
+    console.error('  Stack:', error.stack);
+    if (error.details) console.error('  Details:', error.details);
+    if (error.code) console.error('  Code:', error.code);
     throw error;
   }
 });
