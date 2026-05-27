@@ -4,8 +4,18 @@ import { Box, Chip, Typography } from '@mui/material';
 import { Timer, Warning } from '@mui/icons-material';
 
 const SessionTimer = () => {
-  const [timeRemaining, setTimeRemaining] = useState(300000); // 5 minutes default fallback
-  const [isWarning, setIsWarning] = useState(false);
+  const getInitialRemainingTime = () => {
+    const storedEndTime = localStorage.getItem('session_end_time');
+    if (storedEndTime) {
+      const remaining = parseInt(storedEndTime, 10) - Date.now();
+      return Math.max(0, remaining);
+    }
+    return 20 * 60 * 1000; // 20 minutes default fallback
+  };
+
+  const initialTime = getInitialRemainingTime();
+  const [timeRemaining, setTimeRemaining] = useState(initialTime);
+  const [isWarning, setIsWarning] = useState(initialTime <= 60000); // Highlight red if under 1 minute
 
   const formatTime = (ms) => {
     const total = Math.ceil(ms / 1000);
