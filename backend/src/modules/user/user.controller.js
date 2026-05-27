@@ -73,24 +73,51 @@ const updateProfile = asyncHandler(async (req, res) => {
 
 /** PUT /api/user/address */
 const updateAddress = asyncHandler(async (req, res) => {
-  const { address } = req.body;
-  if (!address) return badRequest(res, 'Address is required');
+  let { address } = req.body;
   
-  // Validate address object has required fields
+  if (!address) {
+    return badRequest(res, 'Address object is required');
+  }
+  
+  // Parse if it comes as string (from form data)
   if (typeof address === 'string') {
     try {
       address = JSON.parse(address);
     } catch (e) {
+      console.error('[ADDRESS] Failed to parse address string:', e.message);
       return badRequest(res, 'Invalid address format');
     }
   }
   
-  if (!address.country || !address.pincode) {
-    return badRequest(res, 'Country and pincode are required');
+  // Validate required fields
+  if (!address.country) {
+    return badRequest(res, 'Country is required');
   }
   
-  const updatedProfile = await userService.updateProfile(req.user.userId, { address });
-  return success(res, { user: mapProfileToFrontend(updatedProfile, [], req.user.email) }, 'Address updated');
+  if (!address.pincode) {
+    return badRequest(res, 'Pincode is required');
+  }
+  
+  if (!/^\d{6}$/.test(address.pincode)) {
+    return badRequest(res, 'Pincode must be exactly 6 digits');
+  }
+  
+  if (!address.addressLine1) {
+    return badRequest(res, 'Address Line 1 is required');
+  }
+  
+  console.log('[ADDRESS] Updating address for user:', req.user.userId, 'with:', address);
+  
+  try {
+    const updatedProfile = await userService.updateProfile(req.user.userId, { address });
+    console.log('[ADDRESS] Update successful, profile returned:', !!updatedProfile);
+    
+    const prescriptions = await userService.getPrescriptions(req.user.userId);
+    return success(res, { user: mapProfileToFrontend(updatedProfile, prescriptions, req.user.email) }, 'Address updated');
+  } catch (error) {
+    console.error('[ADDRESS] Error during update:', error.message, error.stack);
+    throw error;
+  }
 });
 
 /** POST /api/user/change-password */
