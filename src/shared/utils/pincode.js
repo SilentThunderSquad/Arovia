@@ -1,63 +1,77 @@
 /**
  * Fetches location details (State, District/City) from a pincode.
- * Uses the free public API: https://api.postalpincode.in/pincode/{pincode}
- * Falls back to alternative API if primary fails.
+ * USES BACKEND PROXY: GET /api/public/pincode/:pincode
+ * 
+ * Why backend proxy?
+ * - Avoids CORS issues (frontend-to-external-API blocked)
+ * - Avoids SSL certificate problems
+ * - Better error handling and retry logic on server
+ * - Rate limiting protection
  *
  * @param {string} pincode - The 6-digit pincode
- * @returns {Promise<{state: string, city: string, error?: string}>}
+ * @returns {Promise<{state: string, city: string, country: string, error?: string}>}
  */
 import logger from './logger';
 
 export const fetchLocationByPincode = async (pincode) => {
-    if (!pincode || pincode.length !== 6) return { error: 'Invalid pincode length' };
+    // Validate pincode format
+    if (!pincode || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) {
+        return { error: 'Invalid pincode. Must be exactly 6 digits.' };
+    }
     
-    // Try primary API
     try {
-        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`, {
+        // Determine backend URL (localhost in dev, production domain in prod)
+        const baseURL = window.location.origin.includes('5173') 
+            ? 'http://localhost:5000' 
+            : window.location.origin;
+        
+        // Call backend endpoint
+        const response = await fetch(`${baseURL}/api/public/pincode/${pincode}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
         });
         
+        // Handle rate limiting
+        if (response.status === 429) {
+            return { error: 'Too many requests. Please wait a moment.' };
+        }
+        
         if (!response.ok) {
-            throw new Error(`API returned ${response.status}`);
+            throw new Error(`Server returned ${response.status}`);
         }
         
-        const data = await response.json();
+        const result = await response.json();
         
-        if (Array.isArray(data) && data.length > 0 && data[0].Status === 'Success') {
-            const postOffice = data[0].PostOffice[0];
-            return { state: postOffice.State, city: postOffice.District, country: 'India' };
-        }
-        return { error: 'Invalid pincode or not found' };
-    } catch (error) {
-        logger.warn('Primary pincode API failed', { error: error.message, pincode }, 'PINCODE');
-        
-        // Try fallback API (pincode.in)
-        try {
-            const fallbackResponse = await fetch(`https://pincode.in/api/v2/pincode/${pincode}`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                }
-            });
+        // Backend returns { success: true, data: { state, city, country } }
+        if (result.success && result.data) {
+            logger.debug('Pincode lookup successful via backend', { 
+                pincode, 
+                state: result.data.state, 
+                city: result.data.city 
+            }, 'PINCODE');
             
-            if (fallbackResponse.ok) {
-                const fallbackData = await fallbackResponse.json();
-                if (fallbackData.success && fallbackData.data && fallbackData.data[0]) {
-                    const location = fallbackData.data[0];
-                    return { 
-                        state: location.state_name, 
-                        city: location.district_name, 
-                        country: 'India' 
-                    };
-                }
-            }
-        } catch (fallbackError) {
-            logger.warn('Fallback pincode API also failed', { error: fallbackError.message, pincode }, 'PINCODE');
+            return {
+                state: result.data.state,
+                city: result.data.city,
+                country: result.data.country || 'India'
+            };
         }
         
-        return { error: 'Failed to fetch location data. Please enter manually.' };
+        return { error: 'Pincode not found. Please enter manually.' };
+    } catch (error) {
+        logger.warn('Pincode lookup failed', { 
+            error: error.message, 
+            pincode 
+        }, 'PINCODE');
+        
+        // Provide helpful error message
+        if (error.message.includes('Failed to fetch')) {
+            return { error: 'Network error. Please check your connection.' };
+        }
+        
+        return { error: 'Could not fetch location. Please enter manually.' };
     }
 };

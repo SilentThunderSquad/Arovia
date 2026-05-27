@@ -2,7 +2,7 @@
 
 const { Router } = require('express');
 const rateLimit = require('express-rate-limit');
-const { checkUsername, getUserProfile, getDoctorProfile } = require('./public.controller');
+const { checkUsername, getUserProfile, getDoctorProfile, getPincodeLocation } = require('./public.controller');
 
 // Create a strict rate limiter for the username check endpoint to prevent enumeration
 const usernameCheckLimiter = rateLimit({
@@ -16,11 +16,24 @@ const usernameCheckLimiter = rateLimit({
   },
 });
 
+// Rate limiter for pincode lookups (more generous)
+const pincodeLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100, // Limit each IP to 100 lookups per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: 429,
+    message: 'Too many pincode lookups. Please try again in a minute.',
+  },
+});
+
 const router = Router();
 
 // Public routes do NOT require authMiddleware or adminMiddleware
 router.get('/username-check/:username', usernameCheckLimiter, checkUsername);
 router.get('/user/:username', getUserProfile);
 router.get('/doctor/:username', getDoctorProfile);
+router.get('/pincode/:pincode', pincodeLimiter, getPincodeLocation);
 
 module.exports = router;
