@@ -21,7 +21,7 @@ export async function apiFetch(endpoint, options = {}) {
   if (!contentType?.includes('application/json')) throw new Error('Server returned a non-JSON response. Check server logs.');
 
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || `Request failed with status ${response.status}`);
+  if (!response.ok) throw new Error(data.message || data.error?.message || `Request failed with status ${response.status}`);
   return data;
 }
 

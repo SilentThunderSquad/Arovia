@@ -38,12 +38,30 @@ class UserService {
   async updateProfile(userId, updates) {
     console.log('[SERVICE] updateProfile called for user:', userId, 'with updates:', Object.keys(updates));
     
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('profiles')
       .update(updates)
       .eq('id', userId)
       .select()
       .single();
+    
+    // Dynamic safeguard: If update failed because the 'visibility' column doesn't exist in the database,
+    // remove it and retry the update. This matches publicService safeguards for local/hosted DB schemas.
+    if (error && error.code === 'PGRST204' && Object.prototype.hasOwnProperty.call(updates, 'visibility')) {
+      console.warn('[SERVICE] Visibility column is missing in DB schema cache. Omitting visibility and retrying...');
+      const fallbackUpdates = { ...updates };
+      delete fallbackUpdates.visibility;
+      
+      const retryResult = await supabase
+        .from('profiles')
+        .update(fallbackUpdates)
+        .eq('id', userId)
+        .select()
+        .single();
+        
+      data = retryResult.data;
+      error = retryResult.error;
+    }
     
     if (error) {
       console.error('[SERVICE] Supabase update error:');

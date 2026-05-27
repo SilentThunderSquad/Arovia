@@ -9,7 +9,7 @@ const { AppError } = require('../shared/utils/errors');
  */
 const errorMiddleware = (err, req, res, next) => { // eslint-disable-line no-unused-vars
   const isProd = process.env.NODE_ENV === 'production';
-  let statusCode = err.statusCode || 500;
+  let statusCode = err.statusCode || err.status || 500;
   let code = err.code || 'INTERNAL_SERVER_ERROR';
   let message = err.message || 'An unexpected error occurred';
   let details = err.details || null;
