@@ -9,7 +9,6 @@ import Swal from 'sweetalert2';
 
 import DashboardLayout from '@shared/components/layout/DashboardLayout';
 import DashboardSettings from '@shared/components/layout/DashboardSettings';
-import AddressManager from './AddressManager';
 import PrescriptionVault from './PrescriptionVault';
 import SecuritySettings from './SecuritySettings';
 import UserOverview from './UserOverview';
@@ -30,7 +29,7 @@ const UserDashboard = () => {
     const segments = pathname.toLowerCase().split('/');
     const lastSegment = segments[segments.length - 1];
     
-    const validViews = ['overview', 'prescriptions', 'records', 'profile', 'settings', 'security'];
+    const validViews = ['overview', 'prescriptions', 'address', 'profile', 'settings', 'security'];
     if (validViews.includes(lastSegment)) {
       return lastSegment;
     }
@@ -73,8 +72,8 @@ const UserDashboard = () => {
         return <UserOverview userInfo={userInfo} setActiveView={handleViewChange} />;
       case 'prescriptions':
         return <PrescriptionVault userInfo={userInfo} onUpdate={handleUpdate} />;
-      case 'records':
-        return <AddressManager userInfo={userInfo} onUpdate={handleUpdate} />;
+      case 'address':
+        return <DashboardSettings user={userInfo} onUpdate={handleUpdate} initialTab={2} />;
       case 'profile':
         // Direct settings sub-tabs mappings for fast SaaS navigation
         return <DashboardSettings user={userInfo} onUpdate={handleUpdate} initialTab={0} />;
@@ -94,8 +93,8 @@ const UserDashboard = () => {
         return { title: 'Patient Console', subtitle: 'Secure overview of clinical status, vaults, and completes.' };
       case 'prescriptions':
         return { title: 'Prescription Vault', subtitle: 'Tamper-proof storage of medical orders and PDFs.' };
-      case 'records':
-        return { title: 'Records Management', subtitle: 'Configure clinical mailing delivery points.' };
+      case 'address':
+        return { title: 'Address Management', subtitle: 'Configure clinical mailing delivery points.' };
       case 'settings':
       case 'profile':
         return { title: 'Settings Console', subtitle: 'Manage identities, visibilities, and credential structures.' };

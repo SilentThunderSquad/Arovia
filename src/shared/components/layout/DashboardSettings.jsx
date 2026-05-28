@@ -45,7 +45,8 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
     city: '',
     pincode: '',
     addressLine1: '',
-    addressLine2: ''
+    addressLine2: '',
+    landmark: ''
   });
   
   const [securityForm, setSecurityForm] = useState({
@@ -82,7 +83,8 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
         city: user.address?.city || '',
         pincode: user.address?.pincode || '',
         addressLine1: user.address?.addressLine1 || '',
-        addressLine2: user.address?.addressLine2 || ''
+        addressLine2: user.address?.addressLine2 || '',
+        landmark: user.address?.landmark || ''
       });
       setAvatarPreview(user.profilePicture || '');
       // TODO: This endpoint doesn't exist in the API yet
@@ -265,7 +267,8 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
         city: user.address?.city || '',
         pincode: user.address?.pincode || '',
         addressLine1: user.address?.addressLine1 || '',
-        addressLine2: user.address?.addressLine2 || ''
+        addressLine2: user.address?.addressLine2 || '',
+        landmark: user.address?.landmark || ''
       });
       setAvatarPreview(user.profilePicture || '');
       setAvatarFile(null);
@@ -307,7 +310,8 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
         city: addressForm.city,
         pincode: addressForm.pincode,
         addressLine1: addressForm.addressLine1,
-        addressLine2: addressForm.addressLine2
+        addressLine2: addressForm.addressLine2,
+        landmark: addressForm.landmark
       }));
 
       const data = await userService.updateProfile(formData);
@@ -380,9 +384,9 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
       {/* Main Tab Panels */}
       <Box sx={{ pb: 10 }}>
         {activeTab === 0 && (
-          <Grid container spacing={3}>
-            <Grid xs={12} md={4}>
-              <Card sx={{ borderRadius: 3, border: '1px solid rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, textAlign: 'center' }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, alignItems: 'stretch' }}>
+            <Box sx={{ width: { xs: '100%', md: '360px' }, flexShrink: 0 }}>
+              <Card sx={{ height: '100%', borderRadius: 3, border: '1px solid rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 4, textAlign: 'center' }}>
                 <Box sx={{ position: 'relative', mb: 3 }}>
                   <Avatar 
                     src={avatarPreview} 
@@ -404,45 +408,45 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
                   Upload a clean JPG/PNG image. Less than 2MB size.
                 </Alert>
               </Card>
-            </Grid>
-            <Grid xs={12} md={8}>
-              <Card sx={{ borderRadius: 3, border: '1px solid rgba(0,0,0,0.06)' }}>
-                <CardContent sx={{ p: 4 }}>
-                  <Typography variant="h6" fontWeight="800" color="#0F4C5C" mb={3}>Personal Details</Typography>
-                  <Grid container spacing={3}>
-                    <Grid xs={12} sm={6}>
-                      <TextField label="Full Name" fullWidth name="name" value={profileForm.name} onChange={handleProfileChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+            </Box>
+            <Box sx={{ flexGrow: 1, width: '100%' }}>
+              <Card sx={{ borderRadius: 3, border: '1px solid rgba(0,0,0,0.06)', height: '100%' }}>
+                <CardContent sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h6" fontWeight="800" color="#0F4C5C" mb={3}>Personal Details</Typography>
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField label="Full Name" fullWidth name="name" value={profileForm.name} onChange={handleProfileChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField label="Phone Number" fullWidth name="phone" value={profileForm.phone} onChange={handleProfileChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField label="Date of Birth" type="date" fullWidth name="dob" value={profileForm.dob} onChange={handleProfileChange} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField select SelectProps={{ native: true }} label="Gender" fullWidth name="gender" value={profileForm.gender} onChange={handleProfileChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                          <option value="Prefer not to say">Prefer not to say</option>
+                        </TextField>
+                      </Grid>
                     </Grid>
-                    <Grid xs={12} sm={6}>
-                      <TextField label="Phone Number" fullWidth name="phone" value={profileForm.phone} onChange={handleProfileChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
-                    </Grid>
-                    <Grid xs={12} sm={6}>
-                      <TextField label="Date of Birth" type="date" fullWidth name="dob" value={profileForm.dob} onChange={handleProfileChange} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
-                    </Grid>
-                    <Grid xs={12} sm={6}>
-                      <TextField select SelectProps={{ native: true }} label="Gender" fullWidth name="gender" value={profileForm.gender} onChange={handleProfileChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
-                      </TextField>
-                    </Grid>
-                    <Grid xs={12}>
-                      <Box sx={{ bgcolor: 'rgba(46, 196, 182, 0.05)', p: 3, borderRadius: 3, border: '1px solid rgba(46, 196, 182, 0.1)' }}>
-                        <FormControlLabel 
-                          control={<Switch checked={profileForm.bloodDonor} onChange={handleProfileChange} name="bloodDonor" />} 
-                          label={<Typography fontWeight="600" sx={{ fontSize: '0.85rem' }}>Interested in Blood Donation</Typography>} 
-                        />
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5, pl: 7 }}>
-                          By enabling, you opt-in to be registered as an active blood donor in emergency medical clinical schedules.
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
+                  </Box>
+                  <Box sx={{ mt: 3, bgcolor: 'rgba(46, 196, 182, 0.05)', p: 3, borderRadius: 3, border: '1px solid rgba(46, 196, 182, 0.1)' }}>
+                    <FormControlLabel 
+                      control={<Switch checked={profileForm.bloodDonor} onChange={handleProfileChange} name="bloodDonor" />} 
+                      label={<Typography fontWeight="600" sx={{ fontSize: '0.85rem' }}>Interested in Blood Donation</Typography>} 
+                    />
+                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5, pl: 7 }}>
+                      By enabling, you opt-in to be registered as an active blood donor in emergency medical clinical schedules.
+                    </Typography>
+                  </Box>
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         )}
 
         {activeTab === 1 && (
@@ -450,7 +454,7 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
             <CardContent sx={{ p: 4 }}>
               <Typography variant="h6" fontWeight="800" color="#0F4C5C" mb={3}>Account Settings</Typography>
               <Grid container spacing={3}>
-                <Grid xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField 
                     label="Username" 
                     fullWidth 
@@ -476,10 +480,10 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
                     sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} 
                   />
                 </Grid>
-                <Grid xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField label="Email Address" fullWidth disabled name="email" value={accountForm.email} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#F8F9FA' } }} />
                 </Grid>
-                <Grid xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField select SelectProps={{ native: true }} label="Profile Visibility" fullWidth name="visibility" value={accountForm.visibility} onChange={handleAccountChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
                     <option value="public">Public (Indexed on search engines)</option>
                     <option value="unlisted">Unlisted (Direct links only)</option>
@@ -514,24 +518,90 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
         )}
 
         {activeTab === 2 && (
-          <Card sx={{ borderRadius: 3, border: '1px solid rgba(0,0,0,0.06)', p: 2 }}>
+          <Card sx={{ borderRadius: 3, border: '1px solid rgba(0,0,0,0.06)' }}>
             <CardContent sx={{ p: 4 }}>
               <Typography variant="h6" fontWeight="800" color="#0F4C5C" mb={3}>Clinical Mailing Address</Typography>
               <Grid container spacing={3}>
-                <Grid xs={12} sm={4}>
-                  <TextField label="Pincode" fullWidth name="pincode" value={addressForm.pincode} onChange={handleAddressChange} inputProps={{ maxLength: 6 }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                    select 
+                    SelectProps={{ native: true }} 
+                    label="Country" 
+                    fullWidth 
+                    name="country" 
+                    value={addressForm.country} 
+                    onChange={handleAddressChange} 
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                  >
+                    <option value="India">India</option>
+                  </TextField>
                 </Grid>
-                <Grid xs={12} sm={4}>
-                  <TextField label="City" fullWidth name="city" value={addressForm.city} onChange={handleAddressChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                    label="Pincode *" 
+                    fullWidth 
+                    name="pincode" 
+                    value={addressForm.pincode} 
+                    onChange={handleAddressChange} 
+                    inputProps={{ maxLength: 6 }} 
+                    helperText="Enter 6-digit Indian postal code for auto-fill"
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} 
+                  />
                 </Grid>
-                <Grid xs={12} sm={4}>
-                  <TextField label="State" fullWidth name="state" value={addressForm.state} onChange={handleAddressChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                    label="City" 
+                    fullWidth 
+                    name="city" 
+                    value={addressForm.city} 
+                    InputProps={{ readOnly: true }} 
+                    placeholder="Auto-filled" 
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#F8F9FA' } }} 
+                  />
                 </Grid>
-                <Grid xs={12} sm={6}>
-                  <TextField label="Address Line 1" fullWidth name="addressLine1" value={addressForm.addressLine1} onChange={handleAddressChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                    label="State" 
+                    fullWidth 
+                    name="state" 
+                    value={addressForm.state} 
+                    InputProps={{ readOnly: true }} 
+                    placeholder="Auto-filled" 
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#F8F9FA' } }} 
+                  />
                 </Grid>
-                <Grid xs={12} sm={6}>
-                  <TextField label="Address Line 2 (Optional)" fullWidth name="addressLine2" value={addressForm.addressLine2} onChange={handleAddressChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                <Grid item xs={12}>
+                  <TextField 
+                    label="Address Line 1 *" 
+                    fullWidth 
+                    name="addressLine1" 
+                    value={addressForm.addressLine1} 
+                    onChange={handleAddressChange} 
+                    placeholder="House No., Building, Street"
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} 
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                    label="Address Line 2 (Optional)" 
+                    fullWidth 
+                    name="addressLine2" 
+                    value={addressForm.addressLine2} 
+                    onChange={handleAddressChange} 
+                    placeholder="Apartment, Studio, Floor"
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} 
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField 
+                    label="Landmark (Optional)" 
+                    fullWidth 
+                    name="landmark" 
+                    value={addressForm.landmark} 
+                    onChange={handleAddressChange} 
+                    placeholder="Near Famous Place"
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} 
+                  />
                 </Grid>
               </Grid>
             </CardContent>
@@ -543,13 +613,13 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
             <CardContent sx={{ p: 4 }}>
               <Typography variant="h6" fontWeight="800" color="#0F4C5C" mb={3}>Update Credentials</Typography>
               <Grid container spacing={3}>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                   <TextField type="password" label="Current Credentials Password" fullWidth name="currentPassword" value={securityForm.currentPassword} onChange={handleSecurityChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
                 </Grid>
-                <Grid xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField type="password" label="New Password" fullWidth name="newPassword" value={securityForm.newPassword} onChange={handleSecurityChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
                 </Grid>
-                <Grid xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField type="password" label="Confirm New Password" fullWidth name="confirmPassword" value={securityForm.confirmPassword} onChange={handleSecurityChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
                 </Grid>
               </Grid>

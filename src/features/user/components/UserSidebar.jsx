@@ -27,8 +27,7 @@ const UserSidebar = ({ activeView, setActiveView, isCollapsed, setIsCollapsed, o
     {
       title: 'HEALTH',
       items: [
-        { id: 'prescriptions', label: 'Prescriptions', icon: <Description /> },
-        { id: 'records', label: 'Records Status', icon: <LocationOn /> }
+        { id: 'prescriptions', label: 'Prescriptions', icon: <Description /> }
       ]
     },
     {
