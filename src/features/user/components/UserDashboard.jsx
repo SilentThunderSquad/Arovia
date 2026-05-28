@@ -25,13 +25,25 @@ const UserDashboard = () => {
   const location = useLocation();
   const { profile: userInfo, initializeSession, logout } = useAuth();
 
-  // Synchronize state based on exact browser URL location
-  const isSettingsPath = location.pathname.endsWith('/settings');
-  const [activeView, setActiveView] = useState(isSettingsPath ? 'settings' : 'overview');
+  // Helper to extract active view from URL pathname
+  const getActiveViewFromPath = (pathname) => {
+    const segments = pathname.toLowerCase().split('/');
+    const lastSegment = segments[segments.length - 1];
+    
+    const validViews = ['overview', 'prescriptions', 'records', 'profile', 'settings', 'security'];
+    if (validViews.includes(lastSegment)) {
+      return lastSegment;
+    }
+    
+    // Default fallback if path is exactly '/dashboard/user' or anything else
+    return 'overview';
+  };
+
+  const [activeView, setActiveView] = useState(() => getActiveViewFromPath(location.pathname));
 
   useEffect(() => {
-    setActiveView(isSettingsPath ? 'settings' : 'overview');
-  }, [location.pathname, isSettingsPath]);
+    setActiveView(getActiveViewFromPath(location.pathname));
+  }, [location.pathname]);
 
   // Handle updates by refreshing the global session state
   // TODO: OPTIMIZATION - Instead of initializeSession() (full re-fetch),
@@ -48,13 +60,10 @@ const UserDashboard = () => {
 
   // Handle custom active view transitions
   const handleViewChange = (viewId) => {
-    if (viewId === 'settings') {
-      navigate('/dashboard/user/settings');
+    if (viewId === 'overview') {
+      navigate('/dashboard/user');
     } else {
-      setActiveView(viewId);
-      if (location.pathname.endsWith('/settings')) {
-        navigate('/dashboard/user');
-      }
+      navigate(`/dashboard/user/${viewId}`);
     }
   };
 
@@ -68,9 +77,9 @@ const UserDashboard = () => {
         return <AddressManager userInfo={userInfo} onUpdate={handleUpdate} />;
       case 'profile':
         // Direct settings sub-tabs mappings for fast SaaS navigation
-        return <DashboardSettings user={userInfo} onUpdate={handleUpdate} />;
+        return <DashboardSettings user={userInfo} onUpdate={handleUpdate} initialTab={0} />;
       case 'settings':
-        return <DashboardSettings user={userInfo} onUpdate={handleUpdate} />;
+        return <DashboardSettings user={userInfo} onUpdate={handleUpdate} initialTab={1} />;
       case 'security':
         return <SecuritySettings userInfo={userInfo} onUpdate={handleUpdate} />;
       default:

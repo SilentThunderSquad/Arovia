@@ -13,9 +13,13 @@ import { useAuth } from '@shared/hooks/useAuth';
 import { fetchLocationByPincode } from '@shared/utils/pincode';
 import logger from '@shared/utils/logger';
 
-const DashboardSettings = ({ user, onUpdate }) => {
+const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
   const { logout } = useAuth();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
