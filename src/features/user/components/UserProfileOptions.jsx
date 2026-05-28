@@ -56,11 +56,14 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
                 // Using relative path representing proxy or import
                 const res = await fetch(`${window.location.origin.includes('5173') ? 'http://localhost:5000' : ''}/api/public/username-check/${cleanUsername}`);
                 const data = await res.json();
-                if (data.success && data.data) {
-                    if (data.data.available) {
+                
+                const payload = data.data || data;
+                
+                if (data.success && payload.available !== undefined) {
+                    if (payload.available) {
                         setUsernameAvailability({ checking: false, available: true, message: 'Username is available!' });
                     } else {
-                        setUsernameAvailability({ checking: false, available: false, message: data.data.reason || 'Username is taken' });
+                        setUsernameAvailability({ checking: false, available: false, message: payload.reason || 'Username is taken' });
                     }
                 } else {
                     setUsernameAvailability({ checking: false, available: false, message: data.message || 'Validation failed' });
@@ -71,7 +74,7 @@ const UserProfileOptions = ({ userInfo, onUpdate }) => {
         }, 600);
 
         return () => clearTimeout(timer);
-    }, [formData.username, userInfo]);
+    }, [formData.username, userInfo?.username]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

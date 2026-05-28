@@ -123,12 +123,17 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
       try {
         const res = await fetch(`${window.location.origin.includes('5173') ? 'http://localhost:5000' : ''}/api/public/username-check/${cleanUsername}`);
         const data = await res.json();
-        if (data.success && data.data) {
-          if (data.data.available) {
+        
+        const payload = data.data || data;
+        
+        if (data.success && payload.available !== undefined) {
+          if (payload.available) {
             setUsernameStatus({ checking: false, available: true, message: 'Username is available!' });
           } else {
-            setUsernameStatus({ checking: false, available: false, message: data.data.reason || 'Username is taken' });
+            setUsernameStatus({ checking: false, available: false, message: payload.reason || 'Username is taken' });
           }
+        } else {
+          setUsernameStatus({ checking: false, available: false, message: data.message || 'Verification failed' });
         }
       } catch (err) {
         setUsernameStatus({ checking: false, available: true, message: 'Online verification skipped' });
@@ -136,7 +141,7 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
     }, 600);
 
     return () => clearTimeout(timer);
-  }, [accountForm.username, user]);
+  }, [accountForm.username, user?.username]);
 
   // Form input changes
   const handleProfileChange = (e) => {

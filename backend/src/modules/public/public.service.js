@@ -56,8 +56,9 @@ class PublicService {
       .eq('old_username', normalized)
       .maybeSingle();
 
-    // If history table doesn't exist yet (migration not fully ran), skip gracefully
-    if (historyError && !historyError.message.includes('relation "username_history" does not exist')) {
+    // If history table doesn't exist yet (migration not fully ran), skip gracefully.
+    // Handles both PGRST205 (PostgREST table missing) and standard PG "relation does not exist" errors.
+    if (historyError && historyError.code !== 'PGRST205' && !historyError.message.includes('username_history')) {
       throw historyError;
     }
 
