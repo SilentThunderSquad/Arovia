@@ -34,7 +34,7 @@ const UserOverview = ({ userInfo, setActiveView }) => {
             value: userInfo?.bloodDonor ? 'Active Donor' : 'Not Registered',
             subtitle: userInfo?.bloodDonor ? 'Ready to save lives ❤️' : 'Help in medical emergencies',
             icon: <Bloodtype sx={{ fontSize: 40, color: userInfo?.bloodDonor ? '#ef4444' : '#9ca3af' }} />,
-            action: () => setActiveView('security'),
+            action: () => setActiveView('profile'),
             actionLabel: userInfo?.bloodDonor ? 'Change Status' : 'Register Now',
             bgcolor: userInfo?.bloodDonor ? 'rgba(239, 68, 68, 0.04)' : 'rgba(0, 0, 0, 0.02)',
         },

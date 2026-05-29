@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 import DashboardLayout from '@shared/components/layout/DashboardLayout';
 import DashboardSettings from '@shared/components/layout/DashboardSettings';
 import PrescriptionVault from './PrescriptionVault';
-import SecuritySettings from './SecuritySettings';
 import UserOverview from './UserOverview';
 import UserSidebar from './UserSidebar';
 
@@ -80,7 +79,7 @@ const UserDashboard = () => {
       case 'settings':
         return <DashboardSettings user={userInfo} onUpdate={handleUpdate} initialTab={1} />;
       case 'security':
-        return <SecuritySettings userInfo={userInfo} onUpdate={handleUpdate} />;
+        return <DashboardSettings user={userInfo} onUpdate={handleUpdate} initialTab={3} />;
       default:
         return <UserOverview userInfo={userInfo} setActiveView={handleViewChange} />;
     }
@@ -99,7 +98,7 @@ const UserDashboard = () => {
       case 'profile':
         return { title: 'Settings Console', subtitle: 'Manage identities, visibilities, and credential structures.' };
       case 'security':
-        return { title: 'Security Controls', subtitle: 'Configure session tokens and emergency donor status.' };
+        return { title: 'Security Controls', subtitle: 'Configure session passwords and credentials.' };
       default:
         return { title: 'Dashboard', subtitle: 'Welcome back to Arovia Clinic.' };
     }
