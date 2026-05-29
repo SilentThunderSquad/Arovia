@@ -382,7 +382,7 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
       </Card>
 
       {/* Main Tab Panels */}
-      <Box sx={{ pb: 10 }}>
+      <Box sx={{ pb: dirty ? 10 : 4 }}>
         {activeTab === 0 && (
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, alignItems: 'stretch' }}>
             <Box sx={{ width: { xs: '100%', md: '360px' }, flexShrink: 0 }}>
@@ -484,7 +484,18 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
                   <TextField label="Email Address" fullWidth disabled name="email" value={accountForm.email} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: '#F8F9FA' } }} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField select SelectProps={{ native: true }} label="Profile Visibility" fullWidth name="visibility" value={accountForm.visibility} onChange={handleAccountChange} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}>
+                  <TextField 
+                    select 
+                    SelectProps={{ native: true }} 
+                    label="Profile Visibility" 
+                    fullWidth 
+                    name="visibility" 
+                    value={accountForm.visibility} 
+                    onChange={handleAccountChange} 
+                    helperText={`Control who can view your public profile card at ${window.location.origin}/u/${accountForm.username || 'username'}`}
+                    FormHelperTextProps={{ sx: { color: 'text.secondary', fontWeight: 500 } }}
+                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                  >
                     <option value="public">Public (Indexed on search engines)</option>
                     <option value="unlisted">Unlisted (Direct links only)</option>
                     <option value="private">Private (Only you can access)</option>
@@ -660,10 +671,10 @@ const DashboardSettings = ({ user, onUpdate, initialTab = 0 }) => {
       {dirty && (
         <Card 
           sx={{ 
-            position: 'fixed', 
+            position: 'sticky', 
             bottom: 24, 
-            left: { xs: 16, md: 'calc(240px + 32px)' }, 
-            right: 16, 
+            mt: 4,
+            width: '100%',
             bgcolor: '#0F4C5C', 
             color: 'white', 
             borderRadius: 3,
