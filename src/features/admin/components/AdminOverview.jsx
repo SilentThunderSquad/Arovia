@@ -150,7 +150,7 @@ const AdminOverview = ({ users = [], doctors = [], analytics = null }) => {
             {/* KPI Stats Grid */}
             <Grid container spacing={3} sx={{ mb: 6 }}>
                 {statSummary.map((stat, idx) => (
-                    <Grid xs={12} sm={6} lg={3} key={idx} component={motion.div} variants={itemVariants}>
+                    <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={idx} component={motion.div} variants={itemVariants}>
                         <Card 
                             sx={{ 
                                 borderRadius: 5, 
@@ -200,7 +200,7 @@ const AdminOverview = ({ users = [], doctors = [], analytics = null }) => {
             {/* Main Visual KPIs - Line and Bar Charts */}
             <Grid container spacing={3}>
                 {/* Registration Trend Line Chart */}
-                <Grid xs={12} component={motion.div} variants={itemVariants}>
+                <Grid size={{ xs: 12 }} component={motion.div} variants={itemVariants}>
                     <Card sx={{ borderRadius: 5, boxShadow: '0 4px 25px rgba(0,0,0,0.06)', height: '100%', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
                         <CardContent sx={{ p: 5 }}>
                             <Typography variant="h5" sx={{ fontWeight: 900, color: colors.primary, mb: 3, textAlign: 'center' }}>
@@ -255,7 +255,7 @@ const AdminOverview = ({ users = [], doctors = [], analytics = null }) => {
                 </Grid>
 
                 {/* Role Composition Bar Chart */}
-                <Grid xs={12} component={motion.div} variants={itemVariants}>
+                <Grid size={{ xs: 12 }} component={motion.div} variants={itemVariants}>
                     <Card sx={{ borderRadius: 5, boxShadow: '0 4px 25px rgba(0,0,0,0.06)', height: '100%', border: '1px solid', borderColor: alpha(colors.primary, 0.05) }}>
                         <CardContent sx={{ p: 5 }}>
                             <Typography variant="h5" sx={{ fontWeight: 900, color: colors.primary, mb: 3, textAlign: 'center' }}>

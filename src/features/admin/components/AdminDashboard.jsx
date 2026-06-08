@@ -28,13 +28,25 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { profile: userInfo, initializeSession, logout } = useAuth();
 
-  // Synchronize state based on exact browser URL location
-  const isSettingsPath = location.pathname.endsWith('/settings');
-  const [activeView, setActiveView] = useState(isSettingsPath ? 'settings' : 'overview');
+  // Helper to extract active view from URL pathname
+  const getActiveViewFromPath = (pathname) => {
+    const segments = pathname.toLowerCase().split('/');
+    const lastSegment = segments[segments.length - 1];
+    
+    const validViews = ['overview', 'users', 'admins', 'doctors', 'analytics', 'settings'];
+    if (validViews.includes(lastSegment)) {
+      return lastSegment;
+    }
+    
+    // Default fallback if path is exactly '/dashboard/admin' or anything else
+    return 'overview';
+  };
+
+  const [activeView, setActiveView] = useState(() => getActiveViewFromPath(location.pathname));
 
   useEffect(() => {
-    setActiveView(isSettingsPath ? 'settings' : 'overview');
-  }, [location.pathname, isSettingsPath]);
+    setActiveView(getActiveViewFromPath(location.pathname));
+  }, [location.pathname]);
 
   useEffect(() => {
     fetchAdminData();
@@ -94,13 +106,10 @@ const AdminDashboard = () => {
 
   // Handle custom active view transitions
   const handleViewChange = (viewId) => {
-    if (viewId === 'settings') {
-      navigate('/dashboard/admin/settings');
+    if (viewId === 'overview') {
+      navigate('/dashboard/admin');
     } else {
-      setActiveView(viewId);
-      if (location.pathname.endsWith('/settings')) {
-        navigate('/dashboard/admin');
-      }
+      navigate(`/dashboard/admin/${viewId}`);
     }
   };
 

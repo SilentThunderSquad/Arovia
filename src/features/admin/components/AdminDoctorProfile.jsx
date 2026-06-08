@@ -113,7 +113,7 @@ const AdminDoctorProfile = () => {
                 <Box component={motion.div} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                     <Grid container spacing={{ xs: 4, md: 6, xl: 8 }}>
                         {/* LEFT: Profile Photo & Key Info */}
-                        <Grid xs={12} md={4} lg={3} sx={{
+                        <Grid size={{ xs: 12, md: 4, lg: 3 }} sx={{
                             borderRight: { md: '2px solid rgba(0,0,0,0.1)' },
                             display: 'flex',
                             flexDirection: 'column',
@@ -166,7 +166,7 @@ const AdminDoctorProfile = () => {
                         </Grid>
 
                         {/* RIGHT: Detailed Info */}
-                        <Grid xs={12} md={8} lg={9} sx={{ pl: { md: 6, lg: 8, xl: 10 } }}>
+                        <Grid size={{ xs: 12, md: 8, lg: 9 }} sx={{ pl: { md: 6, lg: 8, xl: 10 } }}>
                             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-start' }}>
 
                                 <Typography variant="h3" fontWeight="bold" sx={{ color: '#0F4C5C', mb: 1.5, fontSize: { xs: '2.25rem', md: '2.75rem', xl: '3.5rem' } }}>
@@ -235,7 +235,7 @@ const AdminDoctorProfile = () => {
                                     {/* Availability & Fees */}
                                     <Paper elevation={0} sx={{ p: 3, bgcolor: '#ffffff', borderRadius: 3, border: '1px solid #e5e7eb', mt: 2 }}>
                                         <Grid container spacing={4}>
-                                            <Grid xs={12} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                     <Avatar sx={{ bgcolor: '#e0f2fe', color: '#0369a1' }}>
                                                         <AccessTime />
@@ -253,7 +253,7 @@ const AdminDoctorProfile = () => {
                                                     </Box>
                                                 </Box>
                                             </Grid>
-                                            <Grid xs={12} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                     <Avatar sx={{ bgcolor: '#dcfce7', color: '#15803d' }}>
                                                         <AttachMoney />

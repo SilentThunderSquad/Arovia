@@ -104,7 +104,7 @@ const AdminProfilePage = () => {
 
                 <Box component={motion.div} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                     <Grid container spacing={{ xs: 4, md: 6, xl: 8 }}>
-                        <Grid xs={12} md={4} lg={3} sx={{ borderRight: { md: '2px solid rgba(0,0,0,0.1)' }, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', pr: { md: 4, xl: 6 }, mb: { xs: 4, md: 0 } }}>
+                        <Grid size={{ xs: 12, md: 4, lg: 3 }} sx={{ borderRight: { md: '2px solid rgba(0,0,0,0.1)' }, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', pr: { md: 4, xl: 6 }, mb: { xs: 4, md: 0 } }}>
                             <Avatar
                                 src={userInfo?.profilePicture ? (userInfo.profilePicture.startsWith('http') ? userInfo.profilePicture : `${window.location.origin}${userInfo.profilePicture}`) : ''}
                                 sx={{ width: { xs: 180, md: 200, xl: 240 }, height: { xs: 180, md: 200, xl: 240 }, bgcolor: '#2b2b2b', fontSize: { xs: '3.5rem', md: '4rem', xl: '5rem' }, mb: 2, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}
@@ -119,7 +119,7 @@ const AdminProfilePage = () => {
                             )}
                         </Grid>
 
-                        <Grid xs={12} md={8} lg={9} sx={{ pl: { md: 6, lg: 8, xl: 10 } }}>
+                        <Grid size={{ xs: 12, md: 8, lg: 9 }} sx={{ pl: { md: 6, lg: 8, xl: 10 } }}>
                             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-start' }}>
                                 <Typography variant="h3" fontWeight="bold" sx={{ color: '#0F4C5C', mb: 1.5, fontSize: { xs: '2.25rem', md: '2.75rem', xl: '3.5rem' } }}>
                                     {userInfo?.name}
